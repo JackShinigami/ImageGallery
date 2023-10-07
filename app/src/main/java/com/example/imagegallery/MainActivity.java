@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         ImageObject.getImage(picturesDirectory, images);
         ImageObject.getImage(downloadDirectory, images);
+        ImageObject.getImage(dcimDirectory, images);
 // In ra danh sách các file ảnh
         for (ImageObject imageFile : images) {
             Log.d("IMAGE", imageFile.getFilePath());
