@@ -31,15 +31,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // Nếu quyền chưa được cấp, hiển thị pop-up xin cấp quyền
-            Toast.makeText(MainActivity.this, "Chưa cấp quyền", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE,
-                            Manifest.permission.READ_MEDIA_IMAGES}, 1);
-        }
         setContentView(R.layout.activity_main);
 
         File externalStorage = Environment.getExternalStorageDirectory();
@@ -84,5 +75,11 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
     }
 }
