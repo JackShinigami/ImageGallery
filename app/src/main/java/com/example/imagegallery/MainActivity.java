@@ -34,9 +34,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         File externalStorage = Environment.getExternalStorageDirectory();
+
 // Lấy thư mục Pictures
         File picturesDirectory = new File(externalStorage, "Pictures");
         File downloadDirectory = new File(externalStorage, "Download");
+        File dcimDirectory = new File(externalStorage, "DCIM");
+
         List<ImageObject> images = new ArrayList<>();
 
         ImageObject.getImage(picturesDirectory, images);
