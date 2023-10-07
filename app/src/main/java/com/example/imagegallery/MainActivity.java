@@ -1,14 +1,88 @@
 package com.example.imagegallery;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Button btnChange;
+    private int[] colNumbers = {2, 3, 4, 6};
+    private int colNumberIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu quyền chưa được cấp, hiển thị pop-up xin cấp quyền
+            Toast.makeText(MainActivity.this, "Chưa cấp quyền", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.READ_MEDIA_IMAGES}, 1);
+        }
         setContentView(R.layout.activity_main);
+
+        File externalStorage = Environment.getExternalStorageDirectory();
+// Lấy thư mục Pictures
+        File picturesDirectory = new File(externalStorage, "Pictures");
+        File downloadDirectory = new File(externalStorage, "Download");
+        List<ImageObject> images = new ArrayList<>();
+
+        ImageObject.getImage(picturesDirectory, images);
+        ImageObject.getImage(downloadDirectory, images);
+// In ra danh sách các file ảnh
+        for (ImageObject imageFile : images) {
+            Log.d("IMAGE", imageFile.getFilePath());
+        }
+
+        RecyclerView recyclerView = findViewById(R.id.rv_items);
+        MyAdapter adapter = new MyAdapter(images);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setColNumber(2);
+
+
+        //Thêm dividers giữa các item
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecoration);
+
+        recyclerView.setLayoutManager(new GridLayoutManager(this, adapter.getColNumber()));
+
+        // Lấy WindowManager
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        WindowSize.getScreenSize(windowManager);
+
+
+        btnChange = findViewById(R.id.btnChange);
+
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
+                adapter.setColNumber(colNumbers[colNumberIndex]);
+                recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
+            }
+        });
     }
 }
