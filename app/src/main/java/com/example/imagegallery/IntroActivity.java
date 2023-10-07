@@ -42,7 +42,7 @@ public class IntroActivity extends AppCompatActivity {
             {
                 Log.d("PERMISSION", permissions[i] + " " + grantResults[i]);
             }
-            if(grantResults[grantResults.length - 1] == PackageManager.PERMISSION_GRANTED)
+            if(grantResults[grantResults.length - 1] == PackageManager.PERMISSION_GRANTED || grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)
             {
                 Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
                 Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
