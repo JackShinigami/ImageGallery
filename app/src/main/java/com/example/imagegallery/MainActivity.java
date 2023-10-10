@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btnChange;
+    private ImageButton btnChangeGrid;
     private int[] colNumbers = {2, 3, 4};
     private int colNumberIndex = 0;
 
@@ -69,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
         WindowSize.getScreenSize(windowManager);
 
 
-        btnChange = findViewById(R.id.btnChange);
+        btnChangeGrid = findViewById(R.id.btnChangeGrid);
 
-        btnChange.setOnClickListener(new View.OnClickListener() {
+        btnChangeGrid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 colNumberIndex = (colNumberIndex + 1) % colNumbers.length;

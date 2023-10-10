@@ -7,18 +7,25 @@
     tools:context=".MainActivity" android:orientation="vertical">
 
 
-    <Button
-        android:id="@+id/btnChange"
-        android:text="change"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        />
+        android:layout_height="match_parent" android:layout_weight="10">
+        <ImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:id="@+id/btnChangeGrid"
+            android:src="@drawable/grid"
+            android:scaleType="fitCenter"
+            android:layout_alignParentEnd="true"
+            android:background="#FFFFF5"
+            android:layout_margin="10dp"
+            />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/rv_items"
-        android:layout_weight="20"/>
+        android:layout_weight="1"/>
 
 </LinearLayout>
