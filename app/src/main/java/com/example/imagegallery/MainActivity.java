@@ -26,15 +26,37 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ImageButton btnChangeGrid, btnSort;
+    private RecyclerView recyclerView;
+    private MyAdapter adapter;
+
+    private List<ImageObject> images = new ArrayList<>();
     private int[] colNumbers = {2, 3, 4};
     private int colNumberIndex = 0;
 
-    private boolean asencding = true;
+    private boolean asencding = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        recyclerView = findViewById(R.id.rv_items);
+
+        // Lấy WindowManager
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        WindowSize.getScreenSize(windowManager);
+
+        btnChangeGrid = findViewById(R.id.btnChangeGrid);
+        btnSort = findViewById(R.id.btnSort);
+
+        //Thêm dividers giữa các item
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecoration);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -51,38 +73,15 @@ public class MainActivity extends AppCompatActivity {
         for (ImageObject imageFile : images) {
             Log.d("IMAGE", imageFile.getFilePath());
         }
+        ImageObject.sortByDate(images, asencding);
 
-        RecyclerView recyclerView = findViewById(R.id.rv_items);
-        MyAdapter adapter = new MyAdapter(images);
+        adapter = new MyAdapter(images);
         recyclerView.setAdapter(adapter);
 
-        adapter.setColNumber(2);
-
-
-        //Thêm dividers giữa các item
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
+        adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setLayoutManager(new GridLayoutManager(this, adapter.getColNumber()));
 
-        // Lấy WindowManager
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        WindowSize.getScreenSize(windowManager);
-
-
-        btnChangeGrid = findViewById(R.id.btnChangeGrid);
-
-        btnChangeGrid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
-                adapter.setColNumber(colNumbers[colNumberIndex]);
-                recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
-            }
-        });
-
-        btnSort = findViewById(R.id.btnSort);
         btnSort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,7 +98,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        adapter.notifyDataSetChanged();
+        btnChangeGrid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
+                adapter.setColNumber(colNumbers[colNumberIndex]);
+                recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
+            }
+        });
     }
 
     @Override
