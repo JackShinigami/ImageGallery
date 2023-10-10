@@ -16,8 +16,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         imageView = findViewById(R.id.imageView);
-        ImageObject obj = (ImageObject) getIntent().getSerializableExtra("filePath");
+        ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
-
     }
 }

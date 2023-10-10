@@ -44,7 +44,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                intent.putExtra("filePath", imageObject);
+                intent.putExtra("imageObject", imageObject);
                 v.getContext().startActivity(intent);
             }
         });

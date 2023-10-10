@@ -1,15 +1,15 @@
 package com.example.imagegallery;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.List;
-import java.io.Serializable;
 
-public class ImageObject implements Serializable  {
+public class ImageObject implements Parcelable {
     private String filePath;
 
     ImageObject(String filePath) {
@@ -34,6 +34,30 @@ public class ImageObject implements Serializable  {
             }
         }
     }
+    //parcelable implementation
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(android.os.Parcel dest, int flags) {
+        dest.writeString(filePath);
+    }
+    protected ImageObject(android.os.Parcel in) {
+        filePath = in.readString();
+    }
+
+    public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {
+        @Override
+        public ImageObject createFromParcel(android.os.Parcel in) {
+            return new ImageObject(in);
+        }
+
+        @Override
+        public ImageObject[] newArray(int size) {
+            return new ImageObject[size];
+        }
+    };
 
     public void loadImage(Context context, ImageView imageView) {
         Glide.with(context)
