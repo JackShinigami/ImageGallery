@@ -25,7 +25,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private Button btnChange;
-    private int[] colNumbers = {2, 3, 4, 6};
+    private int[] colNumbers = {2, 3, 4};
     private int colNumberIndex = 0;
 
     @Override
