@@ -38,7 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
         layoutParams.width = WindowSize.getWidth() / colNumber;
         layoutParams.height = layoutParams.width;
 
-        imageObject.loadImage(holder.imageView.getContext(), holder.imageView);
+        imageObject.loadImage(holder.imageView.getContext(), holder.imageView, layoutParams.width/3, layoutParams.height/3);
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
