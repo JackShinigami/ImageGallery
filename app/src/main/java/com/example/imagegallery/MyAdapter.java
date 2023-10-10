@@ -35,9 +35,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
         layoutParams.width = WindowSize.getWidth() / colNumber;
         layoutParams.height = layoutParams.width;
 
-        Glide.with(holder.imageView.getContext())
-                .load(new File(imageObject.getFilePath()))
-                .into(holder.imageView);
+        imageObject.loadImage(holder.imageView.getContext(), holder.imageView);
     }
 
     @Override

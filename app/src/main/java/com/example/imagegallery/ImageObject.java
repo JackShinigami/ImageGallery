@@ -1,5 +1,10 @@
 package com.example.imagegallery;
 
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.util.List;
 
@@ -27,5 +32,19 @@ public class ImageObject {
                 }
             }
         }
+    }
+
+    public void loadImage(Context context, ImageView imageView) {
+        Glide.with(context)
+                .load(new File(filePath))
+                .into(imageView);
+    }
+
+    public void loadImage(Context context, ImageView imageView, int width, int height) {
+        Glide.with(context)
+                .load(new File(filePath))
+                .override(width, height)
+                .fitCenter()
+                .into(imageView);
     }
 }
