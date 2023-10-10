@@ -24,10 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ImageGallery"
         tools:targetApi="31" >
-        <service
-            android:name=".PhotoService"
-            android:exported="false" >
-        </service>
+
 
         <activity
             android:name=".DetailActivity"
