@@ -7,13 +7,16 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 public class ImageObject implements Parcelable {
     private String filePath;
-
-    ImageObject(String filePath) {
+    private Date lastModifiedDate;
+    ImageObject(String filePath, Date lastModifiedDate) {
         this.filePath = filePath;
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public String getFilePath() {
@@ -28,8 +31,9 @@ public class ImageObject implements Parcelable {
                     getImage(file, images);
                 } else {
                     String fileName = file.getName().toLowerCase();
+                    Date date = new Date(file.lastModified());
                     if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif"))
-                        images.add(new ImageObject(file.getAbsolutePath()));
+                        images.add(new ImageObject(file.getAbsolutePath(), date));
                 }
             }
         }
@@ -71,5 +75,14 @@ public class ImageObject implements Parcelable {
                 .override(width, height)
                 .fitCenter()
                 .into(imageView);
+    }
+
+    public static void sortByDate(List<ImageObject> images, boolean ascending) {
+        if(ascending) {
+            images.sort(Comparator.comparing(o -> o.lastModifiedDate));
+        }
+        else {
+            images.sort((o1, o2) -> o2.lastModifiedDate.compareTo(o1.lastModifiedDate));
+        }
     }
 }

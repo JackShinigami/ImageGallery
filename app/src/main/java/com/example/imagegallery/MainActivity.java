@@ -25,10 +25,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageButton btnChangeGrid;
+    private ImageButton btnChangeGrid, btnSort;
     private int[] colNumbers = {2, 3, 4};
     private int colNumberIndex = 0;
 
+    private boolean asencding = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,25 @@ public class MainActivity extends AppCompatActivity {
                 recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
             }
         });
+
+        btnSort = findViewById(R.id.btnSort);
+        btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(asencding) {
+                    asencding = false;
+                    ImageObject.sortByDate(images, false);
+                }
+                else {
+                    asencding = true;
+                    ImageObject.sortByDate(images, true);
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        adapter.notifyDataSetChanged();
     }
 
     @Override
