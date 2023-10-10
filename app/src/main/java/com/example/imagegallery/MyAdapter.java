@@ -1,5 +1,8 @@
 package com.example.imagegallery;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +39,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
         layoutParams.height = layoutParams.width;
 
         imageObject.loadImage(holder.imageView.getContext(), holder.imageView);
+
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MyAdapter", "onClick: " + imageObject.getFilePath());
+
+                Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("filePath", imageObject.getFilePath());
+
+                intent.putExtras(bundle);
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
