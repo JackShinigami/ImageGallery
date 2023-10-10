@@ -5,10 +5,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,6 +28,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ImageButton btnChangeGrid, btnSort;
+
+    private Button btnAlbum;
     private RecyclerView recyclerView;
     private MyAdapter adapter;
 
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnChangeGrid = findViewById(R.id.btnChangeGrid);
         btnSort = findViewById(R.id.btnSort);
+        btnAlbum = findViewById(R.id.btnAlbum);
 
         //Thêm dividers giữa các item
         RecyclerView.ItemDecoration itemDecoration = new
@@ -104,6 +109,18 @@ public class MainActivity extends AppCompatActivity {
                 colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
                 adapter.setColNumber(colNumbers[colNumberIndex]);
                 recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this, adapter.getColNumber()));
+            }
+        });
+
+        btnAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
+                Bundle bundleMainAlbum = new Bundle();
+                bundleMainAlbum.putSerializable("images", (ArrayList<ImageObject>) images  );
+                intent.putExtras(bundleMainAlbum);
+                startActivity(intent);
             }
         });
     }

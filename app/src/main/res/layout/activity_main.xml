@@ -20,6 +20,12 @@
             android:background="#FFFFF5"
             android:layout_margin="10dp"
             />
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:id="@+id/btnAlbum"
+            android:text="Album"
+            android:layout_centerInParent="true"/>
         <ImageButton
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -31,5 +37,7 @@
         android:layout_height="match_parent"
         android:id="@+id/rv_items"
         android:layout_weight="1"/>
+
+
 
 </LinearLayout>
