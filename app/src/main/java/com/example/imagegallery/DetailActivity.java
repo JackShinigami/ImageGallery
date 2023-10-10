@@ -16,11 +16,8 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         imageView = findViewById(R.id.imageView);
-        Bundle bundle = getIntent().getExtras();
-        String filePath = bundle.getString("filePath");
-
-        Glide.with(this).load(filePath).into(imageView);
-
+        ImageObject obj = (ImageObject) getIntent().getSerializableExtra("filePath");
+        obj.loadImage(this, imageView);
 
     }
 }

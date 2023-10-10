@@ -7,8 +7,9 @@ import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.List;
+import java.io.Serializable;
 
-public class ImageObject {
+public class ImageObject implements Serializable  {
     private String filePath;
 
     ImageObject(String filePath) {

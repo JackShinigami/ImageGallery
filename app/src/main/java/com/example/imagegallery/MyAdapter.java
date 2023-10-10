@@ -43,13 +43,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("MyAdapter", "onClick: " + imageObject.getFilePath());
-
                 Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("filePath", imageObject.getFilePath());
-
-                intent.putExtras(bundle);
+                intent.putExtra("filePath", imageObject);
                 v.getContext().startActivity(intent);
             }
         });
