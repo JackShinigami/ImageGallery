@@ -44,7 +44,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public void onClick(View v) {
                 ArrayList<ImageObject> images = album.getImages();
-
+                
                 ImageFragment imageFragment = ImageFragment.newInstance(images);
                 FragmentManager fragmentManager = ((AlbumActivity) context).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
