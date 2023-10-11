@@ -205,4 +205,19 @@ public class MainActivity extends AppCompatActivity {
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
     }
+
+    public boolean deleteFile(String path)
+    {
+        File file = new File(path);
+        boolean isDeleted = file.delete();
+        if(isDeleted)
+        {
+            Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, "Not deleted", Toast.LENGTH_SHORT).show();
+        }
+        return isDeleted;
+    }
 }
