@@ -6,30 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" android:orientation="vertical">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:layout_weight="10">
-        <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:id="@+id/btnChangeGrid"
-            android:src="@drawable/grid"
-            android:scaleType="fitCenter"
-            android:layout_alignParentEnd="true"
-            android:background="#FFFFF5"
-            android:layout_margin="10dp"
-            />
+
         <Button
             android:layout_width="100dp"
             android:layout_height="60dp"
             android:id="@+id/btnAlbum"
             android:text="Album"
             android:layout_centerInParent="true"/>
-        <ImageButton
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:id="@+id/btnSort"/>
+
         <Button
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -38,16 +25,14 @@
             android:layout_toRightOf="@+id/btnAlbum"
             android:layout_alignBottom="@+id/btnAlbum"
             android:layout_marginLeft="10dp"/>
-
-
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/rv_items"
-        android:layout_weight="1"/>
-
+        android:id="@+id/fragment_container"
+        android:layout_weight="1"
+        />
 
 
 </LinearLayout>

@@ -15,11 +15,12 @@
             android:id="@+id/rv_albums"
             android:layout_weight="1"/>
 
-        <androidx.recyclerview.widget.RecyclerView
+        <FrameLayout
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/rv_images_album"
             android:layout_weight="1"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

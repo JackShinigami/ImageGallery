@@ -7,14 +7,15 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
+
 
 public class ImageObject implements Parcelable {
     private String filePath;
-    private Date lastModifiedDate;
-    ImageObject(String filePath, Date lastModifiedDate) {
+    private long lastModifiedDate;
+    ImageObject(String filePath, long lastModifiedDate) {
         this.filePath = filePath;
         this.lastModifiedDate = lastModifiedDate;
     }
@@ -22,16 +23,18 @@ public class ImageObject implements Parcelable {
     public String getFilePath() {
         return filePath;
     }
-    public static void getImage(File folder, List<ImageObject> images) {
+    public static void getImage(File folder, ArrayList<ImageObject> images) {
         File[] files = folder.listFiles();
 
         if(files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
+                    if(file.getName().equals("cache") || file.getName().equals(".thumbnails"))
+                        continue;
                     getImage(file, images);
                 } else {
                     String fileName = file.getName().toLowerCase();
-                    Date date = new Date(file.lastModified());
+                    long date = file.lastModified();
                     if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif"))
                         images.add(new ImageObject(file.getAbsolutePath(), date));
                 }
@@ -46,9 +49,11 @@ public class ImageObject implements Parcelable {
     @Override
     public void writeToParcel(android.os.Parcel dest, int flags) {
         dest.writeString(filePath);
+        dest.writeLong(lastModifiedDate);
     }
     protected ImageObject(android.os.Parcel in) {
         filePath = in.readString();
+        lastModifiedDate = in.readLong();
     }
 
     public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {
@@ -77,12 +82,12 @@ public class ImageObject implements Parcelable {
                 .into(imageView);
     }
 
-    public static void sortByDate(List<ImageObject> images, boolean ascending) {
+    public static void sortByDate(ArrayList<ImageObject> images, boolean ascending) {
         if(ascending) {
             images.sort(Comparator.comparing(o -> o.lastModifiedDate));
         }
         else {
-            images.sort((o1, o2) -> o2.lastModifiedDate.compareTo(o1.lastModifiedDate));
+            images.sort((o1, o2) -> (int) (o2.lastModifiedDate - o1.lastModifiedDate));
         }
     }
 }
