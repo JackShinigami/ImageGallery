@@ -1,8 +1,6 @@
 package com.example.imagegallery;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import java.util.ArrayList;
 
-import java.io.File;
-import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
-    List<ImageObject> data;
+    ArrayList<ImageObject> data;
     private int colNumber = 3;
-    public MyAdapter(List<ImageObject> data) {
+
+
+    public MyAdapter(ArrayList<ImageObject> data) {
         this.data = data;
     }
 

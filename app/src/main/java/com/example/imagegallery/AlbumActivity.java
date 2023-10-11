@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.text.Html;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +16,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     RecyclerView rvAlbums;
     AlbumAdapter adapter;
-
+    public FragmentManager fragmentManager = getSupportFragmentManager();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,12 +24,12 @@ public class AlbumActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle bundleMainAlbum = intent.getExtras();
-        ArrayList<Parcelable> images = bundleMainAlbum.getParcelableArrayList("images");
-        ArrayList<ImageObject> imageObjects = new ArrayList<>();
+        ArrayList<ImageObject> imageObjects = bundleMainAlbum.getParcelableArrayList("images");
+        //ArrayList<ImageObject> imageObjects = new ArrayList<>();
 
-        for (Parcelable image : images) {
-            imageObjects.add((ImageObject) image);
-        }
+        //for (Parcelable image : images) {
+        //    imageObjects.add((ImageObject) image);
+        //}
 
 
 

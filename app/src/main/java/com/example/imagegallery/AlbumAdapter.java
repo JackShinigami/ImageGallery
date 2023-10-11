@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -43,19 +44,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public void onClick(View v) {
                 ArrayList<ImageObject> images = album.getImages();
-                adapter = new MyAdapter(images);
-                AlbumActivity activity = (AlbumActivity) context;
-                recyclerView = activity.findViewById(R.id.rv_albums);
 
-
-                adapter = new MyAdapter(images);
-                recyclerView.setAdapter(adapter);
-
-                adapter.setColNumber(colNumbers[colNumberIndex]);
-
-                recyclerView.setLayoutManager(new GridLayoutManager(context, adapter.getColNumber()));
-
-
+                ImageFragment imageFragment = ImageFragment.newInstance(images);
+                FragmentManager fragmentManager = ((AlbumActivity) context).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+                fragmentTransaction.commit();
             }
         });
     }
