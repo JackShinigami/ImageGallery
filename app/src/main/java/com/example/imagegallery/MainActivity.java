@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -111,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
         finishAffinity();
     }
 
+
+
     String currentPhotoPath;
 
     private File createImageFile() throws IOException {
@@ -152,8 +156,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(takePictureIntent);
         }
 
-        galleryAddPic();
+        Bitmap bitmap = null;
+        bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+        //check if bitmap is null
 
+
+        galleryAddPic();
+        if(bitmap==null)
+        {
+            deleteFile(currentPhotoPath);
+        }
 
     }
 
