@@ -25,13 +25,7 @@ public class AlbumActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundleMainAlbum = intent.getExtras();
         ArrayList<ImageObject> imageObjects = bundleMainAlbum.getParcelableArrayList("images");
-        //ArrayList<ImageObject> imageObjects = new ArrayList<>();
-
-        //for (Parcelable image : images) {
-        //    imageObjects.add((ImageObject) image);
-        //}
-
-
+        
 
         ArrayList<AlbumData> albumData = new ArrayList<>();
         AlbumData album = new AlbumData("All Images", imageObjects);
