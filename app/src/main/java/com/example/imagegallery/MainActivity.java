@@ -88,23 +88,29 @@ public class MainActivity extends AppCompatActivity {
         }
         ImageObject.sortByDate(images, asencding);
 
-        btnAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
-                Bundle bundleMainAlbum = new Bundle();
-                bundleMainAlbum.putParcelableArrayList("images", images);
-                intent.putExtras(bundleMainAlbum);
-                startActivity(intent);
-            }
-        });
         //Load ImageFragment with images on fragment_container
         ImageFragment imageFragment = ImageFragment.newInstance(images);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, imageFragment);
         fragmentTransaction.commit();
+
+        btnAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ArrayList<AlbumData> albumData = new ArrayList<>();
+                AlbumData album = new AlbumData("All Images", images);
+                albumData.add(album);
+
+                AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
+                FragmentManager albumFragmentManager = getSupportFragmentManager();
+                FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
+                AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
+                AlbumFragmentTransaction.commit();
+            }
+        });
 
     }
 
