@@ -1,9 +1,15 @@
 package com.example.imagegallery;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -40,6 +46,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         holder.tvAlbumName.setText(album.getAlbumName());
         holder.tvAlbumSize.setText(album.getImages().size() + " images");
 
+        holder.moreMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(holder.moreMenu, position);
+            }
+        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,8 +66,77 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         });
     }
 
+    private void showPopupMenu(View itemView, int position) {
+        AlbumData currentAlbum = albums.get(position);
+
+        Context context = itemView.getContext();
+        PopupMenu popupMenu = new PopupMenu(context, itemView);
+        popupMenu.inflate(R.menu.album_item_popup_menu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int itemId = item.getItemId();
+                if(R.id.edit_album == itemId){
+                    EditAlbumName(itemView, position);
+                }
+                else if(R.id.delete_album == itemId){
+                    albums.remove(position);
+                    notifyDataSetChanged();
+                }
+                return true;
+            }
+
+
+        });
+        popupMenu.show();
+
+    }
+
+    private void EditAlbumName(View itemView, int position) {
+        AlbumData currentAlbum = albums.get(position);
+        String oldName = currentAlbum.getAlbumName();
+        Context context = itemView.getContext();
+
+        View view = LayoutInflater.from(context).inflate(R.layout.add_album, null);
+        TextView txtTitle = view.findViewById(R.id.txtTitle);
+        EditText txtName = view.findViewById(R.id.edit_album_name);
+
+        txtTitle.setText("Edit Album Name");
+        txtName.setText(oldName);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(view);
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newName = txtName.getText().toString();
+                currentAlbum.setAlbumName(newName);
+                notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create();
+        builder.show();
+
+    }
+
+
     @Override
     public int getItemCount() {
         return albums.size();
+    }
+
+    public void addAlbum(AlbumData album){
+        albums.add(album);
+        notifyDataSetChanged();
     }
 }

@@ -1,9 +1,14 @@
 package com.example.imagegallery;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,6 +36,7 @@ public class AlbumFragment extends Fragment {
 
     private RecyclerView rvAlbums;
     private AlbumAdapter adapter;
+    private ImageView btnAddAlbum;
 
 
     @Override
@@ -52,6 +58,47 @@ public class AlbumFragment extends Fragment {
         adapter = new AlbumAdapter(albumFragment.getContext(), albums);
         rvAlbums.setAdapter(adapter);
 
+        btnAddAlbum = albumFragment.findViewById(R.id.btnAddAlbum);
+        btnAddAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddNewAlbum();
+            }
+        });
         return albumFragment;
     }
+
+    private void AddNewAlbum() {
+        View addAlbumView = getLayoutInflater().inflate(R.layout.add_album, null);
+        EditText txtName = addAlbumView.findViewById(R.id.edit_album_name);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(addAlbumView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String albumName = txtName.getText().toString();
+
+                if(albumName.length() != 0) {
+                    AlbumData album = new AlbumData(albumName);
+                    adapter.addAlbum(album);
+                    Toast.makeText(getContext(), "Album added", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(), "Album not added", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.create();
+        builder.show();
+    }
+
 }

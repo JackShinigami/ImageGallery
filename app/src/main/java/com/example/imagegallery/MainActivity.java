@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 AlbumData album = new AlbumData("All Images", images);
                 albumData.add(album);
 
-                AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
+                AlbumFragment albumFragment = AlbumFragment.newInstance( albumData);
                 FragmentManager albumFragmentManager = getSupportFragmentManager();
                 FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                 AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
