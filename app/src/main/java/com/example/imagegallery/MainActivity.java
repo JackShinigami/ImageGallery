@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
 // In ra danh sách các file ảnh
         for (ImageObject imageFile : images) {
             Log.d("IMAGE", imageFile.getFilePath());
+
         }
+
         ImageObject.sortByDate(images, asencding);
 
         btnAlbum.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +200,16 @@ public class MainActivity extends AppCompatActivity {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         try {
             wallpaperManager.setBitmap(BitmapFactory.decodeFile(Path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setLockScreen(String Path)
+    {
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+        try {
+            wallpaperManager.setBitmap(BitmapFactory.decodeFile(Path), null, true, WallpaperManager.FLAG_LOCK);
         } catch (IOException e) {
             e.printStackTrace();
         }
