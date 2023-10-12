@@ -11,6 +11,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
        >
+        <ImageView
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:id="@+id/album_thumbnail"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/icon_albums"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -18,7 +25,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:text="Album 01"
-            android:layout_alignParentLeft="true"/>
+            android:layout_toEndOf="@+id/album_thumbnail"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,8 +33,14 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:text="10"
-            android:layout_alignParentLeft="true"
+            android:layout_toEndOf="@+id/album_thumbnail"
             android:layout_below="@+id/tv_album_name"/>
+
+        <ImageView
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_more"/>
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
