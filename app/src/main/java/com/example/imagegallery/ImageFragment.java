@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -56,11 +58,17 @@ public class ImageFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private ImageButton btnChangeGrid, btnSort;
+    private ImageButton btnChangeGrid, btnSort, btnOptions;
     private int[] colNumbers = {2, 3, 4};
     private static int colNumberIndex = 0;
 
     private static boolean ascending = false;
+
+    private enum SortType {
+        DATE, NAME
+    }
+    private static SortType sortType = SortType.DATE;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,11 +100,17 @@ public class ImageFragment extends Fragment {
             public void onClick(View view) {
                 if(ascending) {
                     ascending = false;
-                    ImageObject.sortByDate(images, false);
+                    if(SortType.DATE == sortType)
+                        ImageObject.sortByDate(images, ascending);
+                    else if(SortType.NAME == sortType)
+                        ImageObject.sortByFileName(images, ascending);
                 }
                 else {
                     ascending = true;
-                    ImageObject.sortByDate(images, true);
+                    if(SortType.DATE == sortType)
+                        ImageObject.sortByDate(images, ascending);
+                    else if(SortType.NAME == sortType)
+                        ImageObject.sortByFileName(images, ascending);
                 }
 
                 adapter.notifyDataSetChanged();
@@ -113,7 +127,35 @@ public class ImageFragment extends Fragment {
             }
         });
 
+        btnOptions = imageFragment.findViewById(R.id.btnOptions);
+        btnOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(imageFragment.getContext(), btnOptions);
 
+                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        int id = menuItem.getItemId();
+                        if(id == R.id.menu_date)
+                        {
+                            sortType = SortType.DATE;
+                            ImageObject.sortByDate(images, ascending);
+                            adapter.notifyDataSetChanged();
+                        }
+                        else if(id == R.id.menu_name)
+                        {
+                            sortType = SortType.NAME;
+                            ImageObject.sortByFileName(images, ascending);
+                            adapter.notifyDataSetChanged();
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
+            });
 
         return imageFragment;
     }

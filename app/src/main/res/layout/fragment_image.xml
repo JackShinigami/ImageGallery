@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:layout_weight="10">
 
+
         <ImageButton
             android:id="@+id/btnChangeGrid"
             android:layout_width="60dp"
@@ -24,7 +25,13 @@
         <ImageButton
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:id="@+id/btnSort"/>
+            android:id="@+id/btnSort"
+            android:layout_toEndOf="@+id/btnOptions"/>
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="60dp"
+            android:id="@+id/btnOptions"
+            />
 
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
