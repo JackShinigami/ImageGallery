@@ -14,11 +14,6 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="#FFFFF5"
             android:scaleType="fitCenter"
             android:src="@drawable/grid" />
 
@@ -26,11 +21,15 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/btnSort"
+            android:src="@drawable/arrowdown"
+            android:scaleType="fitCenter"
             android:layout_toEndOf="@+id/btnOptions"/>
         <ImageButton
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="60dp"
             android:id="@+id/btnOptions"
+            android:src="@drawable/option"
+            android:scaleType="fitCenter"
             />
 
     </RelativeLayout>

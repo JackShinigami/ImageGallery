@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -103,6 +104,7 @@ public class ImageFragment extends Fragment {
                         ImageObject.sortByDate(images, ascending);
                     else if(SortType.NAME == sortType)
                         ImageObject.sortByFileName(images, ascending);
+                    btnSort.setImageResource(R.drawable.arrowup);
                 }
                 else {
                     ascending = true;
@@ -110,11 +112,17 @@ public class ImageFragment extends Fragment {
                         ImageObject.sortByDate(images, ascending);
                     else if(SortType.NAME == sortType)
                         ImageObject.sortByFileName(images, ascending);
+                    btnSort.setImageResource(R.drawable.arrowdown);
                 }
 
                 adapter.notifyDataSetChanged();
             }
         });
+
+        if(ascending)
+            btnSort.setImageResource(R.drawable.arrowdown);
+        else
+            btnSort.setImageResource(R.drawable.arrowup);
 
         btnChangeGrid = imageFragment.findViewById(R.id.btnChangeGrid);
         btnChangeGrid.setOnClickListener(new View.OnClickListener() {
