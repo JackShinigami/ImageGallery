@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -191,5 +192,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Not deleted", Toast.LENGTH_SHORT).show();
         }
         return isDeleted;
+    }
+
+    public void setWallpaper(String Path) {
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+        try {
+            wallpaperManager.setBitmap(BitmapFactory.decodeFile(Path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
