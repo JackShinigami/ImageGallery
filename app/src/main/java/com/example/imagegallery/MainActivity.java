@@ -35,9 +35,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageButton btnChangeGrid, btnSort;
-
-    private Button btnAlbum;
+    private ImageButton btnChangeGrid, btnSort, btnAlbum, btnGallery, btnCamera;
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
@@ -59,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAlbum = findViewById(R.id.btnAlbum);
 
-        Button btnCamera = findViewById(R.id.btnCamera);
+        btnCamera = findViewById(R.id.btnCamera);
         btnCamera = findViewById(R.id.btnCamera);
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.fragment_container, imageFragment);
         fragmentTransaction.commit();
 
-<<<<<<< Updated upstream
+
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +116,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnGallery = findViewById(R.id.btnGallery);
+        btnGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageFragment imageFragment = ImageFragment.newInstance(images);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+                fragmentTransaction.commit();
+            }
+        });
 
     }
 
