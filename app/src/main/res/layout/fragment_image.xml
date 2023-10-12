@@ -15,7 +15,7 @@
             android:layout_height="60dp"
             android:layout_alignParentEnd="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/grid" />
+            android:src="@drawable/ic_grid_changer" />
 
         <ImageButton
             android:layout_width="60dp"

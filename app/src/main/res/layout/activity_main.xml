@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/btnGallery"
-            android:src="@drawable/gallery"
+            android:src="@drawable/ic_gallery_launcher"
             android:scaleType="fitCenter"
             android:layout_weight="1"
             />
@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:id="@+id/btnAlbum"
             android:text="Album"
-            android:src="@drawable/book"
+            android:src="@drawable/ic_album_launcher"
             android:scaleType="fitCenter"
             android:layout_weight="1"/>
 
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/btnCamera"
-            android:src="@drawable/camera"
+            android:src="@drawable/ic_camera_launcher"
             android:scaleType="fitCenter"
             android:text="Camera"
             android:layout_weight="1"
