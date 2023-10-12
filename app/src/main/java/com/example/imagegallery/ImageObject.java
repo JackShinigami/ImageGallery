@@ -15,28 +15,37 @@ import java.util.Date;
 public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
-    ImageObject(String filePath, long lastModifiedDate) {
+    private String fileName;
+    ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
         this.lastModifiedDate = lastModifiedDate;
+        this.fileName = fileName;
     }
 
     public String getFilePath() {
         return filePath;
     }
+    public long getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+    public String getFileName() {
+        return fileName;
+    }
+
     public static void getImage(File folder, ArrayList<ImageObject> images) {
         File[] files = folder.listFiles();
 
         if(files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    if(file.getName().equals("cache") || file.getName().equals(".thumbnails"))
+                    if (file.getName().equals("cache") || file.getName().equals(".thumbnails"))
                         continue;
                     getImage(file, images);
                 } else {
                     String fileName = file.getName().toLowerCase();
                     long date = file.lastModified();
                     if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif"))
-                        images.add(new ImageObject(file.getAbsolutePath(), date));
+                        images.add(new ImageObject(file.getAbsolutePath(), date, fileName));
                 }
             }
         }
@@ -50,10 +59,12 @@ public class ImageObject implements Parcelable {
     public void writeToParcel(android.os.Parcel dest, int flags) {
         dest.writeString(filePath);
         dest.writeLong(lastModifiedDate);
+        dest.writeString(fileName);
     }
     protected ImageObject(android.os.Parcel in) {
         filePath = in.readString();
         lastModifiedDate = in.readLong();
+        fileName = in.readString();
     }
 
     public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {
@@ -88,6 +99,15 @@ public class ImageObject implements Parcelable {
         }
         else {
             images.sort((o1, o2) -> (int) (o2.lastModifiedDate - o1.lastModifiedDate));
+        }
+    }
+
+    public static void sortByFileName(ArrayList<ImageObject> images, boolean ascending) {
+        if(ascending) {
+            images.sort(Comparator.comparing(o -> o.fileName));
+        }
+        else {
+            images.sort((o1, o2) -> o2.fileName.compareTo(o1.fileName));
         }
     }
 }

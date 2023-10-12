@@ -112,6 +112,9 @@ public class ImageFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), adapter.getColNumber()));
             }
         });
+
+
+
         return imageFragment;
     }
 }
