@@ -31,7 +31,7 @@ import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    String currentPhotoPath="default";
     private ImageButton btnChangeGrid, btnSort, btnAlbum, btnGallery, btnCamera;
 
     private RecyclerView recyclerView;
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        checkcurrentPhotoPath();
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    String currentPhotoPath;
+
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -176,16 +177,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(takePictureIntent);
         }
 
-        Bitmap bitmap = null;
-        bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+
         //check if bitmap is null
 
 
         galleryAddPic();
-        if(bitmap==null)
-        {
-            deleteFile(currentPhotoPath);
-        }
+
 
     }
 
@@ -196,20 +193,21 @@ public class MainActivity extends AppCompatActivity {
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         sendBroadcast(mediaScanIntent);
+
     }
 
     public boolean deleteFile(String path)
     {
         File file = new File(path);
         boolean isDeleted = file.delete();
-        if(isDeleted)
+        /*if(isDeleted)
         {
             Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
         }
         else
         {
             Toast.makeText(this, "Not deleted", Toast.LENGTH_SHORT).show();
-        }
+        }*/
         return isDeleted;
     }
 
@@ -229,6 +227,21 @@ public class MainActivity extends AppCompatActivity {
             wallpaperManager.setBitmap(BitmapFactory.decodeFile(Path), null, true, WallpaperManager.FLAG_LOCK);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void checkcurrentPhotoPath()
+    {
+        if (currentPhotoPath.equals("default"))
+        {
+            return;
+        }
+        Bitmap bitmap = null;
+        bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+        if(bitmap==null)
+        {
+            Toast.makeText(this, "Bitmap is null", Toast.LENGTH_SHORT).show();
+            deleteFile(currentPhotoPath);
         }
     }
 }
