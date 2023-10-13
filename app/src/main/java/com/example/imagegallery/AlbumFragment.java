@@ -46,13 +46,12 @@ public class AlbumFragment extends Fragment {
         if (getArguments() != null) {
             albums = getArguments().getParcelableArrayList(ARG_PARAM1);
         }
-        Log.d("AlbumFragment", getContext().toString());
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(getContext());
         if(albumNameList != null) {
             for (String albumName : albumNameList) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
                 albums.add(album);
-
+                Log.d("AlbumFragment", "onCreate: " + albumName);
             }
         }
     }

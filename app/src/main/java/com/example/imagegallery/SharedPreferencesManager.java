@@ -43,6 +43,10 @@ public class SharedPreferencesManager {
     }
 
     public static void deleteAlbumData(Context context, String albumName) {
+        ArrayList<String> albumList = loadAlbumNameList(context);
+        albumList.remove(albumName);
+        saveAlbumNameList(context, albumList);
+
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         editor.remove(albumName);
         editor.apply();

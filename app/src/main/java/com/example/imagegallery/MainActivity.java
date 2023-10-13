@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -38,12 +40,28 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private ArrayList<ImageObject> currentImages;
+    public enum FragmentType {
+        IMAGE_FRAGMENT,
+        ALBUM_FRAGMENT,
+        ALBUM_IMAGE_FRAGMENT
+    }
 
+    private FragmentType currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(savedInstanceState != null) {
+            currentImages = savedInstanceState.getParcelableArrayList("currentImages");
+            currentFragment = FragmentType.values()[savedInstanceState.getInt("currentFragment")];
+        }
+        else {
+            currentImages = new ArrayList<>();
+            currentFragment = FragmentType.IMAGE_FRAGMENT;
+        }
 
         // Lấy WindowManager
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -87,18 +105,37 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        if(FragmentType.IMAGE_FRAGMENT == currentFragment){
+            //Load ImageFragment with images on fragment_container
+            ImageFragment imageFragment = ImageFragment.newInstance(images);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+            fragmentTransaction.commit();
 
-        //Load ImageFragment with images on fragment_container
-        ImageFragment imageFragment = ImageFragment.newInstance(images);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, imageFragment);
-        fragmentTransaction.commit();
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+        }
+        else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
+            ArrayList<AlbumData> albumData = new ArrayList<>();
+            AlbumData album = new AlbumData("All Images", images);
+            albumData.add(album);
+            AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
 
-        btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
-        btnAlbum.setImageResource(R.drawable.ic_album_launcher);
-//        btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
-//        btnCamera.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+            FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
+            AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
+            AlbumFragmentTransaction.commit();
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+        }
+        else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
+            ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages);
+            FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
+            AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
+            AlbumImageFragmentTransaction.commit();
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+        }
+
 
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
@@ -116,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 AlbumFragmentTransaction.commit();
                 btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
                 btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+
+                setCurrentFragment(FragmentType.ALBUM_FRAGMENT);
             }
         });
 
@@ -131,9 +170,20 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction.commit();
                 btnAlbum.setImageResource(R.drawable.ic_album_launcher);
                 btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+
+                setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
+                setCurrentImages(new ArrayList<>());
             }
         });
 
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        outState.putParcelableArrayList("currentImages", currentImages);
+        outState.putInt("currentFragment", currentFragment.ordinal());
+        Log.println(Log.DEBUG, "onSaveInstanceState", currentFragment.toString());
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
@@ -142,6 +192,14 @@ public class MainActivity extends AppCompatActivity {
         finishAffinity();
     }
 
+
+    public void setCurrentImages(ArrayList<ImageObject> currentImages) {
+        this.currentImages = currentImages;
+    }
+
+    public void setCurrentFragment(FragmentType currentFragment) {
+        this.currentFragment = currentFragment;
+    }
 
     private File createImageFile() throws IOException {
         // Create an image file name

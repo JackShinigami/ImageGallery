@@ -62,6 +62,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, imageFragment);
                 fragmentTransaction.commit();
+
+                ((MainActivity) context).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
+                ((MainActivity) context).setCurrentImages(images);
             }
         });
     }
