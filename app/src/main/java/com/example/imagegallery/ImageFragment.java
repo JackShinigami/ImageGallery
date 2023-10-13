@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 
@@ -58,7 +59,8 @@ public class ImageFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private ImageButton btnChangeGrid, btnSort, btnOptions;
+    private ImageButton btnChangeGrid;
+    private ImageView btnSort, btnOptions;
     private int[] colNumbers = {2, 3, 4};
     private static int colNumberIndex = 0;
 
@@ -87,11 +89,17 @@ public class ImageFragment extends Fragment {
         RecyclerView.ItemDecoration itemDecoration = new
                 DividerItemDecoration(imageFragment.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecoration);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+
+        ImageObject.sortByDate(images, ascending);
 
         MyAdapter adapter = new MyAdapter(images);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
+
+
         recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), colNumbers[colNumberIndex]));
 
         btnSort = imageFragment.findViewById(R.id.btnSort);
@@ -104,7 +112,7 @@ public class ImageFragment extends Fragment {
                         ImageObject.sortByDate(images, ascending);
                     else if(SortType.NAME == sortType)
                         ImageObject.sortByFileName(images, ascending);
-                    btnSort.setImageResource(R.drawable.arrowup);
+                    btnSort.setImageResource(R.drawable.ic_arrow_up);
                 }
                 else {
                     ascending = true;
@@ -112,7 +120,7 @@ public class ImageFragment extends Fragment {
                         ImageObject.sortByDate(images, ascending);
                     else if(SortType.NAME == sortType)
                         ImageObject.sortByFileName(images, ascending);
-                    btnSort.setImageResource(R.drawable.arrowdown);
+                    btnSort.setImageResource(R.drawable.ic_arrow_down);
                 }
 
                 adapter.notifyDataSetChanged();
@@ -120,9 +128,9 @@ public class ImageFragment extends Fragment {
         });
 
         if(ascending)
-            btnSort.setImageResource(R.drawable.arrowdown);
+            btnSort.setImageResource(R.drawable.ic_arrow_down);
         else
-            btnSort.setImageResource(R.drawable.arrowup);
+            btnSort.setImageResource(R.drawable.ic_arrow_up);
 
         btnChangeGrid = imageFragment.findViewById(R.id.btnChangeGrid);
         btnChangeGrid.setOnClickListener(new View.OnClickListener() {

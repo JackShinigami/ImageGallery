@@ -17,18 +17,18 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_grid_changer" />
 
-        <ImageButton
+        <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/btnSort"
-            android:src="@drawable/arrowdown"
+            android:src="@drawable/ic_arrow_down"
             android:scaleType="fitCenter"
             android:layout_toEndOf="@+id/btnOptions"/>
-        <ImageButton
+        <ImageView
             android:layout_width="40dp"
             android:layout_height="60dp"
             android:id="@+id/btnOptions"
-            android:src="@drawable/option"
+            android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
             />
 

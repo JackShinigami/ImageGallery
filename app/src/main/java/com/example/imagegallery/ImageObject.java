@@ -82,6 +82,8 @@ public class ImageObject implements Parcelable {
     public void loadImage(Context context, ImageView imageView) {
         Glide.with(context)
                 .load(new File(filePath))
+                .placeholder(R.drawable.ic_loading)
+                .error(R.drawable.ic_error)
                 .into(imageView);
     }
 
@@ -90,6 +92,8 @@ public class ImageObject implements Parcelable {
                 .load(new File(filePath))
                 .override(width, height)
                 .fitCenter()
+                .placeholder(R.drawable.ic_loading)
+                .error(R.drawable.ic_error)
                 .into(imageView);
     }
 

@@ -8,11 +8,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,16 +34,12 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     String currentPhotoPath="default";
-    private ImageButton btnChangeGrid, btnSort, btnAlbum, btnGallery, btnCamera;
+    private ImageButton btnAlbum, btnGallery, btnCamera;
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
 
-    private ArrayList<ImageObject> images = new ArrayList<>();
-    private int[] colNumbers = {2, 3, 4};
-    private int colNumberIndex = 0;
 
-    private boolean asencding = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnAlbum = findViewById(R.id.btnAlbum);
+        btnGallery = findViewById(R.id.btnGallery);
 
         btnCamera = findViewById(R.id.btnCamera);
         btnCamera = findViewById(R.id.btnCamera);
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onResume() {
         super.onResume();
@@ -87,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        ImageObject.sortByDate(images, asencding);
-
 
         //Load ImageFragment with images on fragment_container
         ImageFragment imageFragment = ImageFragment.newInstance(images);
@@ -96,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, imageFragment);
         fragmentTransaction.commit();
-
+        btnGallery.setBackground(getDrawable(R.drawable.bg_selected));
+        btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
 
         btnAlbum.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View v) {
 
@@ -111,11 +111,14 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                 AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
                 AlbumFragmentTransaction.commit();
+                btnAlbum.setBackground(getDrawable(R.drawable.bg_selected));
+                btnGallery.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
             }
         });
 
-        btnGallery = findViewById(R.id.btnGallery);
+
         btnGallery.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
                 ImageFragment imageFragment = ImageFragment.newInstance(images);
@@ -123,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, imageFragment);
                 fragmentTransaction.commit();
+                btnGallery.setBackground(getDrawable(R.drawable.bg_selected));
+                btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
             }
         });
 

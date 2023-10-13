@@ -17,6 +17,7 @@
             android:src="@drawable/ic_gallery_launcher"
             android:scaleType="fitCenter"
             android:layout_weight="1"
+            android:background="@drawable/bg_selected"
             />
         <ImageButton
             android:layout_width="match_parent"
@@ -25,7 +26,8 @@
             android:text="Album"
             android:src="@drawable/ic_album_launcher"
             android:scaleType="fitCenter"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:background="@color/design_default_color_background"/>
 
         <ImageButton
             android:layout_width="match_parent"
@@ -35,6 +37,7 @@
             android:scaleType="fitCenter"
             android:text="Camera"
             android:layout_weight="1"
+            android:background="@color/design_default_color_background"
             />
     </LinearLayout>
 
