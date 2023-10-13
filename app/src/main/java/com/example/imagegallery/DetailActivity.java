@@ -75,6 +75,10 @@ public class DetailActivity extends AppCompatActivity {
                     share.putExtra(Intent.EXTRA_STREAM, imageUri);
                     startActivity(Intent.createChooser(share, "Select"));*/
                 }
+                else if(R.id.add_to_album == itemId){
+                    AlbumHelper.addImgaeToAlbum(this, obj);
+                }
+
 
                 return true;
             });
