@@ -102,6 +102,7 @@ public class ImageFragment extends Fragment {
 
 
         recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), colNumbers[colNumberIndex]));
+        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
 
         btnSort = imageFragment.findViewById(R.id.btnSort);
         btnSort.setOnClickListener(new View.OnClickListener() {
@@ -174,5 +175,19 @@ public class ImageFragment extends Fragment {
             });
 
         return imageFragment;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+        SharedPreferencesManager.saveCurrentItemPosition(getContext(), firstVisiblePosition);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
     }
 }
