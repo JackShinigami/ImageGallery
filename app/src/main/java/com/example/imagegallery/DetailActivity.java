@@ -27,10 +27,7 @@ public class DetailActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
-        Button btnSetWallpaper = findViewById(R.id.btnSetWallpaper);
-        btnSetWallpaper.setOnClickListener(v -> {
-            Wallpapersetter.setWallpaper(this, obj.getFilePath());
-        });
+
 
         ImageView iv_more = findViewById(R.id.iv_more);
         iv_more.setOnClickListener(v -> {
@@ -51,7 +48,6 @@ public class DetailActivity extends AppCompatActivity {
             //shơw popup menu
             popupMenu.show();
         });
-
 
     }
 }
