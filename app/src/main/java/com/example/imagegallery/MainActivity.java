@@ -49,18 +49,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private FragmentType currentFragment;
+    private String currentFragmentName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState != null) {
-            currentImages = savedInstanceState.getParcelableArrayList("currentImages");
-            currentFragment = FragmentType.values()[savedInstanceState.getInt("currentFragment")];
+
+        //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
+        //currentFragment = FragmentType.IMAGE_FRAGMENT;
+        currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
+
+
+        if(currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
+            currentImages = SharedPreferencesManager.loadCurrentImages(this);
+            currentFragmentName = SharedPreferencesManager.loadCurrentName(this);
         }
         else {
             currentImages = new ArrayList<>();
-            currentFragment = FragmentType.IMAGE_FRAGMENT;
+            currentFragmentName = "Gallery";
         }
 
         // Lấy WindowManager
@@ -107,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
-            ImageFragment imageFragment = ImageFragment.newInstance(images);
+            ImageFragment imageFragment = ImageFragment.newInstance(images, currentFragmentName);
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, imageFragment);
             fragmentTransaction.commit();
@@ -128,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         }
         else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
-            ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages);
+            ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
             AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
             AlbumImageFragmentTransaction.commit();
@@ -163,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
-                ImageFragment imageFragment = ImageFragment.newInstance(images);
+                ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, imageFragment);
@@ -179,11 +186,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-        outState.putParcelableArrayList("currentImages", currentImages);
-        outState.putInt("currentFragment", currentFragment.ordinal());
+    protected void onPause() {
+        super.onPause();
+        SharedPreferencesManager.saveCurrentImages(this, currentImages);
+        SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
+        SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
         Log.println(Log.DEBUG, "onSaveInstanceState", currentFragment.toString());
-        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferencesManager.saveCurrentImages(this, new ArrayList<>());
+        SharedPreferencesManager.saveStateFragment(this, 0);
+        SharedPreferencesManager.saveCurrentName(this, "Gallery");
     }
 
     @Override
@@ -199,6 +215,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setCurrentFragment(FragmentType currentFragment) {
         this.currentFragment = currentFragment;
+    }
+
+    public void setCurrentFragmentName(String currentFragmentName) {
+        this.currentFragmentName = currentFragmentName;
     }
 
     private File createImageFile() throws IOException {
@@ -245,8 +265,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         galleryAddPic();
-
-
+        currentFragment = FragmentType.IMAGE_FRAGMENT;
+        currentImages = new ArrayList<>();
+        currentFragmentName = "Gallery";
     }
 
     private void galleryAddPic() {
