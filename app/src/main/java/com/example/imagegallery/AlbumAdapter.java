@@ -80,6 +80,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     EditAlbumName(itemView, position);
                 }
                 else if(R.id.delete_album == itemId){
+                    SharedPreferencesManager.deleteAlbumData(context, albums.get(position).getAlbumName());
                     albums.remove(position);
                     notifyDataSetChanged();
                 }
@@ -114,6 +115,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 currentAlbum.setAlbumName(newName);
                 notifyDataSetChanged();
                 dialog.dismiss();
+
+                SharedPreferencesManager.deleteAlbumData(context, oldName);
             }
         });
 
