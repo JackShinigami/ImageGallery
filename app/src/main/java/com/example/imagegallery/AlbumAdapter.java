@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -112,11 +113,24 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newName = txtName.getText().toString();
-                currentAlbum.setAlbumName(newName);
-                notifyDataSetChanged();
-                dialog.dismiss();
+                if(newName.length() != 0) {
+                    if(!oldName.equals(newName)) {
+                        for(AlbumData album : albums) {
+                            if(album.getAlbumName().equals(newName)) {
+                                Toast.makeText(context, "Album name already exists", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                        currentAlbum.setAlbumName(newName);
+                        notifyDataSetChanged();
+                        dialog.dismiss();
 
-                SharedPreferencesManager.deleteAlbumData(context, oldName);
+                        SharedPreferencesManager.deleteAlbumData(context, oldName);
+                    }
+                }
+                else {
+                    Toast.makeText(context, "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

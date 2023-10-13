@@ -2,8 +2,10 @@ package com.example.imagegallery;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +48,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                 v.getContext().startActivity(intent);
             }
         });
+
+        holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
+                popupMenu.inflate(R.menu.item_image_popup_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int itemId = item.getItemId();
+                        if(R.id.add_to_album == itemId){
+                            AlbumHelper.addImgaeToAlbum(v.getContext(), imageObject);
+                        }
+                        return  true;
+                    }
+                });
+                popupMenu.show();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -60,4 +82,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
     public int getColNumber() {
         return colNumber;
     }
+
+
 }

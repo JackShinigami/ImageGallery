@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -45,8 +46,16 @@ public class AlbumData implements Parcelable {
         }
     };
 
-    public void addImage(ImageObject image){
+    public boolean addImage(ImageObject image){
+
+        for(ImageObject imageObject : this.images){
+            if(imageObject.getFilePath().equals(image.getFilePath())){
+                return false;
+            }
+        }
+
         this.images.add(image);
+        return true;
     }
 
     public void removeImage(ImageObject image){
