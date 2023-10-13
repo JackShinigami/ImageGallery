@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -44,6 +45,7 @@ public class ImageObject implements Parcelable {
                 } else {
                     String fileName = file.getName().toLowerCase();
                     long date = file.lastModified();
+
                     if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif"))
                         images.add(new ImageObject(file.getAbsolutePath(), date, fileName));
                 }
@@ -99,11 +101,14 @@ public class ImageObject implements Parcelable {
 
     public static void sortByDate(ArrayList<ImageObject> images, boolean ascending) {
         if(ascending) {
-            images.sort(Comparator.comparing(o -> o.lastModifiedDate));
+            images.sort(Comparator.comparing(o -> new Date (o.lastModifiedDate)));
         }
         else {
-            images.sort((o1, o2) -> (int) (o2.lastModifiedDate - o1.lastModifiedDate));
+            images.sort((o1, o2) -> new Date(o2.lastModifiedDate).compareTo(new Date(o1.lastModifiedDate)));
         }
+
+        for(ImageObject image : images)
+            Log.d("Date", new Date(image.lastModifiedDate).toString() + " " + image.fileName  );
     }
 
     public static void sortByFileName(ArrayList<ImageObject> images, boolean ascending) {

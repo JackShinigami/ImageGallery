@@ -50,9 +50,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
-        <activity
-            android:name=".AlbumActivity"
-            android:exported="true" />
+
     </application>
 
 </manifest>

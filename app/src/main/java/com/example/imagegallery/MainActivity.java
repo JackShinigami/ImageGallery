@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        checkcurrentPhotoPath();
+        //checkcurrentPhotoPath();
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
