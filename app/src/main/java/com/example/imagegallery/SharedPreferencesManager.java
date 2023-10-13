@@ -8,8 +8,11 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 public class SharedPreferencesManager {
-    private static final String SHARED_PREFERENCES_NAME = "Image_Gallery_Data";
-    private static final String ALBUM_LIST = "albumList";
+    private static final String SHARED_PREFERENCES_NAME = "ImageGalleryData_21112003";
+    private static final String ALBUM_LIST = "albumList21112003";
+    private static final String CURRENT_STATE = "currentState21112003";
+    private static final String CURRENT_IMAGES = "currentImages21112003";
+    private static final String CURRENT_NAME = "currentName21112003";
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -43,8 +46,51 @@ public class SharedPreferencesManager {
     }
 
     public static void deleteAlbumData(Context context, String albumName) {
+        ArrayList<String> albumList = loadAlbumNameList(context);
+        albumList.remove(albumName);
+        saveAlbumNameList(context, albumList);
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         editor.remove(albumName);
         editor.apply();
+    }
+
+    public static void saveStateFragment(Context context, int state) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(CURRENT_STATE, state);
+        editor.apply();
+    }
+
+    public static int loadStateFragment(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int state = sharedPreferences.getInt(CURRENT_STATE, 0);
+        return state;
+    }
+
+    public static void saveCurrentImages(Context context, ArrayList<ImageObject> images) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(images);
+        editor.putString(CURRENT_IMAGES, json);
+        editor.apply();
+    }
+
+    public static ArrayList<ImageObject> loadCurrentImages(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(CURRENT_IMAGES, null);
+        ArrayList<ImageObject> images = gson.fromJson(json, ArrayList.class);
+        return images;
+    }
+
+    public static void saveCurrentName(Context context, String name) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putString(CURRENT_NAME, name);
+        editor.apply();
+    }
+
+    public static String loadCurrentName(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String name = sharedPreferences.getString(CURRENT_NAME, null);
+        return name;
     }
 }

@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +20,7 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -38,12 +40,35 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
+    private FragmentManager fragmentManager = getSupportFragmentManager();
+    private ArrayList<ImageObject> currentImages;
+    public enum FragmentType {
+        IMAGE_FRAGMENT,
+        ALBUM_FRAGMENT,
+        ALBUM_IMAGE_FRAGMENT
+    }
 
+    private FragmentType currentFragment;
+    private String currentFragmentName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
+        //currentFragment = FragmentType.IMAGE_FRAGMENT;
+        currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
+
+
+        if(currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
+            currentImages = SharedPreferencesManager.loadCurrentImages(this);
+            currentFragmentName = SharedPreferencesManager.loadCurrentName(this);
+        }
+        else {
+            currentImages = new ArrayList<>();
+            currentFragmentName = "Gallery";
+        }
 
         // Lấy WindowManager
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -87,18 +112,37 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        if(FragmentType.IMAGE_FRAGMENT == currentFragment){
+            //Load ImageFragment with images on fragment_container
+            ImageFragment imageFragment = ImageFragment.newInstance(images, currentFragmentName);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+            fragmentTransaction.commit();
 
-        //Load ImageFragment with images on fragment_container
-        ImageFragment imageFragment = ImageFragment.newInstance(images);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, imageFragment);
-        fragmentTransaction.commit();
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+        }
+        else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
+            ArrayList<AlbumData> albumData = new ArrayList<>();
+            AlbumData album = new AlbumData("All Images", images);
+            albumData.add(album);
+            AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
 
-        btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
-        btnAlbum.setImageResource(R.drawable.ic_album_launcher);
-//        btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
-//        btnCamera.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+            FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
+            AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
+            AlbumFragmentTransaction.commit();
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+        }
+        else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
+            ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
+            FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
+            AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
+            AlbumImageFragmentTransaction.commit();
+            btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+            btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+        }
+
 
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
@@ -116,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 AlbumFragmentTransaction.commit();
                 btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
                 btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+
+                setCurrentFragment(FragmentType.ALBUM_FRAGMENT);
             }
         });
 
@@ -124,16 +170,36 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View view) {
-                ImageFragment imageFragment = ImageFragment.newInstance(images);
+                ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, imageFragment);
                 fragmentTransaction.commit();
                 btnAlbum.setImageResource(R.drawable.ic_album_launcher);
                 btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+
+                setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
+                setCurrentImages(new ArrayList<>());
             }
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferencesManager.saveCurrentImages(this, currentImages);
+        SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
+        SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
+        Log.println(Log.DEBUG, "onSaveInstanceState", currentFragment.toString());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferencesManager.saveCurrentImages(this, new ArrayList<>());
+        SharedPreferencesManager.saveStateFragment(this, 0);
+        SharedPreferencesManager.saveCurrentName(this, "Gallery");
     }
 
     @Override
@@ -142,6 +208,18 @@ public class MainActivity extends AppCompatActivity {
         finishAffinity();
     }
 
+
+    public void setCurrentImages(ArrayList<ImageObject> currentImages) {
+        this.currentImages = currentImages;
+    }
+
+    public void setCurrentFragment(FragmentType currentFragment) {
+        this.currentFragment = currentFragment;
+    }
+
+    public void setCurrentFragmentName(String currentFragmentName) {
+        this.currentFragmentName = currentFragmentName;
+    }
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -187,8 +265,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         galleryAddPic();
-
-
+        currentFragment = FragmentType.IMAGE_FRAGMENT;
+        currentImages = new ArrayList<>();
+        currentFragmentName = "Gallery";
     }
 
     private void galleryAddPic() {

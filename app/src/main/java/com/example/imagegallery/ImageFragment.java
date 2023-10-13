@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 
 import java.util.ArrayList;
@@ -30,35 +31,30 @@ public class ImageFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "ArrayList<ImageObject>";
+    private static final String ARG_PARAM2 = "fragmentName";
     //private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
     private ArrayList<ImageObject> images;
+    private String fragmentName;
     //private String mParam2;
 
     public ImageFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ImageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ImageFragment newInstance(ArrayList<ImageObject> images) {
+
+    public static ImageFragment newInstance(ArrayList<ImageObject> images, String fragmentName) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_PARAM1, images);
+        args.putString(ARG_PARAM2, fragmentName);
         fragment.setArguments(args);
         return fragment;
     }
 
     private RecyclerView recyclerView;
-
+    private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
     private int[] colNumbers = {2, 3, 4};
@@ -76,6 +72,7 @@ public class ImageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             images = getArguments().getParcelableArrayList(ARG_PARAM1);
+            fragmentName = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -83,8 +80,12 @@ public class ImageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = imageFragment.findViewById(R.id.rv_items);
+        tvTitle = imageFragment.findViewById(R.id.tvTitle);
+
+        tvTitle.setText(fragmentName);
 
         RecyclerView.ItemDecoration itemDecoration = new
                 DividerItemDecoration(imageFragment.getContext(), DividerItemDecoration.VERTICAL);
