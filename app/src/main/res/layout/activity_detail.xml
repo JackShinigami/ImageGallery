@@ -16,6 +16,8 @@
         android:id="@+id/iv_more"
         android:layout_width="66dp"
         android:layout_height="66dp"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_more"
         app:layout_constraintEnd_toEndOf="parent"

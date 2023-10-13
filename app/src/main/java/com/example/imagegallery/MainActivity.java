@@ -94,9 +94,12 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, imageFragment);
         fragmentTransaction.commit();
-        btnGallery.setBackground(getDrawable(R.drawable.bg_selected));
-        btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
-        btnCamera.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+
+        btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+        btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+//        btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+//        btnCamera.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
@@ -111,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                 AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
                 AlbumFragmentTransaction.commit();
-                btnAlbum.setBackground(getDrawable(R.drawable.bg_selected));
-                btnGallery.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+                btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+                btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
             }
         });
 
@@ -126,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragment_container, imageFragment);
                 fragmentTransaction.commit();
-                btnGallery.setBackground(getDrawable(R.drawable.bg_selected));
-                btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
+                btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+                btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
             }
         });
 
@@ -138,9 +141,6 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
         finishAffinity();
     }
-
-
-
 
 
     private File createImageFile() throws IOException {
