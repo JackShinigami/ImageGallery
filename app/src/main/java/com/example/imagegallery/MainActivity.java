@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
 
         btnCamera = findViewById(R.id.btnCamera);
-        btnCamera = findViewById(R.id.btnCamera);
+
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
         btnGallery.setBackground(getDrawable(R.drawable.bg_selected));
         btnAlbum.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
-
+        btnCamera.setBackground(ColorDrawable.createFromPath("#FFFFFFFF"));
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
