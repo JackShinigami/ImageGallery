@@ -8,10 +8,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -52,15 +54,26 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 else if(R.id.share == itemId){
 
-                    Bitmap b = BitmapFactory.decodeFile(obj.getFilePath());
+                   /* Bitmap b = BitmapFactory.decodeFile(obj.getFilePath());
                     Intent share = new Intent(Intent.ACTION_SEND);
                     share.setType("image/*");
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    b.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), b, "Title", null);
+                    b.compress(Bitmap.CompressFormat.JPEG, 100, bytes);*/
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("image/*");
+                    MediaScannerConnection.scanFile(this,
+                            new String[] {obj.getFilePath() }, null,
+                            new MediaScannerConnection.OnScanCompletedListener() {
+                                public void onScanCompleted(String path, Uri uri) {
+                                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                                    startActivity(Intent.createChooser(share, "Select"));
+                                }
+                            });
+                    /*String path = MediaStore.Images.Media.insertImage(getContentResolver(), b, "Title", null);
+                    Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
                     Uri imageUri =  Uri.parse(path);
                     share.putExtra(Intent.EXTRA_STREAM, imageUri);
-                    startActivity(Intent.createChooser(share, "Select"));
+                    startActivity(Intent.createChooser(share, "Select"));*/
                 }
 
                 return true;
