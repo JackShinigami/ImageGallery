@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,15 @@ public class AlbumFragment extends Fragment {
         if (getArguments() != null) {
             albums = getArguments().getParcelableArrayList(ARG_PARAM1);
         }
+        Log.d("AlbumFragment", getContext().toString());
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(getContext());
+        if(albumNameList != null) {
+            for (String albumName : albumNameList) {
+                AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
+                albums.add(album);
+
+            }
+        }
     }
 
     @Override
@@ -66,6 +76,22 @@ public class AlbumFragment extends Fragment {
             }
         });
         return albumFragment;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ArrayList<String> albumNameList = new ArrayList<>();
+
+        for(AlbumData album : albums) {
+            String name = album.getAlbumName();
+            if(!name.equals("All Images")) {
+                albumNameList.add(name);
+                SharedPreferencesManager.saveAlbumData(getContext(), album);
+            }
+        }
+
+        SharedPreferencesManager.saveAlbumNameList(getContext(), albumNameList);
     }
 
     private void AddNewAlbum() {
