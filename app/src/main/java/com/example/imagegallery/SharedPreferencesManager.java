@@ -14,6 +14,8 @@ public class SharedPreferencesManager {
     private static final String CURRENT_IMAGES = "currentImages21112003";
     private static final String CURRENT_NAME = "currentName21112003";
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
+
+
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -106,4 +108,6 @@ public class SharedPreferencesManager {
         int position = sharedPreferences.getInt(CURRENT_ITEM_POSITION, 0);
         return position;
     }
+
+
 }
