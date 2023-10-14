@@ -3,4 +3,7 @@
     <item
         android:id="@+id/add_to_album"
         android:title="Add to album" />
+    <item
+        android:id="@+id/remove_from_album"
+        android:title="Remove from Album" />
 </menu>

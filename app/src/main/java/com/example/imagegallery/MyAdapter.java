@@ -52,14 +52,29 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
         holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                MainActivity mainActivity = (MainActivity) v.getContext();
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
                 popupMenu.inflate(R.menu.item_image_popup_menu);
+
+                if(mainActivity.getCurrentFragementName().equals("Gallery")){
+                    popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
+                }
+                else{
+                    popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(true);
+                }
+
+
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int itemId = item.getItemId();
                         if(R.id.add_to_album == itemId){
                             AlbumHelper.addImgaeToAlbum(v.getContext(), imageObject);
+                        }
+                        else if(R.id.remove_from_album == itemId){
+                            AlbumHelper.removeImageFromAlbum(v.getContext(), imageObject);
+                            data = SharedPreferencesManager.loadAlbumData(mainActivity, mainActivity.getCurrentFragementName()).getImages();
+                            notifyDataSetChanged();
                         }
                         return  true;
                     }

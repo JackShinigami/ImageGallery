@@ -221,6 +221,11 @@ public class MainActivity extends AppCompatActivity {
         this.currentFragmentName = currentFragmentName;
     }
 
+    public String getCurrentFragementName()
+    {
+        return currentFragmentName;
+    }
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
