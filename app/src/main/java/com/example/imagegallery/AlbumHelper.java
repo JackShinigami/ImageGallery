@@ -38,6 +38,7 @@ public class AlbumHelper {
                         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
                        if(albumData.addImage(imageObject)){
                            SharedPreferencesManager.saveAlbumData(context, albumData);
+                           imageObject.addAlbumName(context,albumName);
                            Toast.makeText(context, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
                        }
                        else{
@@ -48,6 +49,7 @@ public class AlbumHelper {
                         AlbumData albumData = new AlbumData(albumName);
                         albumData.addImage(imageObject);
                         SharedPreferencesManager.saveAlbumData(context, albumData);
+                        imageObject.addAlbumName(context,albumName);
                         finalAlbumNameList.add(albumName);
                         SharedPreferencesManager.saveAlbumNameList(context, finalAlbumNameList);
                         Toast.makeText(context, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();

@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -36,7 +37,8 @@ public class DetailActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
-
+        if(obj.getAlbumNames() != null && obj.getAlbumNames().size() != 0)
+            Log.println(Log.DEBUG, "DetailActivity", obj.getAlbumNames().get(0));
 
         ImageView iv_more = findViewById(R.id.iv_more);
         iv_more.setOnClickListener(v -> {
@@ -77,6 +79,22 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 else if(R.id.add_to_album == itemId){
                     AlbumHelper.addImgaeToAlbum(this, obj);
+                }
+                else if(R.id.delete_image == itemId){
+                    Log.d("DetailActivity", SharedPreferencesManager.loadCurrentName(this));
+                    if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")) {
+                        obj.deleteFile(this);
+                    }
+                    else {
+                        obj.deleteToTrash(this);
+                    }
+
+                    finish();
+                }
+                else if(R.id.restore_image == itemId)
+                {
+                    obj.restoreFile(this);
+                    finish();
                 }
 
 

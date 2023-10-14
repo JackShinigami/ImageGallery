@@ -67,6 +67,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 ((MainActivity) context).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
                 ((MainActivity) context).setCurrentImages(images);
                 ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
+                SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
             }
         });
     }
