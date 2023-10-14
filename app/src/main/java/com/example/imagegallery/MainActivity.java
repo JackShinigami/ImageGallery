@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         //load currentPhotoPath
-        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref!=null) {
             currentPhotoPath = sharedPref.getString("path", "");
-        }
+        }*/
 
 
         checkcurrentPhotoPath();
@@ -201,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         //save currentPhotoPath
-        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+       /* SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("path", currentPhotoPath);
-        editor.commit();
+        editor.commit();*/
 
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
