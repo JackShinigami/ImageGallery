@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
                 setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
                 setCurrentImages(new ArrayList<>());
+                setCurrentFragmentName("Gallery");
             }
         });
 
