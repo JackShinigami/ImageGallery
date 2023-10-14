@@ -44,6 +44,18 @@ public class DetailActivity extends AppCompatActivity {
         iv_more.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(this, iv_more);
             popupMenu.getMenuInflater().inflate(R.menu.detail_image_popup, popupMenu.getMenu());
+
+            if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")){
+                popupMenu.getMenu().findItem(R.id.delete_image).setVisible(false);
+                popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.restore_image).setVisible(true);
+            }
+            else{
+                popupMenu.getMenu().findItem(R.id.delete_image).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(false);
+                popupMenu.getMenu().findItem(R.id.restore_image).setVisible(false);
+            }
+
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if(R.id.set_wallpaper == itemId){
@@ -80,15 +92,14 @@ public class DetailActivity extends AppCompatActivity {
                 else if(R.id.add_to_album == itemId){
                     AlbumHelper.addImgaeToAlbum(this, obj);
                 }
-                else if(R.id.delete_image == itemId){
+                else if(R.id.delete_image == itemId) {
                     Log.d("DetailActivity", SharedPreferencesManager.loadCurrentName(this));
-                    if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")) {
-                        obj.deleteFile(this);
-                    }
-                    else {
-                        obj.deleteToTrash(this);
-                    }
-
+                    obj.deleteToTrash(this);
+                    finish();
+                }
+                else if(R.id.delete_trash == itemId)
+                {
+                    obj.deleteFile(this);
                     finish();
                 }
                 else if(R.id.restore_image == itemId)
@@ -100,6 +111,7 @@ public class DetailActivity extends AppCompatActivity {
 
                 return true;
             });
+
             //shơw popup menu
             popupMenu.show();
         });

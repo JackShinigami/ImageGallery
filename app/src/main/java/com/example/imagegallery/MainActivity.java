@@ -166,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         }
         else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
-
             ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(this, currentFragmentName).getImages();
             ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
