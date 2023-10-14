@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -134,10 +135,25 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
+        if(obj.getAlbumNames() != null && obj.getAlbumNames().size() != 0)
+            Log.println(Log.DEBUG, "DetailActivity", obj.getAlbumNames().get(0));
+
         ImageView iv_more = findViewById(R.id.iv_more);
         iv_more.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(this, iv_more);
             popupMenu.getMenuInflater().inflate(R.menu.detail_image_popup, popupMenu.getMenu());
+
+            if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")){
+                popupMenu.getMenu().findItem(R.id.delete_image).setVisible(false);
+                popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.restore_image).setVisible(true);
+            }
+            else{
+                popupMenu.getMenu().findItem(R.id.delete_image).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(false);
+                popupMenu.getMenu().findItem(R.id.restore_image).setVisible(false);
+            }
+
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if(R.id.set_wallpaper == itemId){
@@ -174,11 +190,26 @@ public class DetailActivity extends AppCompatActivity {
                 else if(R.id.add_to_album == itemId){
                     AlbumHelper.addImgaeToAlbum(this, obj);
                 }
+                else if(R.id.delete_image == itemId) {
+                    Log.d("DetailActivity", SharedPreferencesManager.loadCurrentName(this));
+                    obj.deleteToTrash(this);
+                    finish();
+                }
+                else if(R.id.delete_trash == itemId)
+                {
+                    obj.deleteFile(this);
+                    finish();
+                }
+                else if(R.id.restore_image == itemId)
+                {
+                    obj.restoreFile(this);
+                    finish();
+                }
 
 
                 return true;
             });
-            //show popup menu
+
             popupMenu.show();
         });
 

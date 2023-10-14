@@ -1,6 +1,7 @@
 package com.example.imagegallery;
 
 import android.content.Context;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ImageView;
@@ -17,10 +18,13 @@ public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
     private String fileName;
+    private ArrayList<String> albumNames;
+
     ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
         this.lastModifiedDate = lastModifiedDate;
         this.fileName = fileName;
+        this.albumNames = new ArrayList<>();
     }
 
     public String getFilePath() {
@@ -33,7 +37,7 @@ public class ImageObject implements Parcelable {
         return fileName;
     }
 
-    public static void getImage(File folder, ArrayList<ImageObject> images) {
+    public static void getImage(Context context, File folder, ArrayList<ImageObject> images) {
         File[] files = folder.listFiles();
 
         if(files != null) {
@@ -41,16 +45,112 @@ public class ImageObject implements Parcelable {
                 if (file.isDirectory()) {
                     if (file.getName().equals("cache") || file.getName().equals(".thumbnails"))
                         continue;
-                    getImage(file, images);
+                    getImage(context, file, images);
                 } else {
                     String fileName = file.getName().toLowerCase();
                     long date = file.lastModified();
 
-                    if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif"))
-                        images.add(new ImageObject(file.getAbsolutePath(), date, fileName));
+                    if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif")) {
+                        ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
+                        image.albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, image.filePath);
+                        if (image.albumNames != null)
+                            for (String albumName : image.albumNames)
+                                Log.d("Album", albumName + " " + image.fileName);
+                        else {
+                            image.setAlbumNames(context, new ArrayList<String>());
+                        }
+                        images.add(image);
+
+                    }
                 }
             }
         }
+    }
+
+
+
+    public ArrayList<String> getAlbumNames() {
+        return albumNames;
+    }
+
+    public void setAlbumNames(Context context, ArrayList<String> albumNames) {
+        this.albumNames = albumNames;
+        SharedPreferencesManager.saveImageAlbumInfo(context, this);
+    }
+
+    public void removeAlbumName(Context context, String albumName) {
+        if(this.albumNames != null && this.albumNames.contains(albumName)) {
+            this.albumNames.remove(albumName);
+            SharedPreferencesManager.saveImageAlbumInfo(context, this);
+        }
+    }
+
+    public void addAlbumName(Context context, String albumName) {
+        if(this.albumNames == null)
+            this.albumNames = new ArrayList<>();
+
+        if(!this.albumNames.contains(albumName)) {
+            this.albumNames.add(albumName);
+            SharedPreferencesManager.saveImageAlbumInfo(context, this);
+        }
+    }
+
+    public void deleteToTrash(Context context) {
+        File file = new File(this.filePath);
+        File externalStorage = Environment.getExternalStorageDirectory();
+            if(this.albumNames != null) {
+                for (String albumName : this.albumNames) {
+                    AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
+                    album.removeImage(this);
+                    SharedPreferencesManager.saveAlbumData(context, album);
+                }
+                SharedPreferencesManager.deleteImageAlbumInfo(context, this);
+            }
+
+            File trash = new File(externalStorage, "Trash");
+            if(!trash.exists())
+                trash.mkdir();
+            File newFile = new File(trash, this.fileName);
+
+            SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this.filePath);
+            file.renameTo(newFile);
+    }
+
+    //delete file from trash
+    public void deleteFile(Context context) {
+        File file = new File(this.filePath);
+        if(file.exists()) {
+            file.delete();
+            SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+            AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
+            album.removeImage(this);
+            SharedPreferencesManager.saveAlbumData(context, album);
+        }
+    }
+
+    public void restoreFile(Context context){
+        File file = new File(this.filePath);
+        File externalStorage = Environment.getExternalStorageDirectory();
+        if(file.exists()) {
+            String oldName = SharedPreferencesManager.loadTrashFile(context, this.filePath);
+            String folderName;
+            if  (oldName == null)
+                folderName = "Pictures";
+            else {
+                folderName = oldName.substring(0, oldName.lastIndexOf("/"));
+                folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
+            }
+            File newFolder = new File(externalStorage, folderName);
+
+            File newFile = new File(newFolder, this.fileName);
+            SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+            file.renameTo(newFile);
+
+            AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
+            album.removeImage(this);
+            SharedPreferencesManager.saveAlbumData(context, album);
+        }
+
     }
     //parcelable implementation
     @Override
@@ -62,11 +162,13 @@ public class ImageObject implements Parcelable {
         dest.writeString(filePath);
         dest.writeLong(lastModifiedDate);
         dest.writeString(fileName);
+        dest.writeStringList(albumNames);
     }
     protected ImageObject(android.os.Parcel in) {
         filePath = in.readString();
         lastModifiedDate = in.readLong();
         fileName = in.readString();
+        albumNames = in.createStringArrayList();
     }
 
     public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {
