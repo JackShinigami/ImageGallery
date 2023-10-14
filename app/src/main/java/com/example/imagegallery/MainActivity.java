@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+
         //load currentPhotoPath
         SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref!=null) {
@@ -109,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         checkcurrentPhotoPath();
+
+        //test, comment the line below if it doesn't work
+        checkPhotoInAlbum();
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -342,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
             AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
             if(albumData.addImage(imageObject)){
                 SharedPreferencesManager.saveAlbumData(this, albumData);
-                setCurrentImages(albumData.getImages());
+                //setCurrentImages(albumData.getImages());
                 Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
             }
             else{
@@ -406,4 +410,36 @@ public class MainActivity extends AppCompatActivity {
             deleteFile(currentPhotoPath);
         }
     }
+
+    public void checkPhotoInAlbum(){
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
+        if(albumNameList == null){
+            albumNameList = new ArrayList<>();
+        }
+
+        ArrayList<String> finalAlbumNameList = albumNameList;
+        String albumName = getCurrentFragementName();
+
+        //create image object
+        File file = new File(currentPhotoPath);
+        String fileName = file.getName().toLowerCase();
+        long date = file.lastModified();
+        ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
+
+        if(finalAlbumNameList.contains(albumName)){
+
+            AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
+            Bitmap bitmap = null;
+            bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+            if(bitmap==null)
+            {
+                albumData.removeImage(imageObject);
+                SharedPreferencesManager.saveAlbumData(this, albumData);
+
+            }
+
+        }
+    }
+
+
 }
