@@ -111,4 +111,5 @@ public class AlbumData implements Parcelable {
         dest.writeSerializable(lastModifiedDate);
 
     }
+
 }

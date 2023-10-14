@@ -58,7 +58,7 @@ public class AlbumFragment extends Fragment {
             for (String albumName : albumNameList) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
                 albums.add(album);
-                Log.d("AlbumFragment", "onCreate: " + albumName);
+                Log.d("AlbumFragment", "onCreate: " );
             }
         }
         rvAlbums = albumFragment.findViewById(R.id.rv_albums);
@@ -87,6 +87,7 @@ public class AlbumFragment extends Fragment {
             if(!name.equals("All Images") && !name.equals("Trash")) {
                 albumNameList.add(name);
                 SharedPreferencesManager.saveAlbumData(getContext(), album);
+                Log.println(Log.DEBUG, "AlbumFragment", "onPause: " + name);
             }
         }
 

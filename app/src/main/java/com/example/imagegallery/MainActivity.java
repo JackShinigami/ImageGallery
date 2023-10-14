@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("TRASH", imageFile.getFilePath());
             }
         }
+        SharedPreferencesManager.saveAlbumData(this, new AlbumData("Trash", trashImages));
+
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
             ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         }
         else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
+            ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(this, currentFragmentName).getImages();
             ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
             AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
@@ -197,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
 
                 setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
                 setCurrentImages(new ArrayList<>());
+                setCurrentFragmentName("Gallery");
+                SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
             }
         });
 

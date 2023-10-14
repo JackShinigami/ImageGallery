@@ -37,7 +37,8 @@ public class DetailActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
-
+        if(obj.getAlbumNames() != null && obj.getAlbumNames().size() != 0)
+            Log.println(Log.DEBUG, "DetailActivity", obj.getAlbumNames().get(0));
 
         ImageView iv_more = findViewById(R.id.iv_more);
         iv_more.setOnClickListener(v -> {
@@ -80,20 +81,19 @@ public class DetailActivity extends AppCompatActivity {
                     AlbumHelper.addImgaeToAlbum(this, obj);
                 }
                 else if(R.id.delete_image == itemId){
+                    Log.d("DetailActivity", SharedPreferencesManager.loadCurrentName(this));
                     if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")) {
                         obj.deleteFile(this);
-                        ArrayList<ImageObject> currentImage = SharedPreferencesManager.loadCurrentImages(this);
-                        for (ImageObject imageObject : currentImage) {
-                            if (imageObject.getFilePath().equals(obj.getFilePath())) {
-                                currentImage.remove(imageObject);
-                                break;
-                            }
-                        }
-                        SharedPreferencesManager.saveCurrentImages(this, currentImage);
                     }
                     else {
                         obj.deleteToTrash(this);
                     }
+
+                    finish();
+                }
+                else if(R.id.restore_image == itemId)
+                {
+                    obj.restoreFile(this);
                     finish();
                 }
 

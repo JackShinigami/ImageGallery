@@ -78,7 +78,7 @@ public class SharedPreferencesManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(IMAGE_LIST, null);
         if(json == null)
-            return null;
+            return new ArrayList<>();
         image_Album = gson.fromJson(json, Bundle.class);
         ArrayList<String> albumNames = image_Album.getStringArrayList(filePath);
         return albumNames;
@@ -152,6 +152,8 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(CURRENT_IMAGES, null);
+        if(json == null)
+            return new ArrayList<>();
         ArrayList<ImageObject> images = gson.fromJson(json, ArrayList.class);
         return images;
     }

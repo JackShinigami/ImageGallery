@@ -122,6 +122,9 @@ public class ImageObject implements Parcelable {
         if(file.exists()) {
             file.delete();
             SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+            AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
+            album.removeImage(this);
+            SharedPreferencesManager.saveAlbumData(context, album);
         }
     }
 
@@ -129,10 +132,25 @@ public class ImageObject implements Parcelable {
         File file = new File(this.filePath);
         File externalStorage = Environment.getExternalStorageDirectory();
         if(file.exists()) {
-            File newFile = new File(externalStorage, SharedPreferencesManager.loadTrashFile(context, this.filePath));
+            String oldName = SharedPreferencesManager.loadTrashFile(context, this.filePath);
+            String folderName;
+            if  (oldName == null)
+                folderName = "Pictures";
+            else {
+                folderName = oldName.substring(0, oldName.lastIndexOf("/"));
+                folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
+            }
+            File newFolder = new File(externalStorage, folderName);
+
+            File newFile = new File(newFolder, this.fileName);
             SharedPreferencesManager.deleteTrashFile(context, this.filePath);
             file.renameTo(newFile);
+
+            AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
+            album.removeImage(this);
+            SharedPreferencesManager.saveAlbumData(context, album);
         }
+
     }
     //parcelable implementation
     @Override
