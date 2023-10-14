@@ -46,6 +46,13 @@ public class AlbumFragment extends Fragment {
         if (getArguments() != null) {
             albums = getArguments().getParcelableArrayList(ARG_PARAM1);
         }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View albumFragment = inflater.inflate(R.layout.fragment_album, container, false);
+
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(getContext());
         if(albumNameList != null) {
             for (String albumName : albumNameList) {
@@ -54,13 +61,6 @@ public class AlbumFragment extends Fragment {
                 Log.d("AlbumFragment", "onCreate: " + albumName);
             }
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View albumFragment = inflater.inflate(R.layout.fragment_album, container, false);
-
         rvAlbums = albumFragment.findViewById(R.id.rv_albums);
         rvAlbums.setLayoutManager(new LinearLayoutManager(albumFragment.getContext()));
 
@@ -84,7 +84,7 @@ public class AlbumFragment extends Fragment {
 
         for(AlbumData album : albums) {
             String name = album.getAlbumName();
-            if(!name.equals("All Images")) {
+            if(!name.equals("All Images") && !name.equals("Trash")) {
                 albumNameList.add(name);
                 SharedPreferencesManager.saveAlbumData(getContext(), album);
             }

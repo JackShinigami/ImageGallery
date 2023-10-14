@@ -103,18 +103,30 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<ImageObject> images = new ArrayList<>();
 
-        ImageObject.getImage(picturesDirectory, images);
-        ImageObject.getImage(downloadDirectory, images);
-        ImageObject.getImage(dcimDirectory, images);
+        ImageObject.getImage(this, picturesDirectory, images);
+        ImageObject.getImage(this, downloadDirectory, images);
+        ImageObject.getImage(this, dcimDirectory, images);
 // In ra danh sách các file ảnh
         for (ImageObject imageFile : images) {
             Log.d("IMAGE", imageFile.getFilePath());
 
         }
 
+        File trashDirectory = new File(externalStorage, "Trash");
+        ArrayList<ImageObject> trashImages = new ArrayList<>();
+        if(!trashDirectory.exists()) {
+            trashDirectory.mkdir();
+        }
+        else{
+            trashImages = new ArrayList<>();
+            ImageObject.getImage(this, trashDirectory, trashImages);
+            for (ImageObject imageFile : trashImages) {
+                Log.d("TRASH", imageFile.getFilePath());
+            }
+        }
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
-            ImageFragment imageFragment = ImageFragment.newInstance(images, currentFragmentName);
+            ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, imageFragment);
             fragmentTransaction.commit();
@@ -125,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
         else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
             ArrayList<AlbumData> albumData = new ArrayList<>();
             AlbumData album = new AlbumData("All Images", images);
+            AlbumData trashAlbum = new AlbumData("Trash", trashImages);
             albumData.add(album);
+            albumData.add(trashAlbum);
             AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
 
             FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
@@ -144,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        ArrayList<ImageObject> finalTrashImages = trashImages;
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
@@ -152,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<AlbumData> albumData = new ArrayList<>();
                 AlbumData album = new AlbumData("All Images", images);
                 albumData.add(album);
+                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages);
+                albumData.add(trashAlbum);
 
                 AlbumFragment albumFragment = AlbumFragment.newInstance( albumData);
                 FragmentManager albumFragmentManager = getSupportFragmentManager();

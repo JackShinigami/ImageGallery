@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import com.google.gson.Gson;
 
@@ -14,6 +15,12 @@ public class SharedPreferencesManager {
     private static final String CURRENT_IMAGES = "currentImages21112003";
     private static final String CURRENT_NAME = "currentName21112003";
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
+
+    private static final String IMAGE_LIST = "imageList21112003";
+    public static Bundle image_Album = new Bundle();
+    public static Bundle trash_list = new Bundle();
+    private static final String TRASH_LIST = "trashList21112003";
+    private static final String TRASH_IMAGES = "trashImages21112003";
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -54,6 +61,72 @@ public class SharedPreferencesManager {
         editor.remove(albumName);
         editor.apply();
     }
+
+
+    public static void saveImageAlbumInfo(Context context, ImageObject imageObject) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+
+        image_Album.putStringArrayList(imageObject.getFilePath(), imageObject.getAlbumNames());
+        String json = gson.toJson(image_Album);
+        editor.putString(IMAGE_LIST, json);
+        editor.apply();
+    }
+
+    public static ArrayList<String> loadImageAlbumInfo(Context context, String filePath) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(IMAGE_LIST, null);
+        if(json == null)
+            return null;
+        image_Album = gson.fromJson(json, Bundle.class);
+        ArrayList<String> albumNames = image_Album.getStringArrayList(filePath);
+        return albumNames;
+    }
+
+    public static void deleteImageAlbumInfo(Context context, ImageObject imageObject) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(IMAGE_LIST, null);
+        image_Album = gson.fromJson(json, Bundle.class);
+        image_Album.remove(imageObject.getFilePath());
+        json = gson.toJson(image_Album);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(IMAGE_LIST, json);
+        editor.apply();
+    }
+
+    public static void saveTrashFile(Context context, String newPath, String oldPath) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+
+        trash_list.putString(newPath, oldPath);
+        String json = gson.toJson(trash_list);
+        editor.putString(TRASH_LIST, json);
+        editor.apply();
+    }
+
+    public static String loadTrashFile(Context context, String newPath) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(TRASH_LIST, null);
+        trash_list = gson.fromJson(json, Bundle.class);
+        String oldPath = trash_list.getString(newPath);
+        return oldPath;
+    }
+
+    public static void deleteTrashFile(Context context, String newPath) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(TRASH_LIST, null);
+        trash_list = gson.fromJson(json, Bundle.class);
+        trash_list.remove(newPath);
+        json = gson.toJson(trash_list);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(TRASH_LIST, json);
+        editor.apply();
+    }
+
 
     public static void saveStateFragment(Context context, int state) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();

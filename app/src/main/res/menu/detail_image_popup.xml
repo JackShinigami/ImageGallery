@@ -12,4 +12,7 @@
     <item
         android:id="@+id/add_to_album"
         android:title="Add to album" />
+
+    <item android:id="@+id/delete_image"
+        android:title="Delete" />
 </menu>

@@ -59,7 +59,12 @@ public class AlbumData implements Parcelable {
     }
 
     public void removeImage(ImageObject image){
-        this.images.remove(image);
+        for(ImageObject imageObject : this.images){
+            if(imageObject.getFilePath().equals(image.getFilePath())){
+                this.images.remove(imageObject);
+                return;
+            }
+        }
     }
 
     public void setImages(ArrayList<ImageObject> images){

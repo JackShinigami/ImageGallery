@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -77,6 +78,23 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 else if(R.id.add_to_album == itemId){
                     AlbumHelper.addImgaeToAlbum(this, obj);
+                }
+                else if(R.id.delete_image == itemId){
+                    if(SharedPreferencesManager.loadCurrentName(this).equals("Trash")) {
+                        obj.deleteFile(this);
+                        ArrayList<ImageObject> currentImage = SharedPreferencesManager.loadCurrentImages(this);
+                        for (ImageObject imageObject : currentImage) {
+                            if (imageObject.getFilePath().equals(obj.getFilePath())) {
+                                currentImage.remove(imageObject);
+                                break;
+                            }
+                        }
+                        SharedPreferencesManager.saveCurrentImages(this, currentImage);
+                    }
+                    else {
+                        obj.deleteToTrash(this);
+                    }
+                    finish();
                 }
 
 
