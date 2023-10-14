@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,11 @@ import android.os.Environment;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -97,10 +101,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         //load currentPhotoPath
-        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref!=null) {
             currentPhotoPath = sharedPref.getString("path", "");
-        }*/
+        }
+
 
 
         checkcurrentPhotoPath();
@@ -202,10 +207,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         //save currentPhotoPath
-       /* SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("path", currentPhotoPath);
-        editor.commit();*/
+        editor.commit();
 
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
@@ -290,9 +295,40 @@ public class MainActivity extends AppCompatActivity {
 
 
         galleryAddPic();
-        currentFragment = FragmentType.IMAGE_FRAGMENT;
+
+
+        //TRYING TO MAKE TAKE PHOTO BUTTON ADD IMAGE TO ALBUM
+        /*currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentImages = new ArrayList<>();
-        currentFragmentName = "Gallery";
+        currentFragmentName = "Gallery";*/  //dont have to, we want to back where capture image button is clicked
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
+
+        if(albumNameList == null){
+            albumNameList = new ArrayList<>();
+        }
+
+        ArrayList<String> finalAlbumNameList = albumNameList;
+        String albumName = getCurrentFragementName();
+
+        //create image object
+        File file = new File(currentPhotoPath);
+        String fileName = file.getName().toLowerCase();
+        long date = file.lastModified();
+        ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
+
+        if(finalAlbumNameList.contains(albumName)){
+            AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
+            if(albumData.addImage(imageObject)){
+                SharedPreferencesManager.saveAlbumData(this, albumData);
+                setCurrentImages(albumData.getImages());
+                Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
 
 
     }
