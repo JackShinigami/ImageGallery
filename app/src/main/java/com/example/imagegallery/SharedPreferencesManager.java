@@ -21,6 +21,7 @@ public class SharedPreferencesManager {
     public static Bundle trash_list = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
     private static final String TRASH_IMAGES = "trashImages21112003";
+
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -181,4 +182,6 @@ public class SharedPreferencesManager {
         int position = sharedPreferences.getInt(CURRENT_ITEM_POSITION, 0);
         return position;
     }
+
+
 }

@@ -17,4 +17,5 @@
         android:title="Delete" />
     <item android:id="@+id/restore_image"
         android:title="Restore(Trash)" />
+
 </menu>

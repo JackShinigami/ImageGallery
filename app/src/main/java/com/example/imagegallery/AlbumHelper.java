@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -63,5 +64,19 @@ public class AlbumHelper {
         builder.setNegativeButton("Cancel", null);
         builder.create();
         builder.show();
+    }
+
+
+    public static void removeImageFromAlbum(Context context, ImageObject imageObject){
+        MainActivity mainActivity = (MainActivity) context;
+        String albumName = mainActivity.getCurrentFragementName();
+        AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
+        if(albumData.deleteImage(imageObject)){
+            SharedPreferencesManager.saveAlbumData(context, albumData);
+            Toast.makeText(context, "Image has been deleted from " + albumName, Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(context, "Image does not exist in this album", Toast.LENGTH_SHORT).show();
+        }
     }
 }
