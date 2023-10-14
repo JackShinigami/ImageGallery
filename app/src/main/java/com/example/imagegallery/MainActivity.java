@@ -101,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         //load currentPhotoPath
-        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref!=null) {
             currentPhotoPath = sharedPref.getString("path", "");
-        }
+        }*/
 
 
 
@@ -207,10 +207,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         //save currentPhotoPath
-        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("path", currentPhotoPath);
-        editor.commit();
+        editor.commit();*/
 
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
@@ -301,7 +301,8 @@ public class MainActivity extends AppCompatActivity {
         /*currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentImages = new ArrayList<>();
         currentFragmentName = "Gallery";*/  //dont have to, we want to back where capture image button is clicked
-        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
+
+        /*ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
 
         if(albumNameList == null){
             albumNameList = new ArrayList<>();
@@ -326,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
             else{
                 Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
             }
-        }
+        }*/
 
 
 
