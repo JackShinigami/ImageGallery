@@ -13,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
@@ -36,6 +37,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     String currentPhotoPath="default";
+    private String PATHPREFNAME = "pathPref";
     private ImageButton btnAlbum, btnGallery, btnCamera;
 
     private RecyclerView recyclerView;
@@ -93,6 +95,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        //load currentPhotoPath
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        if (sharedPref.contains("path") && sharedPref!=null) {
+            currentPhotoPath = sharedPref.getString("path", "");
+        }
+
+
         checkcurrentPhotoPath();
         File externalStorage = Environment.getExternalStorageDirectory();
 
@@ -135,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         }
         else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
+
             ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
             AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
@@ -188,10 +199,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        //save currentPhotoPath
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("path", currentPhotoPath);
+        editor.commit();
+
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
         SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
         Log.println(Log.DEBUG, "onSaveInstanceState", currentFragment.toString());
+
     }
 
     @Override
@@ -273,6 +292,8 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentImages = new ArrayList<>();
         currentFragmentName = "Gallery";
+
+
     }
 
     private void galleryAddPic() {
