@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
+import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -55,6 +56,7 @@ public class DetailActivity extends AppCompatActivity {
     private boolean isFlippedHorizontally = false;
     private boolean isFlippedVertically = false;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
