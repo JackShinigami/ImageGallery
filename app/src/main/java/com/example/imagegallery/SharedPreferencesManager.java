@@ -97,23 +97,26 @@ public class SharedPreferencesManager {
         editor.apply();
     }
 
-    public static void saveTrashFile(Context context, String newPath, String oldPath) {
+    public static void saveTrashFile(Context context, String newPath, ImageObject imageObject) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
 
-        trash_list.putString(newPath, oldPath);
+        String oldObject = gson.toJson(imageObject);
+        trash_list.putString(newPath, oldObject);
+
         String json = gson.toJson(trash_list);
         editor.putString(TRASH_LIST, json);
         editor.apply();
     }
 
-    public static String loadTrashFile(Context context, String newPath) {
+    public static ImageObject loadTrashFile(Context context, String newPath) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(TRASH_LIST, null);
         trash_list = gson.fromJson(json, Bundle.class);
-        String oldPath = trash_list.getString(newPath);
-        return oldPath;
+        String oldObject = trash_list.getString(newPath);
+        ImageObject res = gson.fromJson(oldObject, ImageObject.class);
+        return res;
     }
 
     public static void deleteTrashFile(Context context, String newPath) {

@@ -47,11 +47,13 @@ public class ImageObject implements Parcelable {
                         continue;
                     getImage(context, file, images);
                 } else {
-                    String fileName = file.getName().toLowerCase();
+                    String fileName = file.getName();
+                    String fileNameLower = fileName.toLowerCase();
                     long date = file.lastModified();
 
-                    if (fileName.endsWith(".jpg") || fileName.endsWith(".png") || fileName.endsWith(".jpeg") || fileName.endsWith(".gif")) {
+                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
+                        Log.d("Image", image.fileName);
                         image.albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, image.filePath);
                         if (image.albumNames != null)
                             for (String albumName : image.albumNames)
@@ -112,7 +114,7 @@ public class ImageObject implements Parcelable {
                 trash.mkdir();
             File newFile = new File(trash, this.fileName);
 
-            SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this.filePath);
+            SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this);
             file.renameTo(newFile);
     }
 
@@ -132,19 +134,32 @@ public class ImageObject implements Parcelable {
         File file = new File(this.filePath);
         File externalStorage = Environment.getExternalStorageDirectory();
         if(file.exists()) {
-            String oldName = SharedPreferencesManager.loadTrashFile(context, this.filePath);
-            String folderName;
-            if  (oldName == null)
-                folderName = "Pictures";
+            ImageObject oldObject = SharedPreferencesManager.loadTrashFile(context, this.filePath);
+            String oldFilePath;
+            if  (oldObject == null)
+                oldFilePath = externalStorage.getPath() + "/Pictures/" + this.fileName;
             else {
-                folderName = oldName.substring(0, oldName.lastIndexOf("/"));
-                folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
+                oldFilePath = oldObject.filePath;
+                //folderName = oldFilePath.substring(0, oldFilePath.lastIndexOf("/"));
+                //folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
             }
-            File newFolder = new File(externalStorage, folderName);
+            Log.d("Restore", oldFilePath);
 
-            File newFile = new File(newFolder, this.fileName);
-            SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+            File newFile = new File(oldFilePath);
             file.renameTo(newFile);
+
+            if(oldObject.albumNames != null && oldObject.albumNames.size() > 0) {
+                for (String albumName : oldObject.albumNames) {
+                    AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
+                    album.addImage(oldObject);
+                    SharedPreferencesManager.saveAlbumData(context, album);
+                }
+
+                SharedPreferencesManager.saveImageAlbumInfo(context, oldObject);
+            }
+
+            SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+
 
             AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
             album.removeImage(this);
