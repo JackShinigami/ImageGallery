@@ -338,15 +338,16 @@ public class MainActivity extends AppCompatActivity {
         String albumName = getCurrentFragementName();
 
         //create image object
-        File file = new File(currentPhotoPath);
-        String fileName = file.getName().toLowerCase();
-        long date = file.lastModified();
+        //File file = new File(currentPhotoPath);
+        String fileName = photoFile.getName().toLowerCase();
+        long date = photoFile.lastModified();
         ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
 
         if(finalAlbumNameList.contains(albumName)){
             AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
             if(albumData.addImage(imageObject)){
                 SharedPreferencesManager.saveAlbumData(this, albumData);
+                imageObject.addAlbumName(this,albumName);
                 //setCurrentImages(albumData.getImages());
                 Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
             }
@@ -354,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
             }
         }
+
 
 
 
@@ -427,7 +429,7 @@ public class MainActivity extends AppCompatActivity {
         long date = file.lastModified();
         ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
 
-        if(finalAlbumNameList.contains(albumName)){
+        if(finalAlbumNameList.contains(albumName) ){
 
             AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
             Bitmap bitmap = null;
