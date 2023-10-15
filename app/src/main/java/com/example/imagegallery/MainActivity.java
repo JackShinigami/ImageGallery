@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         SharedPreferencesManager.saveAlbumData(this, new AlbumData("Trash", trashImages));
+        SharedPreferencesManager.saveAlbumData(this ,new AlbumData("All Images", images));
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
