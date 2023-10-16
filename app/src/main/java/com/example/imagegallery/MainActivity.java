@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<AlbumData> albumData = new ArrayList<>();
                 AlbumData album = new AlbumData("All Images", images);
                 albumData.add(album);
-                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages);
+                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages, R.drawable.ic_trash);
                 albumData.add(trashAlbum);
 
                 AlbumFragment albumFragment = AlbumFragment.newInstance( albumData);
