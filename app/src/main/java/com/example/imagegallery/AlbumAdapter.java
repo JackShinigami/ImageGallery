@@ -46,6 +46,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         AlbumData album = albums.get(position);
         holder.tvAlbumName.setText(album.getAlbumName());
         holder.tvAlbumSize.setText(album.getImages().size() + " images");
+        int resID = album.getThumbnailPath();
+
+        holder.albumThumbnail.setImageResource(resID);
 
         holder.moreMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +81,15 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         Context context = itemView.getContext();
         PopupMenu popupMenu = new PopupMenu(context, itemView);
         popupMenu.inflate(R.menu.album_item_popup_menu);
+
+        if(currentAlbum.getAlbumName().equals("All Images") || currentAlbum.getAlbumName().equals("Trash")){
+            popupMenu.getMenu().findItem(R.id.edit_album).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.delete_album).setVisible(false);
+        }
+        else{
+            popupMenu.getMenu().findItem(R.id.edit_album).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.delete_album).setVisible(true);
+        }
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {

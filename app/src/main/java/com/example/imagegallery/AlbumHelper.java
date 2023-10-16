@@ -79,4 +79,6 @@ public class AlbumHelper {
             Toast.makeText(context, "Image does not exist in this album", Toast.LENGTH_SHORT).show();
         }
     }
+
+    //public static void createDefaultAlbum(Context context);
 }

@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
             ArrayList<AlbumData> albumData = new ArrayList<>();
             AlbumData album = new AlbumData("All Images", images);
-            AlbumData trashAlbum = new AlbumData("Trash", trashImages);
+            AlbumData trashAlbum = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
             albumData.add(album);
             albumData.add(trashAlbum);
             AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);

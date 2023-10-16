@@ -6,29 +6,89 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         >
+
+
+
+
+        <RelativeLayout
+            android:id="@+id/taskBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:layout_alignParentTop="true" >
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:id="@+id/btnSort"
+                android:src="@drawable/ic_arrow_down"
+                android:scaleType="fitCenter"
+                android:layout_toEndOf="@+id/btnOptions"/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="60dp"
+                android:id="@+id/btnOptions"
+                android:src="@drawable/ic_more"
+                android:scaleType="fitCenter"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvTitle"
+                android:text="Albums"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textSize="20sp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                />
+
+            <ImageView
+                android:id="@+id/btnAddAlbum"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_add"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="20dp"/>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvMyAlbums"
+            android:text="My Albums"
+            android:textSize="20sp"
+            android:layout_below="@+id/taskBar"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/rv_albums"
+            android:layout_below="@+id/tvMyAlbums"
             />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvUtilities"
+            android:text="Utilities"
+            android:textSize="20sp"
+            android:layout_below="@+id/rv_albums"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rv_utilities"
+            android:layout_below="@+id/tvUtilities"
+            />
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
         />
 
-        <ImageView
-            android:id="@+id/btnAddAlbum"
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:src="@drawable/ic_add"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="20dp"/>
+
 
     </RelativeLayout>
 

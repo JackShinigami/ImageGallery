@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.Toast;
@@ -7,31 +8,53 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 
 //<--implement Parcelable-->
 
 public class AlbumData implements Parcelable {
     private ArrayList<ImageObject> images;
     private String albumName;
-    private LocalDateTime createdDate;
-    private LocalDateTime lastModifiedDate;
+    private long createdDate;
+    private long lastModifiedDate;
+
+    private int thumbnailPath;
 
     public AlbumData(String albumName, ArrayList<ImageObject> images) {
+        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
         this.albumName = albumName;
         this.images = images;
-        this.createdDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.createdDate = now;
+        this.lastModifiedDate = now;
+        this.thumbnailPath = R.drawable.icon_albums;
+    }
+
+    public AlbumData(String albumName, ArrayList<ImageObject> images, int thumbnailPath){
+        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+        this.albumName = albumName;
+        this.images = images;
+        this.createdDate = now;
+        this.lastModifiedDate = now;
+        this.thumbnailPath = thumbnailPath;
     }
 
     public AlbumData(String albumName){
+        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
         this.albumName = albumName;
         this.images = new ArrayList<>();
+        this.createdDate = now;
+        this.lastModifiedDate = now;
+        this.thumbnailPath = R.drawable.icon_albums;
     }
 
     protected AlbumData(Parcel in) {
         images = in.createTypedArrayList(ImageObject.CREATOR);
         albumName = in.readString();
+        createdDate = in.readLong();
+        lastModifiedDate = in.readLong();
     }
 
     public static final Creator<AlbumData> CREATOR = new Creator<AlbumData>() {
@@ -84,15 +107,24 @@ public class AlbumData implements Parcelable {
     }
 
 
-    public LocalDateTime getCreatedDate(){
+    public long getCreatedDate(){
         return this.createdDate;
     }
 
-    public void setLastModifiedDate(){
-        this.lastModifiedDate = LocalDateTime.now();
+    public int getThumbnailPath(){
+        return this.thumbnailPath;
     }
 
-    public LocalDateTime getLastModifiedDate(){
+    public void setThumbnailPath(int thumbnailPath){
+        this.thumbnailPath = thumbnailPath;
+    }
+
+    public void setLastModifiedDate(){
+
+        this.lastModifiedDate = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+    }
+
+    public long getLastModifiedDate(){
         return this.lastModifiedDate;
     }
 
@@ -121,6 +153,26 @@ public class AlbumData implements Parcelable {
             }
         }
         return false;
+    }
+
+    public static void sortAlbumByName(ArrayList<AlbumData> albums, boolean ascending) {
+        if(ascending) {
+            albums.sort((o1, o2) -> o1.getAlbumName().compareTo(o2.getAlbumName()));
+        }
+        else {
+            albums.sort((o1, o2) -> o2.getAlbumName().compareTo(o1.getAlbumName()));
+        }
+    }
+
+    public static void sortAlbumByDate(ArrayList<AlbumData> albums, boolean ascending) {
+
+        if(ascending){
+            albums.sort(Comparator.comparing(o -> new Date(o.getCreatedDate())));
+        }
+        else {
+            albums.sort((o1, o2) -> new Date(o2.getCreatedDate()).compareTo(new Date(o1.getCreatedDate())));
+
+        }
     }
 
 }
