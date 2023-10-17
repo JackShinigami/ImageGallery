@@ -40,7 +40,7 @@ import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity  {
 
-    private ImageView imageView;
+    private ImageView imageView, iv_love;
     private Button btnRotate, btnFlipHorizontal, btnFlipVertical;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
@@ -65,6 +65,38 @@ public class DetailActivity extends AppCompatActivity  {
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
+
+        iv_love = findViewById(R.id.iv_love);
+
+        if(obj.isLoved(this))
+            iv_love.setImageResource(R.drawable.ic_loved);
+        else
+            iv_love.setImageResource(R.drawable.ic_not_loved);
+
+        iv_love.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(obj.isLoved(view.getContext())){
+                    Log.d("DetailActivity", "love = true");
+                    obj.setLoved(view.getContext(), false);
+                    iv_love.setImageResource(R.drawable.ic_not_loved);
+
+                    AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
+                    favorite.removeImage(obj);
+                    SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
+                }
+                else{
+                    Log.d("DetailActivity", "love = false");
+                    obj.setLoved(view.getContext(),true);
+                    iv_love.setImageResource(R.drawable.ic_loved);
+
+                    AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
+                    favorite.addImage(obj);
+                    SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
+                }
+            }
+        });
+
 
         //zooming and panning
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
