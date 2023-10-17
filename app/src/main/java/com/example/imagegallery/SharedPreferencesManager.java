@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -19,8 +20,10 @@ public class SharedPreferencesManager {
     private static final String IMAGE_LIST = "imageList21112003";
     public static Bundle image_Album = new Bundle();
     public static Bundle trash_list = new Bundle();
+    public static Bundle love_images = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
     private static final String TRASH_IMAGES = "trashImages21112003";
+    private static final String LOVE_INFO = "loveInfo21112003";
 
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -192,5 +195,38 @@ public class SharedPreferencesManager {
         return position;
     }
 
+    public static void saveLovedImages(Context context, String filepath) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        love_images.putBoolean(filepath, true);
+        Gson gson = new Gson();
+        String json = gson.toJson(love_images);
+        editor.putString(LOVE_INFO, json);
+        editor.apply();
+    }
+
+    public static boolean isLovedImages(Context context, String filepath) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(LOVE_INFO, null);
+
+        if(json == null)
+            return false;
+        Log.d("json", json);
+        love_images = gson.fromJson(json, Bundle.class);
+
+        if (love_images.getBoolean(filepath))
+            return true;
+        return false;
+    }
+
+    public static void deleteLovedImages(Context context, String filepath){
+        SharedPreferences.Editor sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        love_images.remove(filepath);
+        Gson gson = new Gson();
+        String json = gson.toJson(love_images);
+        sharedPreferences.putString(LOVE_INFO, json);
+        sharedPreferences.apply();
+    }
 
 }

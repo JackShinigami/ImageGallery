@@ -236,4 +236,16 @@ public class ImageObject implements Parcelable {
             images.sort((o1, o2) -> o2.fileName.compareTo(o1.fileName));
         }
     }
+
+    public boolean isLoved(Context context) {
+        Boolean loved = SharedPreferencesManager.isLovedImages(context, this.filePath);
+        return loved;
+    }
+
+    public void setLoved(Context context, boolean loved) {
+        if(loved)
+            SharedPreferencesManager.saveLovedImages(context, this.filePath);
+        else
+            SharedPreferencesManager.deleteLovedImages(context, this.filePath);
+    }
 }
