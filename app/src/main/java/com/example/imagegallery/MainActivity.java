@@ -100,15 +100,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+
         //load currentPhotoPath
-        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref!=null) {
             currentPhotoPath = sharedPref.getString("path", "");
-        }*/
+        }
 
 
 
         checkcurrentPhotoPath();
+
+        //test, comment the line below if it doesn't work
+        checkPhotoInAlbum();
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         SharedPreferencesManager.saveAlbumData(this, new AlbumData("Trash", trashImages));
+        SharedPreferencesManager.saveAlbumData(this ,new AlbumData("All Images", images));
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
             ArrayList<AlbumData> albumData = new ArrayList<>();
             AlbumData album = new AlbumData("All Images", images);
-            AlbumData trashAlbum = new AlbumData("Trash", trashImages);
+            AlbumData trashAlbum = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
             albumData.add(album);
             albumData.add(trashAlbum);
             AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
@@ -185,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<AlbumData> albumData = new ArrayList<>();
                 AlbumData album = new AlbumData("All Images", images);
                 albumData.add(album);
-                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages);
+                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages, R.drawable.ic_trash);
                 albumData.add(trashAlbum);
 
                 AlbumFragment albumFragment = AlbumFragment.newInstance( albumData);
@@ -228,10 +233,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         //save currentPhotoPath
-        /*SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("path", currentPhotoPath);
-        editor.commit();*/
+        editor.commit();
 
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
@@ -323,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
         currentImages = new ArrayList<>();
         currentFragmentName = "Gallery";*/  //dont have to, we want to back where capture image button is clicked
 
-        /*ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
 
         if(albumNameList == null){
             albumNameList = new ArrayList<>();
@@ -333,22 +338,24 @@ public class MainActivity extends AppCompatActivity {
         String albumName = getCurrentFragementName();
 
         //create image object
-        File file = new File(currentPhotoPath);
-        String fileName = file.getName().toLowerCase();
-        long date = file.lastModified();
+        //File file = new File(currentPhotoPath);
+        String fileName = photoFile.getName().toLowerCase();
+        long date = photoFile.lastModified();
         ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
 
         if(finalAlbumNameList.contains(albumName)){
             AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
             if(albumData.addImage(imageObject)){
                 SharedPreferencesManager.saveAlbumData(this, albumData);
-                setCurrentImages(albumData.getImages());
+                imageObject.addAlbumName(this,albumName);
+                //setCurrentImages(albumData.getImages());
                 Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
             }
             else{
                 Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
             }
-        }*/
+        }
+
 
 
 
@@ -369,14 +376,7 @@ public class MainActivity extends AppCompatActivity {
     {
         File file = new File(path);
         boolean isDeleted = file.delete();
-        /*if(isDeleted)
-        {
-            Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(this, "Not deleted", Toast.LENGTH_SHORT).show();
-        }*/
+
         return isDeleted;
     }
 
@@ -413,4 +413,36 @@ public class MainActivity extends AppCompatActivity {
             deleteFile(currentPhotoPath);
         }
     }
+
+    public void checkPhotoInAlbum(){
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
+        if(albumNameList == null){
+            albumNameList = new ArrayList<>();
+        }
+
+        ArrayList<String> finalAlbumNameList = albumNameList;
+        String albumName = getCurrentFragementName();
+
+        //create image object
+        File file = new File(currentPhotoPath);
+        String fileName = file.getName().toLowerCase();
+        long date = file.lastModified();
+        ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
+
+        if(finalAlbumNameList.contains(albumName) ){
+
+            AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
+            Bitmap bitmap = null;
+            bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+            if(bitmap==null)
+            {
+                albumData.removeImage(imageObject);
+                SharedPreferencesManager.saveAlbumData(this, albumData);
+
+            }
+
+        }
+    }
+
+
 }

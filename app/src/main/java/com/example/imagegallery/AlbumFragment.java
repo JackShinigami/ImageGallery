@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -22,6 +24,15 @@ public class AlbumFragment extends Fragment {
     private static final String ARG_PARAM1 = "ArrayList<AlbumData>";
 
     private ArrayList<AlbumData> albums;
+    private ArrayList<AlbumData> defaultAlbums;
+
+    public static boolean ascending = false;
+
+    private enum  SortType{
+        NAME, DATE
+    }
+
+    private SortType sortType = SortType.DATE;
 
     public AlbumFragment() {
         // Required empty public constructor
@@ -35,17 +46,22 @@ public class AlbumFragment extends Fragment {
         return fragment;
     }
 
-    private RecyclerView rvAlbums;
-    private AlbumAdapter adapter;
+    private RecyclerView rvAlbums, rvUitilities;
+    private AlbumAdapter adapter, adapterUtilities;
     private ImageView btnAddAlbum;
+
+    private ImageView btnSort, btnOptions;
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            albums = getArguments().getParcelableArrayList(ARG_PARAM1);
+            defaultAlbums = getArguments().getParcelableArrayList(ARG_PARAM1);
         }
+
+        albums = new ArrayList<>();
     }
 
     @Override
@@ -61,11 +77,22 @@ public class AlbumFragment extends Fragment {
                 Log.d("AlbumFragment", "onCreate: " );
             }
         }
+
+        //My albums section
+        AlbumData.sortAlbumByDate(albums, ascending);
+
         rvAlbums = albumFragment.findViewById(R.id.rv_albums);
         rvAlbums.setLayoutManager(new LinearLayoutManager(albumFragment.getContext()));
 
         adapter = new AlbumAdapter(albumFragment.getContext(), albums);
         rvAlbums.setAdapter(adapter);
+
+        //Utilities section
+        rvUitilities = albumFragment.findViewById(R.id.rv_utilities);
+        rvUitilities.setLayoutManager(new LinearLayoutManager(albumFragment.getContext()));
+        adapterUtilities = new AlbumAdapter(albumFragment.getContext(), defaultAlbums);
+        rvUitilities.setAdapter(adapterUtilities);
+
 
         btnAddAlbum = albumFragment.findViewById(R.id.btnAddAlbum);
         btnAddAlbum.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +101,71 @@ public class AlbumFragment extends Fragment {
                 AddNewAlbum();
             }
         });
+
+        btnSort = albumFragment.findViewById(R.id.btnSort);
+        btnSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ascending){
+
+                    if(SortType.DATE == sortType)
+                        AlbumData.sortAlbumByDate(albums, ascending);
+                    else
+                        AlbumData.sortAlbumByName(albums, ascending);
+                    btnSort.setImageResource(R.drawable.ic_arrow_up);
+                    ascending = false;
+                }
+                else{
+
+                    if(SortType.DATE == sortType)
+                        AlbumData.sortAlbumByDate(albums, ascending);
+                    else
+                        AlbumData.sortAlbumByName(albums, ascending);
+                    btnSort.setImageResource(R.drawable.ic_arrow_down);
+                    ascending = true;
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        if(ascending)
+            btnSort.setImageResource(R.drawable.ic_arrow_down);
+        else
+            btnSort.setImageResource(R.drawable.ic_arrow_up);
+
+        btnOptions = albumFragment.findViewById(R.id.btnOptions);
+        btnOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(albumFragment.getContext(), btnOptions);
+                popupMenu.inflate(R.menu.popup_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int id = item.getItemId();
+                        if(id == R.id.menu_date)
+                        {
+                            sortType = SortType.DATE;
+                            AlbumData.sortAlbumByDate(albums, ascending);
+                            adapter.notifyDataSetChanged();
+                        }
+                        else if(id == R.id.menu_name)
+                        {
+                            sortType = SortType.NAME;
+                            AlbumData.sortAlbumByName(albums, ascending);
+                            adapter.notifyDataSetChanged();
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+
+            }
+        });
+
         return albumFragment;
+
     }
 
     @Override
