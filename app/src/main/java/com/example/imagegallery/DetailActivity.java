@@ -8,6 +8,8 @@ import androidx.appcompat.widget.PopupMenu;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 
 import android.media.MediaScannerConnection;
@@ -19,6 +21,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 
@@ -26,7 +29,8 @@ import android.widget.Toast;
 public class DetailActivity extends AppCompatActivity  {
 
     private ImageView imageView, iv_love;
-    private Button btnRotate, btnFlipHorizontal, btnFlipVertical;
+    private Button btnRotate, btnFlipHorizontal, btnFlipVertical, btnFilter;
+    private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
     private float currentRotation = 0f;
@@ -39,8 +43,8 @@ public class DetailActivity extends AppCompatActivity  {
     private float initialposY = 0f;
     private boolean isFlippedHorizontally = false;
     private boolean isFlippedVertically = false;
-
     private Bitmap originalBitmap, flippedBitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,33 @@ public class DetailActivity extends AppCompatActivity  {
             }
         });
 
+
+        //filter
+        btnFilter = findViewById(R.id.btnFilter);
+        seekBarFilter = findViewById(R.id.seekBarFilter);
+        resetSaturation();
+
+        btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int visibility = seekBarFilter.getVisibility();
+                seekBarFilter.setVisibility(visibility == View.VISIBLE ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        seekBarFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                float saturationVal = (float) i/50 ;
+                applySaturationFilter(saturationVal);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
 
         //zooming and panning
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
@@ -189,16 +220,13 @@ public class DetailActivity extends AppCompatActivity  {
 
             popupMenu.show();
         });
-
     }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         scaleGestureDetector.onTouchEvent(event);
         gestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
-
     private class GestureListener extends GestureDetector.SimpleOnGestureListener{
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -212,29 +240,24 @@ public class DetailActivity extends AppCompatActivity  {
             }
             return false;
         }
-
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             // Handle any fling gestures (optional)
             return true;
         }
-
         @Override
         public void onLongPress(MotionEvent e) {
             // Handle long press (optional)
         }
-
         @Override
         public void onShowPress(MotionEvent e) {
             // Handle show press (optional)
         }
-
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             // Handle single tap up (optional)
             return true;
         }
-
         @Override
         public boolean onDoubleTap(@NonNull MotionEvent e) {
             reset();
@@ -242,7 +265,6 @@ public class DetailActivity extends AppCompatActivity  {
             return true;
         }
     }
-
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
         @Override
         public boolean onScale(@NonNull ScaleGestureDetector detector) {
@@ -294,8 +316,21 @@ public class DetailActivity extends AppCompatActivity  {
         imageView.setScaleX(scaleFactor);
         imageView.setScaleY(scaleFactor);
 
+        resetSaturation();
+    }
+    private void applySaturationFilter(float val)
+    {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(val);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        imageView.setColorFilter(filter);
     }
 
+    private void resetSaturation()
+    {
+        seekBarFilter.setProgress(50);
+        applySaturationFilter(1);
+    }
 }
 
 
