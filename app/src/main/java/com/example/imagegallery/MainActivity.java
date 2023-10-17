@@ -2,7 +2,7 @@ package com.example.imagegallery;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
@@ -10,26 +10,24 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
+
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.PersistableBundle;
+
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -217,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferencesManager.saveCurrentImages(this, currentImages);
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
         SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
-        Log.println(Log.DEBUG, "onSaveInstanceState", currentFragment.toString());
 
     }
 

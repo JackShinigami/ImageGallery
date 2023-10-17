@@ -18,9 +18,6 @@ import android.icu.number.Scale;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -29,13 +26,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class DetailActivity extends AppCompatActivity  {
@@ -77,7 +67,6 @@ public class DetailActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 if(obj.isLoved(view.getContext())){
-                    Log.d("DetailActivity", "love = true");
                     obj.setLoved(view.getContext(), false);
                     iv_love.setImageResource(R.drawable.ic_not_loved);
 
@@ -86,7 +75,6 @@ public class DetailActivity extends AppCompatActivity  {
                     SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
                 }
                 else{
-                    Log.d("DetailActivity", "love = false");
                     obj.setLoved(view.getContext(),true);
                     iv_love.setImageResource(R.drawable.ic_loved);
 
@@ -132,8 +120,6 @@ public class DetailActivity extends AppCompatActivity  {
             }
         });
 
-        if(obj.getAlbumNames() != null && obj.getAlbumNames().size() != 0)
-            Log.println(Log.DEBUG, "DetailActivity", obj.getAlbumNames().get(0));
 
         ImageView iv_more = findViewById(R.id.iv_more);
         iv_more.setOnClickListener(v -> {
@@ -188,7 +174,6 @@ public class DetailActivity extends AppCompatActivity  {
                     AlbumHelper.addImgaeToAlbum(this, obj);
                 }
                 else if(R.id.delete_image == itemId) {
-                    Log.d("DetailActivity", SharedPreferencesManager.loadCurrentName(this));
                     obj.deleteToTrash(this);
                     finish();
                 }

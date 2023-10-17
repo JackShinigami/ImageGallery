@@ -243,9 +243,13 @@ public class ImageObject implements Parcelable {
     }
 
     public void setLoved(Context context, boolean loved) {
-        if(loved)
+        if(loved) {
             SharedPreferencesManager.saveLovedImages(context, this.filePath);
-        else
+            this.addAlbumName(context, "Favorites");
+        }
+        else {
             SharedPreferencesManager.deleteLovedImages(context, this.filePath);
+            this.removeAlbumName(context, "Favorites");
+        }
     }
 }
