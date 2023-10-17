@@ -101,10 +101,13 @@ public class AlbumHelper {
         }
 
 
-        AlbumData trash = new AlbumData("Trash", trashImages,R.drawable.ic_trash, true);
+        AlbumData trash = new AlbumData("Trash", R.drawable.ic_trash, true);
         albums.add(trash);
         AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
-
+        if(favorite == null){
+            favorite = new AlbumData("Favorites", R.drawable.ic_favorite, true);
+            SharedPreferencesManager.saveAlbumData(context, favorite);
+        }
         albums.add(favorite);
 
         SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));
