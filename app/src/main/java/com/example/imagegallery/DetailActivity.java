@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.number.Scale;
@@ -34,7 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class DetailActivity extends AppCompatActivity {
+
+public class DetailActivity extends AppCompatActivity  {
 
     private ImageView imageView;
     private Button btnRotate, btnFlipHorizontal, btnFlipVertical;
@@ -43,17 +46,15 @@ public class DetailActivity extends AppCompatActivity {
     private float currentRotation = 0f;
     private Matrix matrix = new Matrix();
     private float scaleFactor = 1f;
-    private float previousScaleFactor = 1f;
-    private float translateX = 0f;
-    private float translateY = 0f;
-    private float previousTranslateX = 0f;
-    private float previousTranslateY = 0f;
-
-    private static final long DOUBLE_CLICK_TIME_DELTA = 300; // Time threshold for double-click in milliseconds
-    private long lastClickTime = 0;
-
+    private float initialScaleFactor = 1f;
+    private float posX = 0f;
+    private float posY = 0f;
+    private float initialposX = 0f;
+    private float initialposY = 0f;
     private boolean isFlippedHorizontally = false;
     private boolean isFlippedVertically = false;
+
+    private Bitmap originalBitmap, flippedBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,47 +65,23 @@ public class DetailActivity extends AppCompatActivity {
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
 
-        imageView.setScaleType(ImageView.ScaleType.MATRIX);
-        imageView.setImageMatrix(matrix);
+        //zooming and panning
+        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        gestureDetector = new GestureDetector(this, new GestureListener());
+
+        //rotating image
         btnRotate = findViewById(R.id.btnRotate);
         btnRotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                float centerX = imageView.getWidth() ;
-                float centerY = imageView.getHeight() ;
-                matrix.postRotate(currentRotation, centerX, centerY);
                 rotate();
             }
         });
 
-        scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-        gestureDetector = new GestureDetector(this, new MoveListener());
-
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                //double click to return to normal state
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    float x = motionEvent.getX();
-                    float y = motionEvent.getY();
-                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
-
-                    long clickTime = System.currentTimeMillis();
-                    if (clickTime - lastClickTime < DOUBLE_CLICK_TIME_DELTA){
-                        scaleFactor = 1f;
-                        translateX = 0f;
-                        translateY = 0f;
-                        matrix.reset();
-                        imageView.setImageMatrix(matrix);
-                    }
-                    lastClickTime = clickTime;
-                }
-                //handling scale and move gesture
-                scaleGestureDetector.onTouchEvent(motionEvent);
-                gestureDetector.onTouchEvent(motionEvent);
-                return true;
-            }
-        });
+        //flipping image
+        originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
+        flippedBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        imageView.setImageBitmap(flippedBitmap);
 
         btnFlipHorizontal = findViewById(R.id.btnFlipHorizontal);
         btnFlipVertical = findViewById(R.id.btnFlipVertical);
@@ -112,28 +89,15 @@ public class DetailActivity extends AppCompatActivity {
         btnFlipVertical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isFlippedVertically) {
-                    isFlippedVertically = true;
-                } else {
-                    isFlippedVertically = false;
-                }
-                flip();
-                imageView.setImageMatrix(matrix);
+                flipImage();
             }
         });
         btnFlipHorizontal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isFlippedHorizontally) {
-                    isFlippedHorizontally = true;
-                } else {
-                    isFlippedHorizontally = false;
-                }
-                flip();
-                imageView.setImageMatrix(matrix);
+                flipImage();
             }
         });
-
 
         if(obj.getAlbumNames() != null && obj.getAlbumNames().size() != 0)
             Log.println(Log.DEBUG, "DetailActivity", obj.getAlbumNames().get(0));
@@ -214,95 +178,109 @@ public class DetailActivity extends AppCompatActivity {
         });
 
     }
-    private void rotate()
-    {
-        currentRotation =  (currentRotation + 90f);
 
-        //rotate bitmap
-/*        Drawable drawable = imageView.getDrawable();
-        Bitmap bitmap =  rotateBitmap(((BitmapDrawable) drawable).getBitmap(), currentRotation);
-        Log.d("after bitmap", bitmap.toString());
-        imageView.setImageBitmap(bitmap);*/
-
-        float centerX = imageView.getWidth() / 2f;
-        float centerY = imageView.getHeight() / 2f;
-
-        matrix.reset();
-        matrix.postRotate(currentRotation, centerX, centerY);
-
-        imageView.setImageMatrix(matrix);
-
-        // Rotate the image animation
-        //imageView.animate().rotation(currentRotation).setDuration(500).start();
-    }
-    private Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degrees);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        scaleGestureDetector.onTouchEvent(event);
+        gestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
-
-
-            if (scaleFactor > 1.0f) {
-                matrix.postScale(detector.getScaleFactor(), detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
-            } else {
-                matrix.reset();
-            }
-
-            imageView.setImageMatrix(matrix);
-
-            return true;
-        }
-    }
-
-    private class MoveListener extends GestureDetector.SimpleOnGestureListener {
-
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener{
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            translateX -= distanceX;
-            translateY -= distanceY;
+            if(scaleFactor != 1f)
+            {
+                posX -= distanceX;
+                posY -= distanceY;
+                imageView.setTranslationX(posX);
+                imageView.setTranslationY(posY);
+                return true;
+            }
+            return false;
+        }
 
-            float maxTranslateX = (imageView.getWidth() - (imageView.getWidth() / scaleFactor)) / 2;
-            float maxTranslateY = (imageView.getHeight() - (imageView.getHeight() / scaleFactor)) / 2;
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            // Handle any fling gestures (optional)
+            return true;
+        }
 
-            translateX = Math.max(-maxTranslateX, Math.min(translateX, maxTranslateX));
-            translateY = Math.max(-maxTranslateY, Math.min(translateY, maxTranslateY));
+        @Override
+        public void onLongPress(MotionEvent e) {
+            // Handle long press (optional)
+        }
 
-            matrix.postTranslate(-distanceX, -distanceY);
-            imageView.setImageMatrix(matrix);
+        @Override
+        public void onShowPress(MotionEvent e) {
+            // Handle show press (optional)
+        }
 
-            Log.d("SCALE FACTOR", String.valueOf(scaleFactor));
-            Log.d("TRANSLATE X", String.valueOf(translateX));
-            Log.d("TRANSLATE Y", String.valueOf(translateY));
-            Log.d("PREVIOUS SCALE FACTOR", String.valueOf(previousScaleFactor));
-            Log.d("PREVIOUS TRANSLATE X", String.valueOf(previousTranslateX));
-            Log.d("PREVIOUS TRANSLATE Y", String.valueOf(previousTranslateY));
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            // Handle single tap up (optional)
+            return true;
+        }
 
+        @Override
+        public boolean onDoubleTap(@NonNull MotionEvent e) {
+            reset();
+            Toast.makeText(DetailActivity.this, "Double tap", Toast.LENGTH_SHORT).show();
             return true;
         }
     }
 
-    private void flip()
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener{
+        @Override
+        public boolean onScale(@NonNull ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f));
+            imageView.setScaleX(scaleFactor);
+            imageView.setScaleY(scaleFactor);
+            return true;
+        }
+    }
+    private void flipImage()
     {
-        float centerX = imageView.getWidth() / 2f;
-        float centerY = imageView.getHeight() / 2f;
-        float scaleX = isFlippedHorizontally ? -1 : 1;
-        float scaleY = isFlippedVertically ? -1 : 1;
-
-        matrix.setScale(scaleX, scaleY, centerX, centerY);
-        matrix.postTranslate(0, imageView.getHeight());
-        matrix.postScale(1, -1, centerX, centerY);
-
         isFlippedHorizontally = !isFlippedHorizontally;
         isFlippedVertically = !isFlippedVertically;
 
-        imageView.setImageMatrix(matrix);
+        if (isFlippedHorizontally || isFlippedVertically) {
+            matrix.reset();
+            matrix.setScale(isFlippedHorizontally ? -1 : 1, isFlippedVertically ? -1 : 1);
+
+
+            // Create a new flipped bitmap based on the original bitmap
+            flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+
+            imageView.setImageBitmap(flippedBitmap);
+        } else {
+            imageView.setImageBitmap(originalBitmap);
+        }
+    }
+    private void rotate()
+    {
+        currentRotation =  (currentRotation + 90f);
+        imageView.animate().rotation(currentRotation).setDuration(500).start();
+    }
+
+    private void reset()
+    {
+        matrix.reset();
+
+        currentRotation = 0;
+        flippedBitmap = originalBitmap;
+        imageView.setImageBitmap(originalBitmap);
+
+        posX = initialposX;
+        posY = initialposY;
+        scaleFactor = initialScaleFactor;
+
+        imageView.setTranslationX(posX);
+        imageView.setTranslationY(posY);
+        imageView.setScaleX(scaleFactor);
+        imageView.setScaleY(scaleFactor);
+
     }
 
 }
