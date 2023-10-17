@@ -1,11 +1,10 @@
 package com.example.imagegallery;
 
-import android.app.Activity;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -95,9 +94,6 @@ public class AlbumHelper {
         else{
             trashImages = new ArrayList<>();
             ImageObject.getImage(context, trashDirectory, trashImages);
-            for (ImageObject imageFile : trashImages) {
-                Log.d("TRASH", imageFile.getFilePath());
-            }
         }
 
 

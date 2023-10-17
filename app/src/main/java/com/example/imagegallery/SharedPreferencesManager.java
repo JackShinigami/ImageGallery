@@ -3,7 +3,7 @@ package com.example.imagegallery;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+
 
 import com.google.gson.Gson;
 
@@ -212,7 +212,7 @@ public class SharedPreferencesManager {
 
         if(json == null)
             return false;
-        Log.d("json", json);
+
         love_images = gson.fromJson(json, Bundle.class);
 
         if (love_images.getBoolean(filepath))

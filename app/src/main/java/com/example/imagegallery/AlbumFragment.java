@@ -3,7 +3,6 @@ package com.example.imagegallery;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,7 +74,6 @@ public class AlbumFragment extends Fragment {
             for (String albumName : albumNameList) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
                 albums.add(album);
-                Log.d("AlbumFragment", "onCreate: " );
             }
         }
 
@@ -180,7 +177,6 @@ public class AlbumFragment extends Fragment {
             if(!name.equals("All Images") && !name.equals("Trash")) {
                 albumNameList.add(name);
                 SharedPreferencesManager.saveAlbumData(getContext(), album);
-                Log.println(Log.DEBUG, "AlbumFragment", "onPause: " + name);
             }
         }
 

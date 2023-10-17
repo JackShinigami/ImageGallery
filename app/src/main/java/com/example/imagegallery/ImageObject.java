@@ -3,7 +3,6 @@ package com.example.imagegallery;
 import android.content.Context;
 import android.os.Environment;
 import android.os.Parcelable;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -53,14 +52,12 @@ public class ImageObject implements Parcelable {
 
                     if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
-                        Log.d("Image", image.fileName);
+
                         image.albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, image.filePath);
-                        if (image.albumNames != null)
-                            for (String albumName : image.albumNames)
-                                Log.d("Album", albumName + " " + image.fileName);
-                        else {
+                        if (image.albumNames == null){
                             image.setAlbumNames(context, new ArrayList<String>());
                         }
+
                         images.add(image);
 
                     }
@@ -123,6 +120,8 @@ public class ImageObject implements Parcelable {
         File file = new File(this.filePath);
         if(file.exists()) {
             file.delete();
+            ImageObject oldObject = SharedPreferencesManager.loadTrashFile(context, this.filePath);
+            SharedPreferencesManager.deleteLovedImages(context, oldObject.filePath);
             SharedPreferencesManager.deleteTrashFile(context, this.filePath);
             AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
             album.removeImage(this);
@@ -143,7 +142,7 @@ public class ImageObject implements Parcelable {
                 //folderName = oldFilePath.substring(0, oldFilePath.lastIndexOf("/"));
                 //folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
             }
-            Log.d("Restore", oldFilePath);
+
 
             File newFile = new File(oldFilePath);
             file.renameTo(newFile);
@@ -224,8 +223,6 @@ public class ImageObject implements Parcelable {
             images.sort((o1, o2) -> new Date(o2.lastModifiedDate).compareTo(new Date(o1.lastModifiedDate)));
         }
 
-        for(ImageObject image : images)
-            Log.d("Date", new Date(image.lastModifiedDate).toString() + " " + image.fileName  );
     }
 
     public static void sortByFileName(ArrayList<ImageObject> images, boolean ascending) {

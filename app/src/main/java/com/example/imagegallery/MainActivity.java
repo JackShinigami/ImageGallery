@@ -123,11 +123,6 @@ public class MainActivity extends AppCompatActivity {
         ImageObject.getImage(this, picturesDirectory, images);
         ImageObject.getImage(this, downloadDirectory, images);
         ImageObject.getImage(this, dcimDirectory, images);
-// In ra danh sách các file ảnh
-        for (ImageObject imageFile : images) {
-            Log.d("IMAGE", imageFile.getFilePath());
-
-        }
 
         ArrayList<AlbumData> defaultAlbums = AlbumHelper.createDefaultAlbum(this);
 
