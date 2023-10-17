@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 public class AlbumFragment extends Fragment {
 
+    private static final String ARG_PARAM1 = "ArrayList<AlbumData>";
     private ArrayList<AlbumData> albums;
     private ArrayList<AlbumData> defaultAlbums;
 
@@ -37,8 +38,12 @@ public class AlbumFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AlbumFragment newInstance() {
+    public static AlbumFragment newInstance(ArrayList<AlbumData> albums) {
+
         AlbumFragment fragment = new AlbumFragment();
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(ARG_PARAM1, albums);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -55,7 +60,10 @@ public class AlbumFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         albums = new ArrayList<>();
-        defaultAlbums = AlbumHelper.createDefaultAlbum(getContext());
+
+        if(getArguments() != null){
+            defaultAlbums = getArguments().getParcelableArrayList(ARG_PARAM1);
+        }
     }
 
     @Override

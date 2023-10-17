@@ -17,6 +17,8 @@
             android:id="@+id/album_thumbnail"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
             android:src="@drawable/icon_albums"/>
 
         <TextView

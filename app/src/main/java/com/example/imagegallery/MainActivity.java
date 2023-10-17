@@ -131,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        ArrayList<AlbumData> defaultAlbums = AlbumHelper.createDefaultAlbum(this);
+
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             btnAlbum.setImageResource(R.drawable.ic_album_launcher);
         }
         else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
-            AlbumFragment albumFragment = AlbumFragment.newInstance();
+            AlbumFragment albumFragment = AlbumFragment.newInstance(defaultAlbums);
 
             FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
             AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                AlbumFragment albumFragment = AlbumFragment.newInstance();
+                AlbumFragment albumFragment = AlbumFragment.newInstance(defaultAlbums);
                 FragmentManager albumFragmentManager = getSupportFragmentManager();
                 FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                 AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
