@@ -24,13 +24,16 @@
                 android:id="@+id/btnSort"
                 android:src="@drawable/ic_arrow_down"
                 android:scaleType="fitCenter"
-                android:layout_toEndOf="@+id/btnOptions"/>
+                android:layout_toEndOf="@+id/btnOptions"
+                android:layout_centerVertical="true"
+                />
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="60dp"
                 android:id="@+id/btnOptions"
                 android:src="@drawable/ic_more"
                 android:scaleType="fitCenter"
+                android:layout_centerVertical="true"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +53,8 @@
                 android:layout_height="40dp"
                 android:src="@drawable/ic_add"
                 android:layout_alignParentEnd="true"
-                android:layout_margin="20dp"/>
+                android:layout_margin="20dp"
+                android:layout_centerVertical="true"/>
         </RelativeLayout>
 
         <TextView

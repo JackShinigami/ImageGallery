@@ -23,11 +23,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     Context context;
     ArrayList<AlbumData> albums;
-    RecyclerView recyclerView;
-    MyAdapter adapter;
-
-    private int[] colNumbers = {2, 3, 4};
-    private int colNumberIndex = 0;
 
     public AlbumAdapter(Context context, ArrayList<AlbumData> albums){
         this.context = context;

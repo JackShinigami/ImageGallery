@@ -43,6 +43,16 @@ public class AlbumData implements Parcelable {
         this.thumbnailPath = thumbnailPath;
     }
 
+    public AlbumData(String albumName, ArrayList<ImageObject> images, int thumbnailPath, boolean isDefault){
+        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+        this.albumName = albumName;
+        this.images = images;
+        this.createdDate = now;
+        this.lastModifiedDate = now;
+        this.thumbnailPath = thumbnailPath;
+        this.isDefault = isDefault;
+    }
+
     public AlbumData(String albumName){
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
         this.albumName = albumName;
