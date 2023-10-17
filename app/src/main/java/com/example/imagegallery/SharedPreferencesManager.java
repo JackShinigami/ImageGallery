@@ -34,7 +34,13 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(albumName, null);
-        AlbumData albumData = gson.fromJson(json, AlbumData.class);
+        AlbumData albumData;
+        try{
+            albumData = gson.fromJson(json, AlbumData.class);
+        }
+        catch (Exception e){
+            albumData = null;
+        }
         return albumData;
     }
 

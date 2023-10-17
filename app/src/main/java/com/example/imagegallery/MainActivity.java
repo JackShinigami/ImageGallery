@@ -131,20 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        File trashDirectory = new File(externalStorage, "Trash");
-        ArrayList<ImageObject> trashImages = new ArrayList<>();
-        if(!trashDirectory.exists()) {
-            trashDirectory.mkdir();
-        }
-        else{
-            trashImages = new ArrayList<>();
-            ImageObject.getImage(this, trashDirectory, trashImages);
-            for (ImageObject imageFile : trashImages) {
-                Log.d("TRASH", imageFile.getFilePath());
-            }
-        }
-        SharedPreferencesManager.saveAlbumData(this, new AlbumData("Trash", trashImages));
-        SharedPreferencesManager.saveAlbumData(this ,new AlbumData("All Images", images));
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
             //Load ImageFragment with images on fragment_container
@@ -157,12 +143,7 @@ public class MainActivity extends AppCompatActivity {
             btnAlbum.setImageResource(R.drawable.ic_album_launcher);
         }
         else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
-            ArrayList<AlbumData> albumData = new ArrayList<>();
-            AlbumData album = new AlbumData("All Images", images);
-            AlbumData trashAlbum = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
-            albumData.add(album);
-            albumData.add(trashAlbum);
-            AlbumFragment albumFragment = AlbumFragment.newInstance(albumData);
+            AlbumFragment albumFragment = AlbumFragment.newInstance();
 
             FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
             AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
@@ -181,19 +162,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        ArrayList<ImageObject> finalTrashImages = trashImages;
         btnAlbum.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void onClick(View v) {
 
-                ArrayList<AlbumData> albumData = new ArrayList<>();
-                AlbumData album = new AlbumData("All Images", images);
-                albumData.add(album);
-                AlbumData trashAlbum = new AlbumData("Trash", finalTrashImages, R.drawable.ic_trash);
-                albumData.add(trashAlbum);
-
-                AlbumFragment albumFragment = AlbumFragment.newInstance( albumData);
+                AlbumFragment albumFragment = AlbumFragment.newInstance();
                 FragmentManager albumFragmentManager = getSupportFragmentManager();
                 FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                 AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);

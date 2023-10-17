@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class AlbumFragment extends Fragment {
-    private static final String ARG_PARAM1 = "ArrayList<AlbumData>";
 
     private ArrayList<AlbumData> albums;
     private ArrayList<AlbumData> defaultAlbums;
@@ -38,11 +37,8 @@ public class AlbumFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AlbumFragment newInstance(ArrayList<AlbumData> albums) {
+    public static AlbumFragment newInstance() {
         AlbumFragment fragment = new AlbumFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, albums);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -57,11 +53,9 @@ public class AlbumFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            defaultAlbums = getArguments().getParcelableArrayList(ARG_PARAM1);
-        }
 
         albums = new ArrayList<>();
+        defaultAlbums = AlbumHelper.createDefaultAlbum(getContext());
     }
 
     @Override

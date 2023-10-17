@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class AlbumHelper {
@@ -80,5 +83,34 @@ public class AlbumHelper {
         }
     }
 
-    //public static void createDefaultAlbum(Context context);
+    public static ArrayList<AlbumData> createDefaultAlbum(Context context){
+        ArrayList<AlbumData> albums = new ArrayList<>();
+
+        File externalStorage = Environment.getExternalStorageDirectory();
+        File trashDirectory = new File(externalStorage, "Trash");
+        ArrayList<ImageObject> trashImages = new ArrayList<>();
+        if(!trashDirectory.exists()) {
+            trashDirectory.mkdir();
+        }
+        else{
+            trashImages = new ArrayList<>();
+            ImageObject.getImage(context, trashDirectory, trashImages);
+            for (ImageObject imageFile : trashImages) {
+                Log.d("TRASH", imageFile.getFilePath());
+            }
+        }
+
+
+        AlbumData trash = new AlbumData("Trash", R.drawable.ic_trash, true);
+        albums.add(trash);
+        AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorite");
+        if(favorite == null){
+            favorite = new AlbumData("Favorite", R.drawable.ic_favorite, true);
+            SharedPreferencesManager.saveAlbumData(context, favorite);
+        }
+        albums.add(favorite);
+
+        SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));
+        return albums;
+    }
 }
