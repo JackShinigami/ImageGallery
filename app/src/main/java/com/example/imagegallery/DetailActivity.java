@@ -12,9 +12,11 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -31,7 +33,7 @@ import com.google.zxing.RGBLuminanceSource;
 public class DetailActivity extends AppCompatActivity  {
 
     private ImageView imageView, iv_love;
-    private Button btnRotate, btnFlipHorizontal, btnFlipVertical, btnFilter;
+    private Button btnRotate, btnFlipHorizontal, btnFilter;
     private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
@@ -44,9 +46,7 @@ public class DetailActivity extends AppCompatActivity  {
     private float initialposX = 0f;
     private float initialposY = 0f;
     private boolean isFlippedHorizontally = false;
-    private boolean isFlippedVertically = false;
-    private Bitmap originalBitmap, flippedBitmap;
-
+    private Bitmap originalBitmap, flippedBitmap, rotatedBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,6 @@ public class DetailActivity extends AppCompatActivity  {
             }
         });
 
-
         //filter
         btnFilter = findViewById(R.id.btnFilter);
         seekBarFilter = findViewById(R.id.seekBarFilter);
@@ -123,24 +122,16 @@ public class DetailActivity extends AppCompatActivity  {
         btnRotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rotate();
+                rotate(90f);
             }
         });
 
         //flipping image
         originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
-        flippedBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        imageView.setImageBitmap(flippedBitmap);
+        imageView.setImageBitmap(originalBitmap);
 
         btnFlipHorizontal = findViewById(R.id.btnFlipHorizontal);
-        btnFlipVertical = findViewById(R.id.btnFlipVertical);
 
-        btnFlipVertical.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flipImage();
-            }
-        });
         btnFlipHorizontal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -294,35 +285,41 @@ public class DetailActivity extends AppCompatActivity  {
     }
     private void flipImage()
     {
+        flippedBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+
         isFlippedHorizontally = !isFlippedHorizontally;
-        isFlippedVertically = !isFlippedVertically;
-
-        if (isFlippedHorizontally || isFlippedVertically) {
+        if (isFlippedHorizontally) {
             matrix.reset();
-            matrix.setScale(isFlippedHorizontally ? -1 : 1, isFlippedVertically ? -1 : 1);
-
-
+            matrix.setScale(-1, 1);
             // Create a new flipped bitmap based on the original bitmap
             flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
-
             imageView.setImageBitmap(flippedBitmap);
         } else {
             imageView.setImageBitmap(originalBitmap);
         }
     }
-    private void rotate()
+    private void rotate(float val)
     {
         currentRotation =  (currentRotation + 90f);
-        imageView.animate().rotation(currentRotation).setDuration(500).start();
+        //imageView.animate().rotation(currentRotation).setDuration(500).start();
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        Bitmap bitmap = drawable.getBitmap();
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(val);
+
+        rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        imageView.setImageBitmap(rotatedBitmap);
+
     }
 
     private void reset()
     {
         matrix.reset();
 
-        currentRotation = 0;
-        flippedBitmap = originalBitmap;
-        imageView.setImageBitmap(originalBitmap);
+        imageView.setImageMatrix(matrix);
+        rotate(-currentRotation);
+        currentRotation = 0f;
 
         posX = initialposX;
         posY = initialposY;
