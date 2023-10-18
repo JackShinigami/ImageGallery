@@ -45,4 +45,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
+    implementation ("androidx.appcompat:appcompat:1.0.2")
+
 }

@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.RGBLuminanceSource;
 
 
 public class DetailActivity extends AppCompatActivity  {
@@ -181,6 +183,21 @@ public class DetailActivity extends AppCompatActivity  {
                 {
                     obj.restoreFile(this);
                     finish();
+                } else if((R.id.qrscan)==itemId)  {
+                    Bitmap b = BitmapFactory.decodeFile(obj.getFilePath());
+                    //scan qr code in this image
+                    String contents = null;
+                    int[] intArray = new int[b.getWidth()*b.getHeight()];
+                    b.getPixels(intArray, 0, b.getWidth(), 0, 0, b.getWidth(), b.getHeight());
+                    LuminanceSource source = new RGBLuminanceSource(b.getWidth(), b.getHeight(), intArray);
+                    com.google.zxing.BinaryBitmap bitmap = new com.google.zxing.BinaryBitmap(new com.google.zxing.common.HybridBinarizer(source));
+                    try {
+                        contents = new com.google.zxing.qrcode.QRCodeReader().decode(bitmap).getText();
+                        Toast.makeText(this, contents, Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
 
