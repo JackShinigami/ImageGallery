@@ -93,6 +93,9 @@ public class SharedPreferencesManager {
 
         image_Album = gson.fromJson(json, Bundle.class);
         ArrayList<String> albumNames = image_Album.getStringArrayList(filePath);
+        if(albumNames == null)
+            return new ArrayList<>();
+
         return albumNames;
     }
 
