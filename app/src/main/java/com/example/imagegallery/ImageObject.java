@@ -142,8 +142,6 @@ public class ImageObject implements Parcelable {
                 oldFilePath = externalStorage.getPath() + "/Pictures/" + this.fileName;
             else {
                 oldFilePath = oldObject.filePath;
-                //folderName = oldFilePath.substring(0, oldFilePath.lastIndexOf("/"));
-                //folderName = folderName.substring(folderName.lastIndexOf("/") + 1);
             }
 
 
