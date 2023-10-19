@@ -18,13 +18,11 @@ public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
     private String fileName;
-    private ArrayList<String> albumNames;
 
     ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
         this.lastModifiedDate = lastModifiedDate;
         this.fileName = fileName;
-        this.albumNames = new ArrayList<>();
     }
 
     public String getFilePath() {
@@ -53,12 +51,6 @@ public class ImageObject implements Parcelable {
 
                     if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
-
-                        image.albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, image.filePath);
-                        if (image.albumNames == null){
-                            image.setAlbumNames(context, new ArrayList<String>());
-                        }
-
                         images.add(image);
 
                     }
@@ -69,53 +61,58 @@ public class ImageObject implements Parcelable {
 
 
 
-    public ArrayList<String> getAlbumNames() {
-        return albumNames;
+    public void setAlbumNames(Context context, ArrayList<String> albumNames) {
+        SharedPreferencesManager.saveImageAlbumInfo(context, this.filePath, albumNames);
     }
 
-    public void setAlbumNames(Context context, ArrayList<String> albumNames) {
-        this.albumNames = albumNames;
-        SharedPreferencesManager.saveImageAlbumInfo(context, this);
+    public ArrayList<String> getAlbumNames(Context context) {
+        return SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
     }
 
     public void removeAlbumName(Context context, String albumName) {
-        if(this.albumNames != null && this.albumNames.contains(albumName)) {
-            this.albumNames.remove(albumName);
-            SharedPreferencesManager.saveImageAlbumInfo(context, this);
+        ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
+        if(albumNames != null) {
+            if(albumNames.contains(albumName)) {
+                albumNames.remove(albumName);
+                SharedPreferencesManager.saveImageAlbumInfo(context, this.filePath, albumNames);
+            }
         }
     }
 
     public void addAlbumName(Context context, String albumName) {
-        if(this.albumNames == null)
-            this.albumNames = new ArrayList<>();
-
-        if(!this.albumNames.contains(albumName)) {
-            this.albumNames.add(albumName);
-            SharedPreferencesManager.saveImageAlbumInfo(context, this);
+        ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
+        if(albumNames != null) {
+            if(!albumNames.contains(albumName)) {
+                albumNames.add(albumName);
+                SharedPreferencesManager.saveImageAlbumInfo(context, this.filePath, albumNames);
+            }
         }
     }
 
     public void deleteToTrash(Context context) {
         File file = new File(this.filePath);
         File externalStorage = Environment.getExternalStorageDirectory();
-            if(this.albumNames != null ) {
-                for (String albumName : this.albumNames) {
-                    AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
-                    if(album != null) {
-                        album.removeImage(this);
-                        SharedPreferencesManager.saveAlbumData(context, album);
-                    }
+        ArrayList<String> albumNames = getAlbumNames(context);
+        if (albumNames != null && albumNames.size() > 0 ){
+            for (String albumName : albumNames) {
+                AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
+                if (album != null) {
+                    album.removeImage(this);
+                    SharedPreferencesManager.saveAlbumData(context, album);
                 }
-                SharedPreferencesManager.deleteImageAlbumInfo(context, this);
             }
+            SharedPreferencesManager.deleteImageAlbumInfo(context, this);
+        }
 
-            File trash = new File(externalStorage, "Trash");
-            if(!trash.exists())
-                trash.mkdir();
-            File newFile = new File(trash, this.fileName);
+        File trash = new File(externalStorage, "Trash");
+        if (!trash.exists())
+            trash.mkdir();
+        File newFile = new File(trash, this.fileName);
 
-            SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this);
-            file.renameTo(newFile);
+        SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this);
+        SharedPreferencesManager.saveImageAlbumInfo(context, newFile.getAbsolutePath(), albumNames);
+
+        file.renameTo(newFile);
     }
 
     //delete file from trash
@@ -129,6 +126,7 @@ public class ImageObject implements Parcelable {
             AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
             album.removeImage(this);
             SharedPreferencesManager.saveAlbumData(context, album);
+            SharedPreferencesManager.deleteImageAlbumInfo(context, this);
         }
     }
 
@@ -144,22 +142,28 @@ public class ImageObject implements Parcelable {
                 oldFilePath = oldObject.filePath;
             }
 
-
             File newFile = new File(oldFilePath);
             file.renameTo(newFile);
 
-            if(oldObject.albumNames != null && oldObject.albumNames.size() > 0) {
-                for (String albumName : oldObject.albumNames) {
+            ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
+
+            if(albumNames != null && albumNames.size() > 0) {
+                for (String albumName : albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
                     if(album != null) {
                         album.addImage(oldObject);
                         SharedPreferencesManager.saveAlbumData(context, album);
                     }
+                    else
+                    {
+                        albumNames.remove(albumName);
+                    }
                 }
 
-                SharedPreferencesManager.saveImageAlbumInfo(context, oldObject);
+                SharedPreferencesManager.saveImageAlbumInfo(context, oldFilePath, albumNames);
             }
 
+            SharedPreferencesManager.deleteImageAlbumInfo(context, this);
             SharedPreferencesManager.deleteTrashFile(context, this.filePath);
 
 
@@ -179,13 +183,11 @@ public class ImageObject implements Parcelable {
         dest.writeString(filePath);
         dest.writeLong(lastModifiedDate);
         dest.writeString(fileName);
-        dest.writeStringList(albumNames);
     }
     protected ImageObject(android.os.Parcel in) {
         filePath = in.readString();
         lastModifiedDate = in.readLong();
         fileName = in.readString();
-        albumNames = in.createStringArrayList();
     }
 
     public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {

@@ -78,11 +78,12 @@ public class SharedPreferencesManager {
     }
 
 
-    public static void saveImageAlbumInfo(Context context, ImageObject imageObject) {
+    public static void saveImageAlbumInfo(Context context, String filePath, ArrayList<String> albumNames) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
 
-        image_Album.putStringArrayList(imageObject.getFilePath(), imageObject.getAlbumNames());
+        image_Album.putStringArrayList(filePath, albumNames);
+
         String json = gson.toJson(image_Album);
         editor.putString(IMAGE_LIST, json);
         editor.apply();
@@ -94,8 +95,12 @@ public class SharedPreferencesManager {
         String json = sharedPreferences.getString(IMAGE_LIST, null);
         if(json == null)
             return new ArrayList<>();
+
         image_Album = gson.fromJson(json, Bundle.class);
         ArrayList<String> albumNames = image_Album.getStringArrayList(filePath);
+        if(albumNames == null)
+            return new ArrayList<>();
+
         return albumNames;
     }
 

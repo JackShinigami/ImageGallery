@@ -318,7 +318,6 @@ public class MainActivity extends AppCompatActivity {
                 imageObject.addAlbumName(this,albumName);
                 //setCurrentImages(albumData.getImages());
                 Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
-                SharedPreferencesManager.saveImageAlbumInfo(this, imageObject);
             }
             else{
                 Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
