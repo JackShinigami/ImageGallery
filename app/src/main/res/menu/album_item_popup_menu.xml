@@ -6,4 +6,8 @@
     <item
         android:id="@+id/delete_album"
         android:title="Delete" />
+
+    <item
+        android:id="@+id/set_password"
+        android:title="Set Password" />
 </menu>

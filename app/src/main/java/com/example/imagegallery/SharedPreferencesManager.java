@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.ArrayList;
 
 public class SharedPreferencesManager {
@@ -18,9 +20,12 @@ public class SharedPreferencesManager {
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
 
     private static final String IMAGE_LIST = "imageList21112003";
+    private static final String ALBUM_PASSWORD = "albumPassword21112003";
+
     public static Bundle image_Album = new Bundle();
     public static Bundle trash_list = new Bundle();
     public static Bundle love_images = new Bundle();
+    public static  Bundle album_passwords = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
     private static final String TRASH_IMAGES = "trashImages21112003";
     private static final String LOVE_INFO = "loveInfo21112003";
@@ -228,5 +233,84 @@ public class SharedPreferencesManager {
         sharedPreferences.putString(LOVE_INFO, json);
         sharedPreferences.apply();
     }
+
+    public static void saveAlbumPassword(Context context, String ALbumName, String password) {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        album_passwords.putString(ALbumName, hashedPassword);
+        Gson gson = new Gson();
+        String json = gson.toJson(album_passwords);
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+        //todo update album name for album password when  change album name or delete album name
+    }
+
+    public static boolean hasSetPassword(Context context, String ALbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return false;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(ALbumName);
+        if(storedHashedPassword == null)
+            return false;
+        return true;
+    }
+
+    public static boolean checkAlbumPassword(Context context, String ALbumName, String enteredPassword) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return false;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(ALbumName);
+
+        if(storedHashedPassword == null)
+            return false;
+
+        if (BCrypt.checkpw(enteredPassword, storedHashedPassword)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public static void updateAlbumNameInPassword(Context context, String oldAlbumName, String newAlbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(oldAlbumName);
+        if(storedHashedPassword == null)
+            return;
+        album_passwords.putString(newAlbumName, storedHashedPassword);
+        album_passwords.remove(oldAlbumName);
+        json = gson.toJson(album_passwords);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+    }
+
+    public static void deleteAlbumPassword(Context context, String ALbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        album_passwords.remove(ALbumName);
+        json = gson.toJson(album_passwords);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+
+    }
+
+
 
 }

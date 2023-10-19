@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -109,5 +112,110 @@ public class AlbumHelper {
         SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));
         return albums;
     }
+
+    public static void setAlbumPassword(Context context, String albumName){
+        if(SharedPreferencesManager.hasSetPassword(context, albumName)){
+            checkAlbumPassword(context, albumName, new PasswordCheckCallBack() {
+                @Override
+                public void onPasswordChecked(boolean isPasswordCorrect) {
+                    if(isPasswordCorrect){
+                        View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setView(view);
+                        EditText editPassword = view.findViewById(R.id.edit_password);
+                        EditText editConfirmPassword = view.findViewById(R.id.retype_password);
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
+                                    SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
+                                    Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", null);
+                        builder.create();
+                        builder.show();
+                    }
+                }
+            });
+        }
+        else {
+            View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setView(view);
+            EditText editPassword = view.findViewById(R.id.edit_password);
+            EditText editConfirmPassword = view.findViewById(R.id.retype_password);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
+                        SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
+                        Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancel", null);
+            builder.create();
+            builder.show();
+        }
+
+    }
+
+    public static void checkAlbumPassword(Context context, String albumName, PasswordCheckCallBack passwordCheckCallBack){
+
+        if(SharedPreferencesManager.hasSetPassword(context, albumName)){
+            View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setView(view);
+            EditText editPassword = view.findViewById(R.id.edit_password);
+            TextView title = view.findViewById(R.id.txtTitle);
+            LinearLayout retypePassword = view.findViewById(R.id.retype_password_layout);
+            title.setText("Enter Current Password");
+            retypePassword.setVisibility(View.GONE);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(SharedPreferencesManager.checkAlbumPassword(context, albumName, editPassword.getText().toString())){
+                        Toast.makeText(context, "Password is correct", Toast.LENGTH_SHORT).show();
+                        passwordCheckCallBack.onPasswordChecked(true);
+                    }
+                    else{
+                        Toast.makeText(context, "Password is incorrect", Toast.LENGTH_SHORT).show();
+                        passwordCheckCallBack.onPasswordChecked(false);
+
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    passwordCheckCallBack.onPasswordChecked(false);
+                }
+            });
+            builder.create();
+            builder.show();
+
+
+        }
+        else{
+            passwordCheckCallBack.onPasswordChecked(true);
+        }
+
+
+    }
+
 
 }

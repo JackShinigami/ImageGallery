@@ -62,18 +62,25 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<ImageObject> images = album.getImages();
+                AlbumHelper.checkAlbumPassword(context, album.getAlbumName(), new PasswordCheckCallBack() {
+                    @Override
+                    public void onPasswordChecked(boolean isPasswordCorrect) {
+                        if(isPasswordCorrect){
+                            ArrayList<ImageObject> images = album.getImages();
 
-                ImageFragment imageFragment = ImageFragment.newInstance(images, album.getAlbumName());
-                FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, imageFragment);
-                fragmentTransaction.commit();
+                            ImageFragment imageFragment = ImageFragment.newInstance(images, album.getAlbumName());
+                            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+                            fragmentTransaction.commit();
 
-                ((MainActivity) context).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
-                ((MainActivity) context).setCurrentImages(images);
-                ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
-                SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
+                            ((MainActivity) context).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
+                            ((MainActivity) context).setCurrentImages(images);
+                            ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
+                            SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
+                        }
+                    }
+                });
             }
         });
     }
@@ -97,8 +104,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     for(ImageObject image : albums.get(position).getImages()){
                         image.removeAlbumName(context, albums.get(position).getAlbumName());
                     }
+                    SharedPreferencesManager.deleteAlbumPassword(context, albums.get(position).getAlbumName());
                     albums.remove(position);
                     notifyDataSetChanged();
+                }
+                else if(R.id.set_password == itemId){
+                    AlbumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
                 }
                 return true;
             }
@@ -136,6 +147,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                                 return;
                             }
                         }
+                        SharedPreferencesManager.updateAlbumNameInPassword(context, oldName, newName);
                         currentAlbum.setAlbumName(newName);
                         notifyDataSetChanged();
                         dialog.dismiss();
