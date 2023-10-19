@@ -50,7 +50,7 @@ public class ImageObject implements Parcelable {
                     String fileNameLower = fileName.toLowerCase();
                     long date = file.lastModified();
 
-                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif")) {
+                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
 
                         image.albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, image.filePath);
