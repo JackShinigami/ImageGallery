@@ -94,6 +94,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 }
                 else if(R.id.delete_album == itemId){
                     SharedPreferencesManager.deleteAlbumData(context, albums.get(position).getAlbumName());
+                    for(ImageObject image : albums.get(position).getImages()){
+                        image.removeAlbumName(context, albums.get(position).getAlbumName());
+                    }
                     albums.remove(position);
                     notifyDataSetChanged();
                 }

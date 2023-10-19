@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import android.content.Context;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -97,11 +98,13 @@ public class ImageObject implements Parcelable {
     public void deleteToTrash(Context context) {
         File file = new File(this.filePath);
         File externalStorage = Environment.getExternalStorageDirectory();
-            if(this.albumNames != null) {
+            if(this.albumNames != null ) {
                 for (String albumName : this.albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
-                    album.removeImage(this);
-                    SharedPreferencesManager.saveAlbumData(context, album);
+                    if(album != null) {
+                        album.removeImage(this);
+                        SharedPreferencesManager.saveAlbumData(context, album);
+                    }
                 }
                 SharedPreferencesManager.deleteImageAlbumInfo(context, this);
             }
@@ -150,8 +153,10 @@ public class ImageObject implements Parcelable {
             if(oldObject.albumNames != null && oldObject.albumNames.size() > 0) {
                 for (String albumName : oldObject.albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
-                    album.addImage(oldObject);
-                    SharedPreferencesManager.saveAlbumData(context, album);
+                    if(album != null) {
+                        album.addImage(oldObject);
+                        SharedPreferencesManager.saveAlbumData(context, album);
+                    }
                 }
 
                 SharedPreferencesManager.saveImageAlbumInfo(context, oldObject);
