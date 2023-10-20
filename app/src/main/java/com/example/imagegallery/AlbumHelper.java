@@ -141,17 +141,19 @@ public class AlbumHelper {
             ImageObject.getImage(context, trashDirectory, trashImages);
         }
 
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
-
         AlbumData trash = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
-        albumHelper.addDefaultAlbum(trash.getAlbumName());
+        addDefaultAlbum(trash.getAlbumName());
         albums.add(trash);
+
         AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
+        addDefaultAlbum(favorite.getAlbumName());
+
         if(favorite == null){
             favorite = new AlbumData("Favorites", R.drawable.ic_favorite);
             albumHelper.addDefaultAlbum(favorite.getAlbumName());
             SharedPreferencesManager.saveAlbumData(context, favorite);
         }
+
         albums.add(favorite);
 
         SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));
