@@ -19,6 +19,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.icu.text.SimpleDateFormat;
+import android.location.Address;
+import android.location.Geocoder;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -123,6 +128,25 @@ public class MainActivity extends AppCompatActivity {
         ImageObject.getImage(this, picturesDirectory, images);
         ImageObject.getImage(this, downloadDirectory, images);
         ImageObject.getImage(this, dcimDirectory, images);
+
+        for(ImageObject imageObject : images){
+            try {
+                ExifInterface exif = new ExifInterface(imageObject.getFilePath());
+
+                float[] latLong = new float[2];
+                if(exif.getLatLong(latLong)) {
+                    imageObject.setLatLong(latLong);
+                    Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(this));
+                }
+                else {
+                    Log.d("ImageObject", "lat: null long: null");
+                    imageObject.setLatLong(null);
+                }
+            }
+            catch (Exception e) {
+                Log.e("Exif", e.toString());
+            }
+        }
 
         ArrayList<AlbumData> defaultAlbums = AlbumHelper.createDefaultAlbum(this);
 

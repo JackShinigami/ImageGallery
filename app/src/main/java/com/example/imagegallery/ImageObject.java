@@ -1,6 +1,8 @@
 package com.example.imagegallery;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
@@ -12,12 +14,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
     private String fileName;
+    private float[] latLong;
 
     ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
@@ -52,7 +57,6 @@ public class ImageObject implements Parcelable {
                     if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
                         images.add(image);
-
                     }
                 }
             }
@@ -86,6 +90,30 @@ public class ImageObject implements Parcelable {
                 albumNames.add(albumName);
                 SharedPreferencesManager.saveImageAlbumInfo(context, this.filePath, albumNames);
             }
+        }
+    }
+
+    public void setLatLong(float[] latLong) {
+        this.latLong = latLong;
+    }
+    public float[] getLatLong() {
+        return latLong;
+    }
+
+    public String getAddress(Context context) {
+        if(latLong == null)
+            return null;
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            // Tìm kiếm địa điểm từ thông tin vị trí
+            List<Address> addresses = geocoder.getFromLocation(latLong[0], latLong[1], 1);
+
+            // Lấy tên của địa điểm từ đối tượng Address
+            String address = addresses.get(0).getAddressLine(0);
+            return address;
+        } catch (Exception e) {
+            Log.e("Address", e.getMessage());
+            return null;
         }
     }
 
@@ -183,11 +211,13 @@ public class ImageObject implements Parcelable {
         dest.writeString(filePath);
         dest.writeLong(lastModifiedDate);
         dest.writeString(fileName);
+        dest.writeFloatArray(latLong);
     }
     protected ImageObject(android.os.Parcel in) {
         filePath = in.readString();
         lastModifiedDate = in.readLong();
         fileName = in.readString();
+        latLong = in.createFloatArray();
     }
 
     public static final Creator<ImageObject> CREATOR = new Creator<ImageObject>() {
