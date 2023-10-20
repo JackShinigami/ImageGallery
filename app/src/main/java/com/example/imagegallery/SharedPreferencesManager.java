@@ -27,9 +27,10 @@ public class SharedPreferencesManager {
     public static Bundle love_images = new Bundle();
     public static  Bundle album_passwords = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
-    private static final String TRASH_IMAGES = "trashImages21112003";
     private static final String LOVE_INFO = "loveInfo21112003";
     private static final String IS_SET_SECURITY_QUESTION = "isSetSecurityQuestion21112003";
+    private static final String ENTER_WRONG_ANSWER = "enterWrongAnswer21112003";
+    private static final String TIME_ENTER_WRONG_ANSWER = "timeEnterWrongAnswer21112003";
 
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -350,5 +351,30 @@ public class SharedPreferencesManager {
         Gson gson = new Gson();
         boolean isSet = gson.fromJson(json, Boolean.class);
         return isSet;
+    }
+
+    public static void saveEnterWrongAnswerTimes(Context context,int count){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(ENTER_WRONG_ANSWER, count);
+        editor.apply();
+    }
+
+    public static int getEnterWrongAnswerTimes(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int count = sharedPreferences.getInt(ENTER_WRONG_ANSWER, 0);
+        return count;
+    }
+
+    public static void saveTimeEnterWrongAnswer(Context context){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        long time = System.currentTimeMillis();
+        editor.putLong(TIME_ENTER_WRONG_ANSWER, time);
+        editor.apply();
+    }
+
+    public static long getTimeEnterWrongAnswer(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        long time = sharedPreferences.getLong(TIME_ENTER_WRONG_ANSWER, 0);
+        return time;
     }
 }

@@ -311,6 +311,17 @@ public class AlbumHelper {
         builder.show(); }
 
     public void resetAlbumPassword(Context context, String albumName){
+
+        if(SharedPreferencesManager.getEnterWrongAnswerTimes(context) == 5){
+            long time = SharedPreferencesManager.getTimeEnterWrongAnswer(context);
+            if(time != 0){
+                long currentTime = System.currentTimeMillis();
+                if(currentTime - time > 300000){
+                    SharedPreferencesManager.saveEnterWrongAnswerTimes(context, 0);
+                }
+            }
+        }
+
         View view = LayoutInflater.from(context).inflate(R.layout.set_reset_password_form, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view);
@@ -322,15 +333,27 @@ public class AlbumHelper {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         questions.setAdapter(arrayAdapter);
 
+        int enterWrongAnswerTimes = SharedPreferencesManager.getEnterWrongAnswerTimes(context);
+
+        if(enterWrongAnswerTimes == 5){
+            Toast.makeText(context, "You have entered wrong answer 5 times. Please try again later", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(answer.getText().toString().length() != 0){
                     if(SharedPreferencesManager.checkSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString())){
                         setPassword(context, albumName);
+                        SharedPreferencesManager.saveEnterWrongAnswerTimes(context, 0);
                     }
                     else{
                         Toast.makeText(context, "Security question answer is incorrect", Toast.LENGTH_SHORT).show();
+                        SharedPreferencesManager.saveEnterWrongAnswerTimes(context, enterWrongAnswerTimes + 1);
+                        if(enterWrongAnswerTimes == 4){
+                            SharedPreferencesManager.saveTimeEnterWrongAnswer(context);
+                        }
                     }
                 }
                 else{
