@@ -45,7 +45,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     String currentPhotoPath="default";
     private String PATHPREFNAME = "pathPref";
-    private ImageButton btnAlbum, btnGallery, btnCamera;
+    private ImageButton btnAlbum, btnGallery, btnCamera, btnSearch;
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
 
         btnCamera = findViewById(R.id.btnCamera);
+        btnSearch = findViewById(R.id.btnSearch);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,6 +218,17 @@ public class MainActivity extends AppCompatActivity {
                 setCurrentFragmentName("Gallery");
                 SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
 
+            }
+        });
+
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+
+                intent.putParcelableArrayListExtra("images", images);
+                startActivity(intent);
             }
         });
 
