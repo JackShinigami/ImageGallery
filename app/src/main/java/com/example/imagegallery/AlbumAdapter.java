@@ -62,7 +62,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlbumHelper.checkAlbumPassword(context, album.getAlbumName(), new PasswordCheckCallBack() {
+                albumHelper.checkAlbumPassword(context, album.getAlbumName(), new PasswordCheckCallBack() {
                     @Override
                     public void onPasswordChecked(boolean isPasswordCorrect) {
                         if(isPasswordCorrect){
@@ -87,6 +87,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     private void showPopupMenu(View itemView, int position) {
         AlbumData currentAlbum = albums.get(position);
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
 
         Context context = itemView.getContext();
         PopupMenu popupMenu = new PopupMenu(context, itemView);
@@ -109,7 +110,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     notifyDataSetChanged();
                 }
                 else if(R.id.set_password == itemId){
-                    AlbumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
+                    albumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
                 }
                 return true;
             }

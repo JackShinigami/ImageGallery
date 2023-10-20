@@ -29,6 +29,7 @@ public class SharedPreferencesManager {
     private static final String TRASH_LIST = "trashList21112003";
     private static final String TRASH_IMAGES = "trashImages21112003";
     private static final String LOVE_INFO = "loveInfo21112003";
+    private static final String IS_SET_SECURITY_QUESTION = "isSetSecurityQuestion21112003";
 
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -317,6 +318,37 @@ public class SharedPreferencesManager {
     }
 
 
+    public static void saveSecurityQuestion(Context context, String question, String answer) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        String hashedAnswer = BCrypt.hashpw(answer, BCrypt.gensalt());
+        editor.putString(question, hashedAnswer);
+        editor.apply();
 
+        Gson gson = new Gson();
+        String json = gson.toJson(true);
+        editor.putString(IS_SET_SECURITY_QUESTION, json);
+        editor.apply();
+    }
 
+    public static boolean checkSecurityQuestion(Context context, String question, String answer){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String hashedAnswer = sharedPreferences.getString(question, null);
+        if(hashedAnswer == null)
+            return false;
+        if (BCrypt.checkpw(answer, hashedAnswer)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSecurityQuestionSet(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString(IS_SET_SECURITY_QUESTION, null);
+        if(json == null)
+            return false;
+        Gson gson = new Gson();
+        boolean isSet = gson.fromJson(json, Boolean.class);
+        return isSet;
+    }
 }

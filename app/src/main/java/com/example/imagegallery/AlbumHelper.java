@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +24,30 @@ public class AlbumHelper {
 
     private static Set<String> defaultAlbums;
     private static AlbumHelper albumHelper;
+    
+    private static boolean isSecurityQuestionSet = false;
+
+    private static ArrayList<String> questionList;
 
     private AlbumHelper(){
+        defaultAlbums = new HashSet<>();
+        questionList = new ArrayList<>();
+        questionList.add("What is your favorite color?");
+        questionList.add("What is your favorite food?");
+        questionList.add("What is your favorite movie?");
+        questionList.add("What is your favorite animal?");
+        questionList.add("What is your favorite sport?");
+        questionList.add("What is your favorite book?");
+        questionList.add("What is your favorite song?");
+        questionList.add("What is your favorite game?");
+        questionList.add("What is your favorite TV show?");
+        questionList.add("What is your favorite subject?");
+
     }
 
     public static AlbumHelper getInstance(){
         if(albumHelper == null){
             albumHelper = new AlbumHelper();
-            defaultAlbums = new HashSet<>();
         }
         return albumHelper;
     }
@@ -43,7 +60,7 @@ public class AlbumHelper {
         return defaultAlbums.contains(albumName);
     }
 
-    public static void addImgaeToAlbum(Context context, ImageObject imageObject){
+    public void addImageToAlbum(Context context, ImageObject imageObject){
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, albumNameList);
         if(albumNameList == null){
@@ -96,7 +113,7 @@ public class AlbumHelper {
     }
 
 
-    public static void removeImageFromAlbum(Context context, ImageObject imageObject){
+    public void removeImageFromAlbum(Context context, ImageObject imageObject){
         MainActivity mainActivity = (MainActivity) context;
         String albumName = mainActivity.getCurrentFragementName();
         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
@@ -110,7 +127,7 @@ public class AlbumHelper {
         }
     }
 
-    public static ArrayList<AlbumData> createDefaultAlbum(Context context){
+    public ArrayList<AlbumData> createDefaultAlbum(Context context){
         ArrayList<AlbumData> albums = new ArrayList<>();
 
         File externalStorage = Environment.getExternalStorageDirectory();
@@ -141,66 +158,67 @@ public class AlbumHelper {
         return albums;
     }
 
-    public static void setAlbumPassword(Context context, String albumName){
+    public void setAlbumPassword(Context context, String albumName){
+        isSecurityQuestionSet = SharedPreferencesManager.isSecurityQuestionSet(context);
         if(SharedPreferencesManager.hasSetPassword(context, albumName)){
             checkAlbumPassword(context, albumName, new PasswordCheckCallBack() {
                 @Override
                 public void onPasswordChecked(boolean isPasswordCorrect) {
                     if(isPasswordCorrect){
-                        View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setView(view);
-                        EditText editPassword = view.findViewById(R.id.edit_password);
-                        EditText editConfirmPassword = view.findViewById(R.id.retype_password);
-
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
-                                    SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
-                                    Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
-                                }
-                                else{
-                                    Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                        builder.setNegativeButton("Cancel", null);
-                        builder.create();
-                        builder.show();
+                        setPassword(context, albumName);
                     }
                 }
             });
         }
         else {
-            View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setView(view);
-            EditText editPassword = view.findViewById(R.id.edit_password);
-            EditText editConfirmPassword = view.findViewById(R.id.retype_password);
-
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
-                        SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
-                        Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
+            if(!isSecurityQuestionSet){
+                setSecurityQuestion(context, new PasswordCheckCallBack() {
+                    @Override
+                    public void onPasswordChecked(boolean isPasswordCorrect) {
+                        if(isPasswordCorrect){
+                            setPassword(context, albumName);
+                        }
                     }
-                    else{
-                        Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                });
 
-            builder.setNegativeButton("Cancel", null);
-            builder.create();
-            builder.show();
+
+            }
+            else{
+                setPassword(context, albumName);
+            }
+
         }
 
     }
 
-    public static void checkAlbumPassword(Context context, String albumName, PasswordCheckCallBack passwordCheckCallBack){
+    private void setPassword(Context context, String albumName) {
+        View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(view);
+        EditText editPassword = view.findViewById(R.id.edit_password);
+        EditText editConfirmPassword = view.findViewById(R.id.retype_password);
+        TextView forgetPassword = view.findViewById(R.id.forget_password);
+        forgetPassword.setVisibility(View.GONE);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
+                    SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
+                    Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.create();
+        builder.show();
+    }
+
+    public void checkAlbumPassword(Context context, String albumName, PasswordCheckCallBack passwordCheckCallBack){
 
         if(SharedPreferencesManager.hasSetPassword(context, albumName)){
             View view = LayoutInflater.from(context).inflate(R.layout.set_password, null);
@@ -208,6 +226,15 @@ public class AlbumHelper {
             builder.setView(view);
             EditText editPassword = view.findViewById(R.id.edit_password);
             TextView title = view.findViewById(R.id.txtTitle);
+            TextView forgetPassword = view.findViewById(R.id.forget_password);
+
+            forgetPassword.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    resetAlbumPassword(context, albumName);
+                }
+            });
+
             LinearLayout retypePassword = view.findViewById(R.id.retype_password_layout);
             title.setText("Enter Current Password");
             retypePassword.setVisibility(View.GONE);
@@ -243,6 +270,76 @@ public class AlbumHelper {
         }
 
 
+    }
+
+    public void setSecurityQuestion(Context context, PasswordCheckCallBack passwordCheckCallBack){
+        View view = LayoutInflater.from(context).inflate(R.layout.set_reset_password_form, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(view);
+
+        Spinner questions = view.findViewById(R.id.security_question_spinner);
+        EditText answer = view.findViewById(R.id.security_question_answer);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, questionList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        questions.setAdapter(arrayAdapter);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(answer.getText().toString().length() != 0){
+                    SharedPreferencesManager.saveSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString());
+                    Toast.makeText(context, "Security question has been set", Toast.LENGTH_SHORT).show();
+                    passwordCheckCallBack.onPasswordChecked(true);
+                }
+                else{
+                    Toast.makeText(context, "Answer cannot be empty", Toast.LENGTH_SHORT).show();
+                    passwordCheckCallBack.onPasswordChecked(false);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                    passwordCheckCallBack.onPasswordChecked(false);
+            }
+        });
+        builder.create();
+        builder.show(); }
+
+    public void resetAlbumPassword(Context context, String albumName){
+        View view = LayoutInflater.from(context).inflate(R.layout.set_reset_password_form, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(view);
+        TextView txtTitle = view.findViewById(R.id.txtTitle);
+        txtTitle.setText("Reset Password");
+        Spinner questions = view.findViewById(R.id.security_question_spinner);
+        EditText answer = view.findViewById(R.id.security_question_answer);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, questionList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        questions.setAdapter(arrayAdapter);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(answer.getText().toString().length() != 0){
+                    if(SharedPreferencesManager.checkSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString())){
+                        setPassword(context, albumName);
+                    }
+                    else{
+                        Toast.makeText(context, "Security question answer is incorrect", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Toast.makeText(context, "Answer cannot be empty", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.create();
+        builder.show();
     }
 
 

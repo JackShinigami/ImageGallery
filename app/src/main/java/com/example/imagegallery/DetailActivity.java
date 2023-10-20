@@ -197,7 +197,8 @@ public class DetailActivity extends AppCompatActivity  {
                     startActivity(Intent.createChooser(share, "Select"));*/
                 }
                 else if(R.id.add_to_album == itemId){
-                    AlbumHelper.addImgaeToAlbum(this, obj);
+                    AlbumHelper albumHelper = AlbumHelper.getInstance();
+                    albumHelper.addImageToAlbum(this, obj);
                 }
                 else if(R.id.delete_image == itemId) {
                     obj.deleteToTrash(this);

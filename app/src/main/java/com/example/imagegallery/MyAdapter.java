@@ -33,6 +33,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ImageObject imageObject = data.get(position);
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
 
         ViewGroup.LayoutParams layoutParams = holder.imageView.getLayoutParams();
         layoutParams.width = WindowSize.getWidth() / colNumber;
@@ -56,7 +57,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
                 popupMenu.inflate(R.menu.item_image_popup_menu);
 
-                AlbumHelper albumHelper = AlbumHelper.getInstance();
+
 
                 if(albumHelper.isDefaultAlbum(mainActivity.getCurrentFragementName())){
                     popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
@@ -78,10 +79,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                     public boolean onMenuItemClick(MenuItem item) {
                         int itemId = item.getItemId();
                         if(R.id.add_to_album == itemId){
-                            AlbumHelper.addImgaeToAlbum(v.getContext(), imageObject);
+                            albumHelper.addImageToAlbum(v.getContext(), imageObject);
                         }
                         else if(R.id.remove_from_album == itemId){
-                            AlbumHelper.removeImageFromAlbum(v.getContext(), imageObject);
+                            albumHelper.removeImageFromAlbum(v.getContext(), imageObject);
                             data = SharedPreferencesManager.loadAlbumData(mainActivity, mainActivity.getCurrentFragementName()).getImages();
                             notifyDataSetChanged();
                         }

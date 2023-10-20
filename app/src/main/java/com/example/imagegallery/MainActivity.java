@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        ArrayList<AlbumData> defaultAlbums = AlbumHelper.createDefaultAlbum(this);
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
 
 
         if(FragmentType.IMAGE_FRAGMENT == currentFragment){
