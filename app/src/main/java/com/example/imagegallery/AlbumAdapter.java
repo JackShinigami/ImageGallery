@@ -45,8 +45,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         int resID = album.getThumbnailPath();
 
         holder.albumThumbnail.setImageResource(resID);
-
-        if(album.isDefault()){
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        if(albumHelper.isDefaultAlbum(album.getAlbumName())){
             holder.moreMenu.setVisibility(View.INVISIBLE);
         }
         else{

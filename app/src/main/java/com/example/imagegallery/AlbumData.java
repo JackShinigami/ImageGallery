@@ -23,7 +23,6 @@ public class AlbumData implements Parcelable {
 
     private int thumbnailPath;
 
-    private boolean isDefault = false;
 
     public AlbumData(String albumName, ArrayList<ImageObject> images) {
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
@@ -43,15 +42,7 @@ public class AlbumData implements Parcelable {
         this.thumbnailPath = thumbnailPath;
     }
 
-    public AlbumData(String albumName, ArrayList<ImageObject> images, int thumbnailPath, boolean isDefault){
-        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
-        this.albumName = albumName;
-        this.images = images;
-        this.createdDate = now;
-        this.lastModifiedDate = now;
-        this.thumbnailPath = thumbnailPath;
-        this.isDefault = isDefault;
-    }
+
 
     public AlbumData(String albumName){
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
@@ -62,14 +53,15 @@ public class AlbumData implements Parcelable {
         this.thumbnailPath = R.drawable.icon_albums;
     }
 
-    public AlbumData(String albumName, int thumbnailPath, boolean isDefault){
+    public AlbumData(String albumName, int thumbnailPath){
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
         this.albumName = albumName;
         this.images = new ArrayList<>();
         this.createdDate = now;
         this.lastModifiedDate = now;
         this.thumbnailPath = thumbnailPath;
-        this.isDefault = isDefault;
+
     }
 
     protected AlbumData(Parcel in) {
@@ -149,15 +141,6 @@ public class AlbumData implements Parcelable {
     public long getLastModifiedDate(){
         return this.lastModifiedDate;
     }
-
-    public boolean isDefault(){
-        return this.isDefault;
-    }
-
-    public void setDefault(boolean isDefault){
-        this.isDefault = isDefault;
-    }
-
 
 
     @Override

@@ -56,12 +56,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
                 popupMenu.inflate(R.menu.item_image_popup_menu);
 
+                AlbumHelper albumHelper = AlbumHelper.getInstance();
+
+                if(albumHelper.isDefaultAlbum(mainActivity.getCurrentFragementName())){
+                    popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
+                }
+
                 if(mainActivity.getCurrentFragementName().equals("Gallery")){
                     popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                 }
-                else{
-                    popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(true);
+
+                if(mainActivity.getCurrentFragementName().equals("Trash")){
+                    popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
                 }
+
+
 
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

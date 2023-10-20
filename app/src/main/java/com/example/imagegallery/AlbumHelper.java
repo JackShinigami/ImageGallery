@@ -16,8 +16,32 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AlbumHelper {
+
+    private static Set<String> defaultAlbums;
+    private static AlbumHelper albumHelper;
+
+    private AlbumHelper(){
+    }
+
+    public static AlbumHelper getInstance(){
+        if(albumHelper == null){
+            albumHelper = new AlbumHelper();
+            defaultAlbums = new HashSet<>();
+        }
+        return albumHelper;
+    }
+
+    public void addDefaultAlbum(String albumName){
+        defaultAlbums.add(albumName);
+    }
+
+    public boolean isDefaultAlbum(String albumName){
+        return defaultAlbums.contains(albumName);
+    }
 
     public static void addImgaeToAlbum(Context context, ImageObject imageObject){
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
@@ -76,6 +100,7 @@ public class AlbumHelper {
         MainActivity mainActivity = (MainActivity) context;
         String albumName = mainActivity.getCurrentFragementName();
         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
+
         if(albumData.deleteImage(imageObject)){
             SharedPreferencesManager.saveAlbumData(context, albumData);
             Toast.makeText(context, "Image has been deleted from " + albumName, Toast.LENGTH_SHORT).show();
@@ -99,12 +124,15 @@ public class AlbumHelper {
             ImageObject.getImage(context, trashDirectory, trashImages);
         }
 
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
 
-        AlbumData trash = new AlbumData("Trash", trashImages, R.drawable.ic_trash, true);
+        AlbumData trash = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
+        albumHelper.addDefaultAlbum(trash.getAlbumName());
         albums.add(trash);
         AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
         if(favorite == null){
-            favorite = new AlbumData("Favorites", R.drawable.ic_favorite, true);
+            favorite = new AlbumData("Favorites", R.drawable.ic_favorite);
+            albumHelper.addDefaultAlbum(favorite.getAlbumName());
             SharedPreferencesManager.saveAlbumData(context, favorite);
         }
         albums.add(favorite);

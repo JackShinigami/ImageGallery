@@ -59,6 +59,11 @@ public class DetailActivity extends AppCompatActivity  {
 
         iv_love = findViewById(R.id.iv_love);
 
+        if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
+            iv_love.setVisibility(View.GONE);
+
+
+
         if(obj.isLoved(this))
             iv_love.setImageResource(R.drawable.ic_loved);
         else
@@ -149,12 +154,14 @@ public class DetailActivity extends AppCompatActivity  {
                 popupMenu.getMenu().findItem(R.id.delete_image).setVisible(false);
                 popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
                 popupMenu.getMenu().findItem(R.id.restore_image).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
             }
             else{
                 popupMenu.getMenu().findItem(R.id.delete_image).setVisible(true);
                 popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(false);
                 popupMenu.getMenu().findItem(R.id.restore_image).setVisible(false);
             }
+
 
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
