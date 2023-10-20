@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".SearchActivity"
     android:orientation="vertical">
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/search_edit_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="10"/>
+        android:layout_weight="10"
+        android:inputType="text"/>
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
