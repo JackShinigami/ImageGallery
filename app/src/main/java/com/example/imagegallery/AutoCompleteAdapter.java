@@ -36,7 +36,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View myView = LayoutInflater.from(viewGroup.getContext()).inflate(android.R.layout.simple_dropdown_item_1line, viewGroup, false);
+        View myView = LayoutInflater.from(viewGroup.getContext()).inflate(android.R.layout.two_line_list_item, viewGroup, false);
         TextView textView = myView.findViewById(android.R.id.text1);
         textView.setText(data.get(i));
         return myView;
