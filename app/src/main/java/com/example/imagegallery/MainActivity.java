@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -15,12 +16,15 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,7 +47,7 @@ import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
-    String currentPhotoPath="default";
+    String currentPhotoPath = "default";
     private String PATHPREFNAME = "pathPref";
     private ImageButton btnAlbum, btnGallery, btnCamera, btnSearch;
 
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private MyAdapter adapter;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ArrayList<ImageObject> currentImages;
+
     public enum FragmentType {
         IMAGE_FRAGMENT,
         ALBUM_FRAGMENT,
@@ -70,11 +75,10 @@ public class MainActivity extends AppCompatActivity {
         currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
 
 
-        if(currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
+        if (currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
             currentImages = SharedPreferencesManager.loadCurrentImages(this);
             currentFragmentName = SharedPreferencesManager.loadCurrentName(this);
-        }
-        else {
+        } else {
             currentImages = new ArrayList<>();
             currentFragmentName = "Gallery";
         }
@@ -107,16 +111,17 @@ public class MainActivity extends AppCompatActivity {
 
         //load currentPhotoPath
         SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
-        if (sharedPref.contains("path") && sharedPref!=null) {
+        if (sharedPref.contains("path") && sharedPref != null) {
             currentPhotoPath = sharedPref.getString("path", "");
         }
-
 
 
         checkcurrentPhotoPath();
 
         //test, comment the line below if it doesn't work
         checkPhotoInAlbum();
+
+
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -130,21 +135,19 @@ public class MainActivity extends AppCompatActivity {
         ImageObject.getImage(this, downloadDirectory, images);
         ImageObject.getImage(this, dcimDirectory, images);
 
-        for(ImageObject imageObject : images){
+        for (ImageObject imageObject : images) {
             try {
                 ExifInterface exif = new ExifInterface(imageObject.getFilePath());
 
                 float[] latLong = new float[2];
-                if(exif.getLatLong(latLong)) {
+                if (exif.getLatLong(latLong)) {
                     imageObject.setLatLong(latLong);
                     Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(this));
-                }
-                else {
+                } else {
                     Log.d("ImageObject", "lat: null long: null");
                     imageObject.setLatLong(null);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e("Exif", e.toString());
             }
         }
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
 
 
-        if(FragmentType.IMAGE_FRAGMENT == currentFragment){
+        if (FragmentType.IMAGE_FRAGMENT == currentFragment) {
             //Load ImageFragment with images on fragment_container
             ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -162,8 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
             btnAlbum.setImageResource(R.drawable.ic_album_launcher);
-        }
-        else if(FragmentType.ALBUM_FRAGMENT == currentFragment) {
+        } else if (FragmentType.ALBUM_FRAGMENT == currentFragment) {
             AlbumFragment albumFragment = AlbumFragment.newInstance(defaultAlbums);
 
             FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
@@ -171,8 +173,7 @@ public class MainActivity extends AppCompatActivity {
             AlbumFragmentTransaction.commit();
             btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
-        }
-        else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment){
+        } else if (FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment) {
             ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(this, currentFragmentName).getImages();
             ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
@@ -282,8 +283,7 @@ public class MainActivity extends AppCompatActivity {
         this.currentFragmentName = currentFragmentName;
     }
 
-    public String getCurrentFragementName()
-    {
+    public String getCurrentFragementName() {
         return currentFragmentName;
     }
 
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
-    private void dispatchTakePictureIntent() {
+    private void dispatchTakePictureIntent()  {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
 
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
             photoFile = createImageFile();
         } catch (IOException ex) {
             // Error occurred while creating the File
-            Log.d(TAG, "dispatchTakePictureIntent: "+ex.getMessage());
+            Log.d(TAG, "dispatchTakePictureIntent: " + ex.getMessage());
         }
         // Continue only if the File was successfully created
         if (photoFile != null) {
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(this);
 
-        if(albumNameList == null){
+        if (albumNameList == null) {
             albumNameList = new ArrayList<>();
         }
 
@@ -353,23 +353,70 @@ public class MainActivity extends AppCompatActivity {
         long date = photoFile.lastModified();
         ImageObject imageObject = new ImageObject(currentPhotoPath, date, fileName);
 
-        if(finalAlbumNameList.contains(albumName)){
+        if (finalAlbumNameList.contains(albumName)) {
             AlbumData albumData = SharedPreferencesManager.loadAlbumData(this, albumName);
-            if(albumData.addImage(imageObject)){
+            if (albumData.addImage(imageObject)) {
                 SharedPreferencesManager.saveAlbumData(this, albumData);
-                imageObject.addAlbumName(this,albumName);
-                //setCurrentImages(albumData.getImages());
-                Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
-            }
-            else{
-                Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
+                imageObject.addAlbumName(this, albumName);
+
+                //Toast.makeText(this, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
+            } else {
+                //Toast.makeText(this, "Image already exists in this album", Toast.LENGTH_SHORT).show();
             }
         }
 
+        //get location
+        /*LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = null;
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+        else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        double latitude = 0;
+        double longitude = 0;
+        if(location != null){
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+
+        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();*/
+
+        GPSTracker gpsTracker = new GPSTracker(this);
+        double latitude = gpsTracker.getLatitude();
+        double longitude = gpsTracker.getLongitude();
+        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();
 
 
 
+        //Toast address
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
 
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(addresses != null){
+            Address address = addresses.get(0);
+            String addressLine = address.getAddressLine(0);
+            //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    String dec2DMS(double coord) {
+        coord = coord > 0 ? coord : -coord;
+        String sOut = Integer.toString((int)coord) + "/1,";
+        coord = (coord % 1) * 60;
+        sOut = sOut + Integer.toString((int)coord) + "/1,";
+        coord = (coord % 1) * 60000;
+        sOut = sOut + Integer.toString((int)coord) + "/1000";
+        return sOut;
     }
 
     private void galleryAddPic() {

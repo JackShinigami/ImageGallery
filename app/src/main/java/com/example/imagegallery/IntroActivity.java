@@ -25,7 +25,7 @@ public class IntroActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE,
-                            Manifest.permission.READ_MEDIA_IMAGES}, 1);
+                            Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
         else {
             Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
