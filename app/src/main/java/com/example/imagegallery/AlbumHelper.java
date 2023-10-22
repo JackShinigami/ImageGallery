@@ -146,7 +146,7 @@ public class AlbumHelper {
         albums.add(trash);
 
         AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
-        addDefaultAlbum(favorite.getAlbumName());
+
 
         if(favorite == null){
             favorite = new AlbumData("Favorites", R.drawable.ic_favorite);
@@ -154,6 +154,7 @@ public class AlbumHelper {
             SharedPreferencesManager.saveAlbumData(context, favorite);
         }
 
+        addDefaultAlbum(favorite.getAlbumName());
         albums.add(favorite);
 
         SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));

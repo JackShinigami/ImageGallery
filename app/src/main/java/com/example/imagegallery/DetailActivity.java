@@ -202,6 +202,10 @@ public class DetailActivity extends AppCompatActivity  {
                 }
                 else if(R.id.delete_image == itemId) {
                     obj.deleteToTrash(this);
+                    if(SearchActivity.isSearchActivityRunning())
+                    {
+                        SearchActivity.addDeleteImage(obj);
+                    }
                     finish();
                 }
                 else if(R.id.delete_trash == itemId)

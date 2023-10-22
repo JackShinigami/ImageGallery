@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 setCurrentImages(new ArrayList<>());
                 setCurrentFragmentName("Gallery");
                 SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
-
+                SharedPreferencesManager.saveStateFragment(MainActivity.this, 0);
             }
         });
 
@@ -226,9 +226,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-
                 intent.putParcelableArrayListExtra("images", images);
                 startActivity(intent);
+
+                setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
+                setCurrentImages(new ArrayList<>());
+                setCurrentFragmentName("Gallery");
+                SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
+                SharedPreferencesManager.saveStateFragment(MainActivity.this, 0);
             }
         });
 
