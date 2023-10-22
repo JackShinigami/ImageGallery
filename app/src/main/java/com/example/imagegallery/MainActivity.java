@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         for (ImageObject imageObject : images) {
             try {
                 ExifInterface exif = new ExifInterface(imageObject.getFilePath());
-
+                
                 float[] latLong = new float[2];
                 if (exif.getLatLong(latLong)) {
                     imageObject.setLatLong(latLong);
