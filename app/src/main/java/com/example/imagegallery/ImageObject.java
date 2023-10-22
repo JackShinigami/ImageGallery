@@ -102,7 +102,7 @@ public class ImageObject implements Parcelable {
 
     public String getAddress(Context context) {
         if(latLong == null)
-            return null;
+            return "Unknown";
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             // Tìm kiếm địa điểm từ thông tin vị trí
@@ -113,7 +113,7 @@ public class ImageObject implements Parcelable {
             return address;
         } catch (Exception e) {
             Log.e("Address", e.getMessage());
-            return null;
+            return "Unknown";
         }
     }
 

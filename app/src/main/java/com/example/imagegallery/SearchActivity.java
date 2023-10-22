@@ -10,9 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -24,8 +28,10 @@ public class SearchActivity extends AppCompatActivity {
     }
     ArrayList<ImageObject> images = new ArrayList<>();
     ArrayList<ImageObject> newImages = new ArrayList<>();
+    ArrayList<String> data = new ArrayList<>();
     FragmentManager fragmentManager = getSupportFragmentManager();
     AutoCompleteTextView search_edit_text;
+    TextView txtSearchOptions;
     SEARCH_TYPE search_type = SEARCH_TYPE.NAME;
 
     private static ArrayList<ImageObject> deleteImages = new ArrayList<>();
@@ -46,16 +52,40 @@ public class SearchActivity extends AppCompatActivity {
         ft.replace(R.id.fragment_container, imageFragment);
         ft.commit();
 
-        ArrayList<String> data = new ArrayList<>();
-        if(search_type == SEARCH_TYPE.NAME) {
-            for (ImageObject imageObject : images) {
-                data.add(imageObject.getFileName());
+        txtSearchOptions = findViewById(R.id.txtSearchOptions);
+        txtSearchOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(SearchActivity.this, txtSearchOptions);
+                popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        int id = menuItem.getItemId();
+                        if(id == R.id.search_name)
+                        {
+                            search_type = SEARCH_TYPE.NAME;
+                            txtSearchOptions.setText("Name");
+                            updateDataSearch();
+                        }
+                        else if(id == R.id.search_location)
+                        {
+                            search_type = SEARCH_TYPE.LOCATION;
+                            txtSearchOptions.setText("Location");
+                            updateDataSearch();
+                        }
+
+                        return false;
+                    }
+                });
+                popupMenu.show();
             }
-        }
-        else{
-        }
+        });
+
+
         search_edit_text = findViewById(R.id.search_edit_text);
         search_edit_text.setThreshold(1);
+        updateDataSearch();
         search_edit_text.setAdapter(new AutoCompleteAdapter(data));
 
         search_edit_text.setOnItemClickListener((adapterView, view, i, l) -> {
@@ -64,6 +94,11 @@ public class SearchActivity extends AppCompatActivity {
             for(ImageObject imageObject : images){
                 if(search_type == SEARCH_TYPE.NAME) {
                     if (imageObject.getFileName().equals(name)) {
+                        newImages.add(imageObject);
+                    }
+                }
+                else if(search_type == SEARCH_TYPE.LOCATION){
+                    if(imageObject.getAddress(this).equals(name)){
                         newImages.add(imageObject);
                     }
                 }
@@ -80,6 +115,23 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    private void updateDataSearch()
+    {
+        data.clear();
+        if(search_type == SEARCH_TYPE.NAME) {
+            for (ImageObject imageObject : images) {
+                data.add(imageObject.getFileName());
+            }
+        }
+        else if(search_type == SEARCH_TYPE.LOCATION){
+            for (ImageObject imageObject : images) {
+                String address = imageObject.getAddress(this);
+                if(!data.contains(address) ){
+                    data.add(address);
+                }
+            }
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -101,14 +153,7 @@ public class SearchActivity extends AppCompatActivity {
             }
             deleteImages.clear();
 
-            ArrayList<String> data = new ArrayList<>();
-            if(search_type == SEARCH_TYPE.NAME) {
-                for (ImageObject imageObject : images) {
-                    data.add(imageObject.getFileName());
-                }
-            }
-            else{
-            }
+            updateDataSearch();
             search_edit_text.setAdapter(new AutoCompleteAdapter(data));
 
             FragmentTransaction ft1 = fragmentManager.beginTransaction();
