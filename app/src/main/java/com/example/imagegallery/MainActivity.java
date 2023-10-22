@@ -407,6 +407,8 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
         }
 
+        //Toast.makeText(this, "Latitude: " + dec2DMS(latitude) + " Longitude: " + dec2DMS(longitude), Toast.LENGTH_SHORT).show();
+
     }
 
     String dec2DMS(double coord) {

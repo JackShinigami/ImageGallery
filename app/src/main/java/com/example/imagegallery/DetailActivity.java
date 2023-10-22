@@ -26,6 +26,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
@@ -231,6 +235,30 @@ public class DetailActivity extends AppCompatActivity  {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                } else if (R.id.labeling == itemId) {
+
+                    InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(obj.getFilePath()), 0);
+
+                    ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+
+                    labeler.process(image)
+                            .addOnSuccessListener(labels -> {
+                                // Task completed successfully
+                                // ...
+                                String text = "";
+                                for (com.google.mlkit.vision.label.ImageLabel label : labels) {
+                                    String eachLabel = label.getText();
+                                    float confidence = label.getConfidence();
+                                    text += eachLabel + " " + confidence + "\n";
+                                }
+                                Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Task failed with an exception
+                                // ...
+                                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+                            });
 
                 }
 
