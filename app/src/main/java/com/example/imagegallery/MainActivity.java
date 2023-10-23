@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -64,6 +65,20 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentType currentFragment;
     private String currentFragmentName;
+
+    private Thread background;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(android.os.Message msg)
+        {
+            if(msg.what == 0)
+            {
+                background.interrupt();
+            }
+        };
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +122,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-
         //load currentPhotoPath
         SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
         if (sharedPref.contains("path") && sharedPref != null) {
@@ -134,23 +147,30 @@ public class MainActivity extends AppCompatActivity {
         ImageObject.getImage(this, picturesDirectory, images);
         ImageObject.getImage(this, downloadDirectory, images);
         ImageObject.getImage(this, dcimDirectory, images);
+        background = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (ImageObject imageObject : images) {
+                    try {
+                        ExifInterface exif = new ExifInterface(imageObject.getFilePath());
 
-        for (ImageObject imageObject : images) {
-            try {
-                ExifInterface exif = new ExifInterface(imageObject.getFilePath());
-                
-                float[] latLong = new float[2];
-                if (exif.getLatLong(latLong)) {
-                    imageObject.setLatLong(latLong);
-                    Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(this));
-                } else {
-                    Log.d("ImageObject", "lat: null long: null");
-                    imageObject.setLatLong(null);
+                        float[] latLong = new float[2];
+                        if (exif.getLatLong(latLong)) {
+                            imageObject.setLatLong(latLong);
+                            Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
+                        } else {
+                            Log.d("ImageObject", "lat: null long: null");
+                            imageObject.setLatLong(null);
+                        }
+                    } catch (Exception e) {
+                        Log.e("Exif", e.toString());
+                    }
                 }
-            } catch (Exception e) {
-                Log.e("Exif", e.toString());
+
+                handler.sendEmptyMessage(0);
             }
-        }
+        });
+        background.start();
 
         AlbumHelper albumHelper = AlbumHelper.getInstance();
         ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
