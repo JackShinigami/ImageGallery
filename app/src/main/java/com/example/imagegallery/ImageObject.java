@@ -149,12 +149,15 @@ public class ImageObject implements Parcelable {
         if(file.exists()) {
             file.delete();
             ImageObject oldObject = SharedPreferencesManager.loadTrashFile(context, this.filePath);
-            SharedPreferencesManager.deleteLovedImages(context, oldObject.filePath);
-            SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+            if(oldObject != null) {
+                SharedPreferencesManager.deleteLovedImages(context, oldObject.filePath);
+                SharedPreferencesManager.deleteTrashFile(context, this.filePath);
+                SharedPreferencesManager.deleteImageAlbumInfo(context, this);
+            }
+
             AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
             album.removeImage(this);
             SharedPreferencesManager.saveAlbumData(context, album);
-            SharedPreferencesManager.deleteImageAlbumInfo(context, this);
         }
     }
 

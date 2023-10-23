@@ -134,6 +134,8 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(TRASH_LIST, null);
+        if(json == null)
+            return null;
         trash_list = gson.fromJson(json, Bundle.class);
         String oldObject = trash_list.getString(newPath);
         ImageObject res = gson.fromJson(oldObject, ImageObject.class);
@@ -144,6 +146,8 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(TRASH_LIST, null);
+        if(json == null)
+            return;
         trash_list = gson.fromJson(json, Bundle.class);
         trash_list.remove(newPath);
         json = gson.toJson(trash_list);

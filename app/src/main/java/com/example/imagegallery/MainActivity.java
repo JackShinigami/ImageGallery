@@ -150,23 +150,28 @@ public class MainActivity extends AppCompatActivity {
         background = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (ImageObject imageObject : images) {
-                    try {
-                        ExifInterface exif = new ExifInterface(imageObject.getFilePath());
+                try {
+                    for (ImageObject imageObject : images) {
+                        try {
+                            ExifInterface exif = new ExifInterface(imageObject.getFilePath());
 
-                        float[] latLong = new float[2];
-                        if (exif.getLatLong(latLong)) {
-                            imageObject.setLatLong(latLong);
-                            Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
-                        } else {
-                            Log.d("ImageObject", "lat: null long: null");
-                            imageObject.setLatLong(null);
+                            float[] latLong = new float[2];
+                            if (exif.getLatLong(latLong)) {
+                                imageObject.setLatLong(latLong);
+                                Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
+                            } else {
+                                Log.d("ImageObject", "lat: null long: null");
+                                imageObject.setLatLong(null);
+                            }
+                        } catch (Exception e) {
+                            Log.e("Exif", e.toString());
                         }
-                    } catch (Exception e) {
-                        Log.e("Exif", e.toString());
                     }
                 }
-
+                catch (Exception e)
+                {
+                    Log.e("Thread", e.toString());
+                }
                 handler.sendEmptyMessage(0);
             }
         });
