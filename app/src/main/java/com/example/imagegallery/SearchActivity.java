@@ -6,9 +6,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.media.ExifInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +40,20 @@ public class SearchActivity extends AppCompatActivity {
     private static ArrayList<ImageObject> deleteImages = new ArrayList<>();
     private static boolean isRunning = false;
 
+    private Thread background;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler()
+    {
+        public void handleMessage(android.os.Message msg)
+        {
+            if(msg.what == 0)
+            {
+                background.interrupt();
+            }
+        };
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +63,36 @@ public class SearchActivity extends AppCompatActivity {
         images = getIntent().getParcelableArrayListExtra("images");
         Log.d("SearchActivity", "onCreate: " + images.size());
 
+        background = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (ImageObject imageObject : images) {
+                        try {
+                            ExifInterface exif = new ExifInterface(imageObject.getFilePath());
+
+                            float[] latLong = new float[2];
+                            if (exif.getLatLong(latLong)) {
+                                imageObject.setLatLong(latLong);
+                                Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
+                            } else {
+                                Log.d("ImageObject", "lat: null long: null");
+                                imageObject.setLatLong(null);
+                            }
+
+                        } catch (Exception e) {
+                            Log.e("Exif", e.toString());
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.e("Thread", e.toString());
+                }
+                handler.sendEmptyMessage(0);
+            }
+        });
+        background.start();
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ImageFragment imageFragment = ImageFragment.newInstance(newImages, "Search");
