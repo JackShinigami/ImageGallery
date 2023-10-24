@@ -240,7 +240,29 @@ public class ImageObject implements Parcelable {
         }
         return tags;
     }
+    public void addTag(Context context, String tag) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags == null) {
+            tags = new ArrayList<>();
+        }
+        if(!tags.contains(tag)) {
+            tags.add(tag);
+            SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+        }
+    }
+    public void removeTag(Context context, String tag) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags != null) {
+            if(tags.contains(tag)) {
+                tags.remove(tag);
+                SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+            }
+        }
+    }
 
+    public void deleteTags(Context context) {
+        SharedPreferencesManager.deleteTagsForImage(context, this.filePath);
+    }
     private static final ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
     private void autoSetTag(Context context) {
         ArrayList<String> tags = new ArrayList<>();
