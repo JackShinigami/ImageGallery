@@ -1,14 +1,23 @@
 package com.example.imagegallery;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.RGBLuminanceSource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -204,6 +213,53 @@ public class ImageObject implements Parcelable {
         }
 
     }
+
+    public String getQRCodeContent(Context context)
+    {
+        Bitmap b = BitmapFactory.decodeFile(this.filePath);
+        //scan qr code in this image
+        String contents = null;
+        int[] intArray = new int[b.getWidth()*b.getHeight()];
+        b.getPixels(intArray, 0, b.getWidth(), 0, 0, b.getWidth(), b.getHeight());
+        LuminanceSource source = new RGBLuminanceSource(b.getWidth(), b.getHeight(), intArray);
+        com.google.zxing.BinaryBitmap bitmap = new com.google.zxing.BinaryBitmap(new com.google.zxing.common.HybridBinarizer(source));
+        try {
+            contents = new com.google.zxing.qrcode.QRCodeReader().decode(bitmap).getText();
+            Toast.makeText(context, contents, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return contents;
+    }
+
+    public ArrayList<String> getTags(Context context) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags.size() == 0) {
+            InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(this.filePath), 0);
+
+            ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+
+            labeler.process(image)
+                    .addOnSuccessListener(labels -> {
+                        // Task completed successfully
+                        // ...
+                        String text = "";
+                        for (com.google.mlkit.vision.label.ImageLabel label : labels) {
+                            if (label.getConfidence() > 0.7) {
+                                String eachLabel = label.getText();
+                                tags.add(eachLabel);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        // Task failed with an exception
+                        // ...
+                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+                    });
+        }
+        return tags;
+    }
+
     //parcelable implementation
     @Override
     public int describeContents() {

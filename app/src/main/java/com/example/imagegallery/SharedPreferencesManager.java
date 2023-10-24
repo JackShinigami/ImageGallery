@@ -26,11 +26,14 @@ public class SharedPreferencesManager {
     public static Bundle trash_list = new Bundle();
     public static Bundle love_images = new Bundle();
     public static  Bundle album_passwords = new Bundle();
+    private static Bundle image_tags = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
     private static final String LOVE_INFO = "loveInfo21112003";
     private static final String IS_SET_SECURITY_QUESTION = "isSetSecurityQuestion21112003";
     private static final String ENTER_WRONG_ANSWER = "enterWrongAnswer21112003";
     private static final String TIME_ENTER_WRONG_ANSWER = "timeEnterWrongAnswer21112003";
+
+    private static final String IMAGE_TAGS = "imageTags21112003";
 
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -380,5 +383,55 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         long time = sharedPreferences.getLong(TIME_ENTER_WRONG_ANSWER, 0);
         return time;
+    }
+
+    public static void addTagForImage(Context context, String filePath, String tag){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        ArrayList<String> tags = image_tags.getStringArrayList(filePath);
+        if(tags == null)
+            tags = new ArrayList<>();
+        tags.add(tag);
+        image_tags.putStringArrayList(filePath, tags);
+        String json = gson.toJson(image_tags);
+        editor.putString(IMAGE_TAGS, json);
+        editor.apply();
+    }
+
+    public static ArrayList<String> loadTagsForImage(Context context, String filePath){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(IMAGE_TAGS, null);
+        if(json == null)
+            return new ArrayList<>();
+        image_tags = gson.fromJson(json, Bundle.class);
+        ArrayList<String> tags = image_tags.getStringArrayList(filePath);
+        if(tags == null)
+            return new ArrayList<>();
+        return tags;
+    }
+
+    public static void removeTagForImage(Context context, String filePath, String tag){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        ArrayList<String> tags = image_tags.getStringArrayList(filePath);
+        if(tags == null)
+            return;
+        tags.remove(tag);
+        image_tags.putStringArrayList(filePath, tags);
+        String json = gson.toJson(image_tags);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(IMAGE_TAGS, json);
+        editor.apply();
+    }
+
+    public static void deleteTagsForImage(Context context, String filePath){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        image_tags.remove(filePath);
+        String json = gson.toJson(image_tags);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(IMAGE_TAGS, json);
+        editor.apply();
     }
 }
