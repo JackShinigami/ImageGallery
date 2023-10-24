@@ -385,6 +385,14 @@ public class SharedPreferencesManager {
         return time;
     }
 
+    public static void saveTagsForImage(Context context, String filePath, ArrayList<String> tags){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        Gson gson = new Gson();
+        image_tags.putStringArrayList(filePath, tags);
+        String json = gson.toJson(image_tags);
+        editor.putString(IMAGE_TAGS, json);
+        editor.apply();
+    }
     public static void addTagForImage(Context context, String filePath, String tag){
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
@@ -403,11 +411,9 @@ public class SharedPreferencesManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(IMAGE_TAGS, null);
         if(json == null)
-            return new ArrayList<>();
+            return null;
         image_tags = gson.fromJson(json, Bundle.class);
         ArrayList<String> tags = image_tags.getStringArrayList(filePath);
-        if(tags == null)
-            return new ArrayList<>();
         return tags;
     }
 

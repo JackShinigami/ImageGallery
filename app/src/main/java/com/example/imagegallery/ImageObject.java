@@ -234,30 +234,35 @@ public class ImageObject implements Parcelable {
 
     public ArrayList<String> getTags(Context context) {
         ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
-        if(tags.size() == 0) {
-            InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(this.filePath), 0);
-
-            ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
-
-            labeler.process(image)
-                    .addOnSuccessListener(labels -> {
-                        // Task completed successfully
-                        // ...
-                        String text = "";
-                        for (com.google.mlkit.vision.label.ImageLabel label : labels) {
-                            if (label.getConfidence() > 0.7) {
-                                String eachLabel = label.getText();
-                                tags.add(eachLabel);
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Task failed with an exception
-                        // ...
-                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-                    });
+        if(tags == null) {
+            autoSetTag(context);
+            return new ArrayList<>();
         }
         return tags;
+    }
+
+    private static final ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+    private void autoSetTag(Context context) {
+        ArrayList<String> tags = new ArrayList<>();
+        InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(getFilePath()), 0);
+
+        labeler.process(image)
+                .addOnSuccessListener(labels -> {
+                    for (com.google.mlkit.vision.label.ImageLabel label : labels) {
+                        String eachLabel = label.getText();
+                        float confidence = label.getConfidence();
+                        if(confidence > 0.8) {
+                            tags.add(eachLabel);
+                            Log.d("Taggg", eachLabel + " " + tags.size());
+                        }
+                    }
+                    SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                })
+                .addOnFailureListener(e -> {
+                    // Task failed with an exception
+                    // ...
+                    Log.d("Taggg", "Failed "+ e.getMessage());
+                });
     }
 
     //parcelable implementation

@@ -4,4 +4,6 @@
         android:title="Search by name"/>
     <item android:id="@+id/search_location"
         android:title="Search by location"/>
+    <item android:id="@+id/search_tag"
+        android:title="Search by tag"/>
 </menu>
