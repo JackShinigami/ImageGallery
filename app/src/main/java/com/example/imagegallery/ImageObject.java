@@ -1,14 +1,23 @@
 package com.example.imagegallery;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.RGBLuminanceSource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -204,6 +213,80 @@ public class ImageObject implements Parcelable {
         }
 
     }
+
+    public String getQRCodeContent(Context context)
+    {
+        Bitmap b = BitmapFactory.decodeFile(this.filePath);
+        //scan qr code in this image
+        String contents = null;
+        int[] intArray = new int[b.getWidth()*b.getHeight()];
+        b.getPixels(intArray, 0, b.getWidth(), 0, 0, b.getWidth(), b.getHeight());
+        LuminanceSource source = new RGBLuminanceSource(b.getWidth(), b.getHeight(), intArray);
+        com.google.zxing.BinaryBitmap bitmap = new com.google.zxing.BinaryBitmap(new com.google.zxing.common.HybridBinarizer(source));
+        try {
+            contents = new com.google.zxing.qrcode.QRCodeReader().decode(bitmap).getText();
+            Toast.makeText(context, contents, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return contents;
+    }
+
+    public ArrayList<String> getTags(Context context) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags == null) {
+            autoSetTag(context);
+            return new ArrayList<>();
+        }
+        return tags;
+    }
+    public void addTag(Context context, String tag) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags == null) {
+            tags = new ArrayList<>();
+        }
+        if(!tags.contains(tag)) {
+            tags.add(tag);
+            SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+        }
+    }
+    public void removeTag(Context context, String tag) {
+        ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
+        if(tags != null) {
+            if(tags.contains(tag)) {
+                tags.remove(tag);
+                SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+            }
+        }
+    }
+
+    public void deleteTags(Context context) {
+        SharedPreferencesManager.deleteTagsForImage(context, this.filePath);
+    }
+    private static final ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+    private void autoSetTag(Context context) {
+        ArrayList<String> tags = new ArrayList<>();
+        InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(getFilePath()), 0);
+
+        labeler.process(image)
+                .addOnSuccessListener(labels -> {
+                    for (com.google.mlkit.vision.label.ImageLabel label : labels) {
+                        String eachLabel = label.getText();
+                        float confidence = label.getConfidence();
+                        if(confidence > 0.8) {
+                            tags.add(eachLabel);
+                            Log.d("Taggg", eachLabel + " " + tags.size());
+                        }
+                    }
+                    SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                })
+                .addOnFailureListener(e -> {
+                    // Task failed with an exception
+                    // ...
+                    Log.d("Taggg", "Failed "+ e.getMessage());
+                });
+    }
+
     //parcelable implementation
     @Override
     public int describeContents() {

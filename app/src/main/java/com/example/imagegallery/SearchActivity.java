@@ -22,12 +22,15 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SearchActivity extends AppCompatActivity {
 
     public static enum SEARCH_TYPE{
         NAME,
-        LOCATION
+        LOCATION,
+        TAG
     }
     ArrayList<ImageObject> images = new ArrayList<>();
     ArrayList<ImageObject> newImages = new ArrayList<>();
@@ -39,7 +42,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private static ArrayList<ImageObject> deleteImages = new ArrayList<>();
     private static boolean isRunning = false;
-
+    private boolean loaded = false;
     private Thread background;
 
     @SuppressLint("HandlerLeak")
@@ -49,6 +52,7 @@ public class SearchActivity extends AppCompatActivity {
         {
             if(msg.what == 0)
             {
+                loaded = true;
                 background.interrupt();
             }
         };
@@ -83,6 +87,8 @@ public class SearchActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e("Exif", e.toString());
                         }
+
+                        imageObject.getTags(getApplicationContext());
                     }
                 }
                 catch (Exception e)
@@ -105,6 +111,16 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View view) {
                 PopupMenu popupMenu = new PopupMenu(SearchActivity.this, txtSearchOptions);
                 popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
+
+                if(!loaded)
+                {
+                    popupMenu.getMenu().findItem(R.id.search_location).setEnabled(false);
+                    popupMenu.getMenu().findItem(R.id.search_tag).setEnabled(false);
+                }
+                else {
+                    popupMenu.getMenu().findItem(R.id.search_location).setEnabled(true);
+                    popupMenu.getMenu().findItem(R.id.search_tag).setEnabled(true);
+                }
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
@@ -121,7 +137,12 @@ public class SearchActivity extends AppCompatActivity {
                             txtSearchOptions.setText("Location");
                             updateDataSearch();
                         }
-
+                        else if(id == R.id.search_tag)
+                        {
+                            search_type = SEARCH_TYPE.TAG;
+                            txtSearchOptions.setText("Tag");
+                            updateDataSearch();
+                        }
                         return false;
                     }
                 });
@@ -146,6 +167,10 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 else if(search_type == SEARCH_TYPE.LOCATION){
                     if(imageObject.getAddress(this).equals(name)){
+                        newImages.add(imageObject);
+                    }
+                }else if(search_type == SEARCH_TYPE.TAG){
+                    if(imageObject.getTags(this).contains(name)){
                         newImages.add(imageObject);
                     }
                 }
@@ -177,6 +202,17 @@ public class SearchActivity extends AppCompatActivity {
                     data.add(address);
                 }
             }
+        }else if(search_type == SEARCH_TYPE.TAG){
+            for (ImageObject imageObject : images) {
+                ArrayList<String> tags = imageObject.getTags(this);
+                for(String tag : tags)
+                {
+                    if(!data.contains(tag)){
+                        data.add(tag);
+                    }
+                }
+            }
+            Log.d("SearchActivity", "updateDataSearch: " + data.size());
         }
     }
     @Override
