@@ -52,4 +52,5 @@ dependencies {
 
 
 
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
 }
