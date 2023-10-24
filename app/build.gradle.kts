@@ -48,4 +48,5 @@ dependencies {
     implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation ("androidx.appcompat:appcompat:1.0.2")
 
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
 }
