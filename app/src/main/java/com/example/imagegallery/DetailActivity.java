@@ -39,6 +39,10 @@ import com.canhub.cropper.CropImage;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
@@ -101,6 +105,11 @@ public class DetailActivity extends AppCompatActivity  {
         obj.loadImage(this, imageView);
 
         iv_love = findViewById(R.id.iv_love);
+
+        if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
+            iv_love.setVisibility(View.GONE);
+
+
 
         if(obj.isLoved(this))
             iv_love.setImageResource(R.drawable.ic_loved);
@@ -202,12 +211,14 @@ public class DetailActivity extends AppCompatActivity  {
                 popupMenu.getMenu().findItem(R.id.delete_image).setVisible(false);
                 popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
                 popupMenu.getMenu().findItem(R.id.restore_image).setVisible(true);
+                popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
             }
             else{
                 popupMenu.getMenu().findItem(R.id.delete_image).setVisible(true);
                 popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(false);
                 popupMenu.getMenu().findItem(R.id.restore_image).setVisible(false);
             }
+
 
             popupMenu.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
@@ -243,10 +254,15 @@ public class DetailActivity extends AppCompatActivity  {
                     startActivity(Intent.createChooser(share, "Select"));*/
                 }
                 else if(R.id.add_to_album == itemId){
-                    AlbumHelper.addImgaeToAlbum(this, obj);
+                    AlbumHelper albumHelper = AlbumHelper.getInstance();
+                    albumHelper.addImageToAlbum(this, obj);
                 }
                 else if(R.id.delete_image == itemId) {
                     obj.deleteToTrash(this);
+                    if(SearchActivity.isSearchActivityRunning())
+                    {
+                        SearchActivity.addDeleteImage(obj);
+                    }
                     finish();
                 }
                 else if(R.id.delete_trash == itemId)
@@ -272,6 +288,30 @@ public class DetailActivity extends AppCompatActivity  {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                } else if (R.id.labeling == itemId) {
+
+                    InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(obj.getFilePath()), 0);
+
+                    ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+
+                    labeler.process(image)
+                            .addOnSuccessListener(labels -> {
+                                // Task completed successfully
+                                // ...
+                                String text = "";
+                                for (com.google.mlkit.vision.label.ImageLabel label : labels) {
+                                    String eachLabel = label.getText();
+                                    float confidence = label.getConfidence();
+                                    text += eachLabel + " " + confidence + "\n";
+                                }
+                                Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Task failed with an exception
+                                // ...
+                                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+                            });
 
                 }
 

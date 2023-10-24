@@ -12,13 +12,13 @@
         android:orientation="vertical"
        >
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
             android:id="@+id/album_thumbnail"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
             android:src="@drawable/icon_albums"/>
 
         <TextView

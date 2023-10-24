@@ -12,6 +12,9 @@
     <item android:id="@+id/qrscan"
         android:title="Scan qr" />
     <item
+        android:id="@+id/labeling"
+        android:title="labeling" />
+    <item
         android:id="@+id/add_to_album"
         android:title="Add to album" />
 

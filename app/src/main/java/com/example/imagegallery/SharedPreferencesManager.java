@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.ArrayList;
 
 public class SharedPreferencesManager {
@@ -18,12 +20,17 @@ public class SharedPreferencesManager {
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
 
     private static final String IMAGE_LIST = "imageList21112003";
+    private static final String ALBUM_PASSWORD = "albumPassword21112003";
+
     public static Bundle image_Album = new Bundle();
     public static Bundle trash_list = new Bundle();
     public static Bundle love_images = new Bundle();
+    public static  Bundle album_passwords = new Bundle();
     private static final String TRASH_LIST = "trashList21112003";
-    private static final String TRASH_IMAGES = "trashImages21112003";
     private static final String LOVE_INFO = "loveInfo21112003";
+    private static final String IS_SET_SECURITY_QUESTION = "isSetSecurityQuestion21112003";
+    private static final String ENTER_WRONG_ANSWER = "enterWrongAnswer21112003";
+    private static final String TIME_ENTER_WRONG_ANSWER = "timeEnterWrongAnswer21112003";
 
     public static void saveAlbumData(Context context, AlbumData albumData) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
@@ -73,11 +80,12 @@ public class SharedPreferencesManager {
     }
 
 
-    public static void saveImageAlbumInfo(Context context, ImageObject imageObject) {
+    public static void saveImageAlbumInfo(Context context, String filePath, ArrayList<String> albumNames) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         Gson gson = new Gson();
 
-        image_Album.putStringArrayList(imageObject.getFilePath(), imageObject.getAlbumNames());
+        image_Album.putStringArrayList(filePath, albumNames);
+
         String json = gson.toJson(image_Album);
         editor.putString(IMAGE_LIST, json);
         editor.apply();
@@ -89,8 +97,12 @@ public class SharedPreferencesManager {
         String json = sharedPreferences.getString(IMAGE_LIST, null);
         if(json == null)
             return new ArrayList<>();
+
         image_Album = gson.fromJson(json, Bundle.class);
         ArrayList<String> albumNames = image_Album.getStringArrayList(filePath);
+        if(albumNames == null)
+            return new ArrayList<>();
+
         return albumNames;
     }
 
@@ -122,6 +134,8 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(TRASH_LIST, null);
+        if(json == null)
+            return null;
         trash_list = gson.fromJson(json, Bundle.class);
         String oldObject = trash_list.getString(newPath);
         ImageObject res = gson.fromJson(oldObject, ImageObject.class);
@@ -132,6 +146,8 @@ public class SharedPreferencesManager {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(TRASH_LIST, null);
+        if(json == null)
+            return;
         trash_list = gson.fromJson(json, Bundle.class);
         trash_list.remove(newPath);
         json = gson.toJson(trash_list);
@@ -229,4 +245,140 @@ public class SharedPreferencesManager {
         sharedPreferences.apply();
     }
 
+    public static void saveAlbumPassword(Context context, String ALbumName, String password) {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        album_passwords.putString(ALbumName, hashedPassword);
+        Gson gson = new Gson();
+        String json = gson.toJson(album_passwords);
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+        //todo update album name for album password when  change album name or delete album name
+    }
+
+    public static boolean hasSetPassword(Context context, String ALbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return false;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(ALbumName);
+        if(storedHashedPassword == null)
+            return false;
+        return true;
+    }
+
+    public static boolean checkAlbumPassword(Context context, String ALbumName, String enteredPassword) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return false;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(ALbumName);
+
+        if(storedHashedPassword == null)
+            return false;
+
+        if (BCrypt.checkpw(enteredPassword, storedHashedPassword)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public static void updateAlbumNameInPassword(Context context, String oldAlbumName, String newAlbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        String storedHashedPassword = album_passwords.getString(oldAlbumName);
+        if(storedHashedPassword == null)
+            return;
+        album_passwords.putString(newAlbumName, storedHashedPassword);
+        album_passwords.remove(oldAlbumName);
+        json = gson.toJson(album_passwords);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+    }
+
+    public static void deleteAlbumPassword(Context context, String ALbumName) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
+        if(json == null)
+            return;
+        album_passwords = gson.fromJson(json, Bundle.class);
+        album_passwords.remove(ALbumName);
+        json = gson.toJson(album_passwords);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ALBUM_PASSWORD, json);
+        editor.apply();
+
+    }
+
+
+    public static void saveSecurityQuestion(Context context, String question, String answer) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        String hashedAnswer = BCrypt.hashpw(answer, BCrypt.gensalt());
+        editor.putString(question, hashedAnswer);
+        editor.apply();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(true);
+        editor.putString(IS_SET_SECURITY_QUESTION, json);
+        editor.apply();
+    }
+
+    public static boolean checkSecurityQuestion(Context context, String question, String answer){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String hashedAnswer = sharedPreferences.getString(question, null);
+        if(hashedAnswer == null)
+            return false;
+        if (BCrypt.checkpw(answer, hashedAnswer)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSecurityQuestionSet(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString(IS_SET_SECURITY_QUESTION, null);
+        if(json == null)
+            return false;
+        Gson gson = new Gson();
+        boolean isSet = gson.fromJson(json, Boolean.class);
+        return isSet;
+    }
+
+    public static void saveEnterWrongAnswerTimes(Context context,int count){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(ENTER_WRONG_ANSWER, count);
+        editor.apply();
+    }
+
+    public static int getEnterWrongAnswerTimes(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int count = sharedPreferences.getInt(ENTER_WRONG_ANSWER, 0);
+        return count;
+    }
+
+    public static void saveTimeEnterWrongAnswer(Context context){
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        long time = System.currentTimeMillis();
+        editor.putLong(TIME_ENTER_WRONG_ANSWER, time);
+        editor.apply();
+    }
+
+    public static long getTimeEnterWrongAnswer(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        long time = sharedPreferences.getLong(TIME_ENTER_WRONG_ANSWER, 0);
+        return time;
+    }
 }

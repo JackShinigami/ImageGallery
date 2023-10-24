@@ -47,6 +47,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation ("androidx.appcompat:appcompat:1.0.2")
+    implementation ("org.mindrot:jbcrypt:0.4")
+    implementation ("com.google.mlkit:image-labeling:17.0.3")
+
+
 
     implementation("com.vanniktech:android-image-cropper:4.5.0")
 }
