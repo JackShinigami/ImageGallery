@@ -1,10 +1,15 @@
 package com.example.imagegallery;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +20,11 @@ import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -26,6 +35,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.canhub.cropper.CropImage;
+import com.canhub.cropper.CropImageContract;
+import com.canhub.cropper.CropImageContractOptions;
+import com.canhub.cropper.CropImageOptions;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
@@ -33,11 +46,17 @@ import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.Date;
+
 
 public class DetailActivity extends AppCompatActivity  {
 
     private ImageView imageView, iv_love;
-    private Button btnRotate, btnFlipHorizontal, btnFilter;
+    private Button btnRotate, btnFlipHorizontal, btnFilter, btnCrop;
     private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
@@ -51,6 +70,30 @@ public class DetailActivity extends AppCompatActivity  {
     private float initialposY = 0f;
     private boolean isFlippedHorizontally = false;
     private Bitmap originalBitmap, flippedBitmap, rotatedBitmap;
+
+
+    ActivityResultLauncher<Intent> getImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent data = result.getData();
+            Log.d("dataaaaaaaaaaaaaaaaaaaaaaaaa", data.getData().toString());
+            if (data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                Log.d("URI", imageUri.toString());
+                startCrop(imageUri);
+            }
+        }
+    });
+
+    ActivityResultLauncher<Intent> android11StoragePermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        getImageFile(result.getData().getData().toString());
+    });
+
+    ActivityResultLauncher<CropImageContractOptions> cropImage = registerForActivityResult(new CropImageContract(), result -> {
+        if (result.isSuccessful()) {
+            Bitmap cropped = BitmapFactory.decodeFile(result.getUriFilePath(getApplicationContext(), true));
+            saveCroppedImage(cropped);
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +138,16 @@ public class DetailActivity extends AppCompatActivity  {
             }
         });
 
+
+        //cropping
+        btnCrop = findViewById(R.id.btnCrop);
+        btnCrop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getImageFile(obj.getFilePath());
+                Log.d("filepath", obj.getFilePath());
+            }
+        });
         //filter
         btnFilter = findViewById(R.id.btnFilter);
         seekBarFilter = findViewById(R.id.seekBarFilter);
@@ -311,6 +364,14 @@ public class DetailActivity extends AppCompatActivity  {
             return true;
         }
     }
+    @TargetApi(Build.VERSION_CODES.R)
+    private void requestAndroid11StoragePermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        intent.addCategory("android.intent.category.DEFAULT");
+        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+        android11StoragePermission.launch(intent);
+    }
+
     private void flipImage()
     {
         flippedBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -328,7 +389,7 @@ public class DetailActivity extends AppCompatActivity  {
     }
     private void rotate(float val)
     {
-        currentRotation =  (currentRotation + 90f);
+        currentRotation =  (currentRotation + val);
         //imageView.animate().rotation(currentRotation).setDuration(500).start();
         BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
         Bitmap bitmap = drawable.getBitmap();
@@ -358,6 +419,11 @@ public class DetailActivity extends AppCompatActivity  {
         imageView.setScaleX(scaleFactor);
         imageView.setScaleY(scaleFactor);
 
+        if(isFlippedHorizontally) {
+            flipImage();
+            isFlippedHorizontally = false;
+        }
+
         resetSaturation();
     }
     private void applySaturationFilter(float val)
@@ -372,6 +438,59 @@ public class DetailActivity extends AppCompatActivity  {
     {
         seekBarFilter.setProgress(50);
         applySaturationFilter(1);
+    }
+
+    private void startCrop(Uri uri) {
+        CropImageOptions cropImageOptions = new CropImageOptions();
+        cropImageOptions.imageSourceIncludeGallery = false;
+        cropImageOptions.imageSourceIncludeCamera = true;
+        CropImageContractOptions cropImageContractOptions = new CropImageContractOptions(uri, cropImageOptions);
+        cropImage.launch(cropImageContractOptions);
+    }
+    private void getImageFile(String filepath) {
+        File file = new File(filepath);
+        Uri uri = Uri.fromFile(file);
+
+        startCrop(uri);
+    }
+
+    private void saveCroppedImage(Bitmap bitmap) {
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File myDir = new File(root + "/Cropped Images");
+
+        if (!myDir.exists()) {
+            myDir.mkdirs();
+        }
+
+        // Generate a unique file name
+        String imageName = "Image_" + new Date().getTime() + ".jpg";
+
+        File file = new File(myDir, imageName);
+        if (file.exists()) file.delete();
+
+        try {
+            // Save the Bitmap to the file
+            OutputStream outputStream;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                outputStream = Files.newOutputStream(file.toPath());
+            } else {
+                outputStream = new FileOutputStream(file);
+            }
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            // Add the image to the MediaStore
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            // Trigger a media scan to update the gallery
+            MediaScannerConnection.scanFile(getApplicationContext(), new String[]{file.getAbsolutePath()}, null, null);
+
+        } catch (Exception e) {
+        }
     }
 }
 
