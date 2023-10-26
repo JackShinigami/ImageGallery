@@ -43,6 +43,7 @@ import com.canhub.cropper.CropImage;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
@@ -84,7 +85,7 @@ public class DetailActivity extends AppCompatActivity  {
             saveCroppedImage(cropped);
         }
     });
-
+    private TaskCompletionSource<Void> tagsLoadingTask = new TaskCompletionSource<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,13 +96,21 @@ public class DetailActivity extends AppCompatActivity  {
         obj.loadImage(this, imageView);
 
         tags.clear();
-        tags = obj.getTags(this);
-        Log.d("TAG", "onCreate: " + tags.toString());
+        tags = obj.getTags(this, tagsLoadingTask);
+
+
+        tagsLoadingTask.getTask().addOnCompleteListener(task ->{
+            Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
+            tags = obj.getTags(this, tagsLoadingTask);
+            Log.d("TAG", "onCreate: " + tags.toString());
+        });
 
         iv_addtag = findViewById(R.id.iv_addtag);
         iv_addtag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
+                Log.d("TAG", "onCreate: " + tags.toString());
                 PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
                 popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {

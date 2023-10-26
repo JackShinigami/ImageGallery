@@ -21,6 +21,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.TaskCompletionSource;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,6 +59,7 @@ public class SearchActivity extends AppCompatActivity {
             }
         };
     };
+   private  TaskCompletionSource<Void> taskCompletionSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,6 @@ public class SearchActivity extends AppCompatActivity {
                     for (ImageObject imageObject : images) {
                         try {
                             ExifInterface exif = new ExifInterface(imageObject.getFilePath());
-
                             float[] latLong = new float[2];
                             if (exif.getLatLong(latLong)) {
                                 imageObject.setLatLong(latLong);
@@ -87,8 +89,11 @@ public class SearchActivity extends AppCompatActivity {
                         } catch (Exception e) {
                             Log.e("Exif", e.toString());
                         }
+                    }
 
-                        imageObject.getTags(getApplicationContext());
+                    for(ImageObject imageObject : images){
+                        taskCompletionSource = new TaskCompletionSource<>();
+                        imageObject.getTags(getApplicationContext(), taskCompletionSource);
                     }
                 }
                 catch (Exception e)
@@ -170,7 +175,8 @@ public class SearchActivity extends AppCompatActivity {
                         newImages.add(imageObject);
                     }
                 }else if(search_type == SEARCH_TYPE.TAG){
-                    if(imageObject.getTags(this).contains(name)){
+                    taskCompletionSource = new TaskCompletionSource<>();
+                    if(imageObject.getTags(this, taskCompletionSource).contains(name)){
                         newImages.add(imageObject);
                     }
                 }
@@ -204,7 +210,8 @@ public class SearchActivity extends AppCompatActivity {
             }
         }else if(search_type == SEARCH_TYPE.TAG){
             for (ImageObject imageObject : images) {
-                ArrayList<String> tags = imageObject.getTags(this);
+                taskCompletionSource = new TaskCompletionSource<>();
+                ArrayList<String> tags = imageObject.getTags(this, taskCompletionSource);
                 for(String tag : tags)
                 {
                     if(!data.contains(tag)){

@@ -1,5 +1,7 @@
 package com.example.imagegallery;
 
+import static java.lang.Thread.sleep;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
@@ -240,10 +243,11 @@ public class ImageObject implements Parcelable {
         return contents;
     }
 
-    public ArrayList<String> getTags(Context context) {
+
+    public ArrayList<String> getTags(Context context, TaskCompletionSource<Void> taskCompletionSource) {
         ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
         if(tags == null) {
-            autoSetTag(context);
+            autoSetTag(context, taskCompletionSource);
             return new ArrayList<>();
         }
         return tags;
@@ -274,9 +278,11 @@ public class ImageObject implements Parcelable {
         SharedPreferencesManager.deleteTagsForImage(context, this.filePath);
     }
     private static final ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
-    private void autoSetTag(Context context) {
+
+    private void autoSetTag(Context context, TaskCompletionSource<Void> taskCompletionSource) {
         ArrayList<String> tags = new ArrayList<>();
         InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(getFilePath()), 0);
+
 
         labeler.process(image)
                 .addOnSuccessListener(labels -> {
@@ -285,14 +291,17 @@ public class ImageObject implements Parcelable {
                         float confidence = label.getConfidence();
                         if(confidence > 0.8) {
                             tags.add(eachLabel);
+                            this.addTag(context, eachLabel);
                             Log.d("Taggg", eachLabel + " " + tags.size());
                         }
                     }
-                    SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                    //SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                    taskCompletionSource.setResult(null);
                 })
                 .addOnFailureListener(e -> {
                     // Task failed with an exception
                     // ...
+
                     Log.d("Taggg", "Failed "+ e.getMessage());
                 });
     }
