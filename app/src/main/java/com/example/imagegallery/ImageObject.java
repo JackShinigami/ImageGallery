@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,8 +9,15 @@ import android.location.Geocoder;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.google.mlkit.vision.common.InputImage;
@@ -259,6 +267,8 @@ public class ImageObject implements Parcelable {
             }
         }
     }
+
+
 
     public void deleteTags(Context context) {
         SharedPreferencesManager.deleteTagsForImage(context, this.filePath);

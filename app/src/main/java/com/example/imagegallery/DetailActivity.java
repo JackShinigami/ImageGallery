@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +26,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -33,6 +36,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.canhub.cropper.CropImage;
@@ -56,7 +60,7 @@ import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity  {
 
-    private ImageView imageView, iv_love;
+    private ImageView imageView, iv_love, iv_addtag;
     private Button btnRotate, btnFlipHorizontal, btnFilter, btnCrop;
     private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
@@ -73,10 +77,6 @@ public class DetailActivity extends AppCompatActivity  {
     private Bitmap originalBitmap, flippedBitmap, rotatedBitmap;
 
     private ArrayList<String> tags = new ArrayList<>();
-
-    ActivityResultLauncher<Intent> android11StoragePermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        getImageFile(result.getData().getData().toString());
-    });
 
     ActivityResultLauncher<CropImageContractOptions> cropImage = registerForActivityResult(new CropImageContract(), result -> {
         if (result.isSuccessful()) {
@@ -97,6 +97,78 @@ public class DetailActivity extends AppCompatActivity  {
         tags.clear();
         tags = obj.getTags(this);
         Log.d("TAG", "onCreate: " + tags.toString());
+
+        iv_addtag = findViewById(R.id.iv_addtag);
+        iv_addtag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
+                popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int itemId = item.getItemId();
+                    if(R.id.add == itemId){
+                        Dialog dialog = new Dialog(DetailActivity.this);
+                        dialog.setContentView(R.layout.dialog_addtag);
+
+                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
+
+                        btn_submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String tag = tv_tag.getText().toString();
+                                if(tag.isEmpty()){
+                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                }
+                                else if (tags.contains(tag)){
+                                    Toast.makeText(DetailActivity.this, "Tag name already exist", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    tags.add(tag);
+                                    obj.addTag(DetailActivity.this, tag);
+                                    dialog.dismiss();
+                                }
+                            }
+                        });
+
+                        dialog.show();
+                    }
+                    else if(R.id.remove == itemId){
+                        Dialog dialog = new Dialog(DetailActivity.this);
+                        dialog.setContentView(R.layout.dialog_addtag);
+
+                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
+
+                        btn_submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String tag = tv_tag.getText().toString();
+                                if(tag.isEmpty()){
+                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                }
+                                else if (tags.contains(tag)){
+                                    tags.remove(tag);
+                                    obj.removeTag(DetailActivity.this, tag);
+                                    dialog.dismiss();                                }
+                                else {
+                                    Toast.makeText(DetailActivity.this, "Tag name not exist", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        dialog.show();
+                    }
+                    return true;
+                });
+
+
+                popupMenu.show();
+
+
+            }
+        });
+
 
         iv_love = findViewById(R.id.iv_love);
 
@@ -358,13 +430,6 @@ public class DetailActivity extends AppCompatActivity  {
             return true;
         }
     }
-    @TargetApi(Build.VERSION_CODES.R)
-    private void requestAndroid11StoragePermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        intent.addCategory("android.intent.category.DEFAULT");
-        intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
-        android11StoragePermission.launch(intent);
-    }
 
     private void flipImage()
     {
@@ -484,6 +549,7 @@ public class DetailActivity extends AppCompatActivity  {
             MediaScannerConnection.scanFile(getApplicationContext(), new String[]{file.getAbsolutePath()}, null, null);
 
         } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error saving image", Toast.LENGTH_SHORT).show();
         }
     }
 }
