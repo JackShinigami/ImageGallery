@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -71,18 +72,7 @@ public class DetailActivity extends AppCompatActivity  {
     private boolean isFlippedHorizontally = false;
     private Bitmap originalBitmap, flippedBitmap, rotatedBitmap;
 
-
-    ActivityResultLauncher<Intent> getImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() == Activity.RESULT_OK) {
-            Intent data = result.getData();
-            Log.d("dataaaaaaaaaaaaaaaaaaaaaaaaa", data.getData().toString());
-            if (data != null && data.getData() != null) {
-                Uri imageUri = data.getData();
-                Log.d("URI", imageUri.toString());
-                startCrop(imageUri);
-            }
-        }
-    });
+    private ArrayList<String> tags = new ArrayList<>();
 
     ActivityResultLauncher<Intent> android11StoragePermission = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         getImageFile(result.getData().getData().toString());
@@ -103,6 +93,10 @@ public class DetailActivity extends AppCompatActivity  {
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
+
+        tags.clear();
+        tags = obj.getTags(this);
+        Log.d("TAG", "onCreate: " + tags.toString());
 
         iv_love = findViewById(R.id.iv_love);
 
