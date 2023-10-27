@@ -6,4 +6,7 @@
     <item
         android:id="@+id/menu_name"
         android:title="Sort by name" />
+    <item
+        android:id="@+id/menu_delete_duplitate"
+        android:title="Delete duplicate images"/>
 </menu>
