@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,6 +68,18 @@ public class ImageFragment extends Fragment {
         DATE, NAME
     }
     private static SortType sortType = SortType.DATE;
+
+    @SuppressLint("HandlerLeak")
+    private final Handler handler = new Handler()
+    {
+        public void handleMessage(android.os.Message msg)
+        {
+            if(msg.what == 0)
+            {
+                getActivity().recreate();
+            }
+        };
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -163,6 +177,12 @@ public class ImageFragment extends Fragment {
                 PopupMenu popupMenu = new PopupMenu(imageFragment.getContext(), btnOptions);
 
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+
+                if(fragmentName.equals("Search"))
+                {
+                    popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
+                }
+
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
@@ -178,6 +198,24 @@ public class ImageFragment extends Fragment {
                             sortType = SortType.NAME;
                             ImageObject.sortByFileName(images, ascending);
                             adapter.notifyDataSetChanged();
+                        }
+                        else if(id == R.id.menu_delete_duplitate)
+                        {
+                            Thread deleteThread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        ImageObject.deleteDuplicateImage(getContext(), images);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                    }
+                                    handler.sendEmptyMessage(0);
+                                }
+
+                            });
+                            deleteThread.start();
                         }
                         return false;
                     }
