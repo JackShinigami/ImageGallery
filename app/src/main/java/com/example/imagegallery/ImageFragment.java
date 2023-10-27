@@ -178,7 +178,7 @@ public class ImageFragment extends Fragment {
 
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
 
-                if(fragmentName.equals("Search"))
+                if(fragmentName.equals("Search") || fragmentName.equals("Trash"))
                 {
                     popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
                 }
