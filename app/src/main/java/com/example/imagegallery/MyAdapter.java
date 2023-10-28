@@ -86,6 +86,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                             data = SharedPreferencesManager.loadAlbumData(mainActivity, mainActivity.getCurrentFragementName()).getImages();
                             notifyDataSetChanged();
                         }
+                        else if(R.id.upload == itemId){
+                            BackupImage.uploadImage(v.getContext(), imageObject);
+                        }
                         return  true;
                     }
                 });

@@ -178,6 +178,8 @@ public class ImageFragment extends Fragment {
                             sortType = SortType.NAME;
                             ImageObject.sortByFileName(images, ascending);
                             adapter.notifyDataSetChanged();
+                        } else if (id == R.id.menu_test_download) {
+                            BackupImage.downloadImage(getContext());
                         }
                         return false;
                     }
