@@ -29,10 +29,12 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -54,6 +56,8 @@ import com.google.zxing.RGBLuminanceSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,7 +89,7 @@ public class DetailActivity extends AppCompatActivity  {
             saveCroppedImage(cropped);
         }
     });
-    private TaskCompletionSource<Void> tagsLoadingTask = new TaskCompletionSource<>();
+    private TaskCompletionSource<Void> tagsLoadingTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +100,7 @@ public class DetailActivity extends AppCompatActivity  {
         obj.loadImage(this, imageView);
 
         tags.clear();
+        tagsLoadingTask = new TaskCompletionSource<>();
         tags = obj.getTags(this, tagsLoadingTask);
 
 
@@ -109,6 +114,7 @@ public class DetailActivity extends AppCompatActivity  {
         iv_addtag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tagsLoadingTask = new TaskCompletionSource<>();
                 tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
                 Log.d("TAG", "onCreate: " + tags.toString());
                 PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
@@ -322,11 +328,11 @@ public class DetailActivity extends AppCompatActivity  {
                                     startActivity(Intent.createChooser(share, "Select"));
                                 }
                             });
-                    /*String path = MediaStore.Images.Media.insertImage(getContentResolver(), b, "Title", null);
-                    Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
-                    Uri imageUri =  Uri.parse(path);
-                    share.putExtra(Intent.EXTRA_STREAM, imageUri);
-                    startActivity(Intent.createChooser(share, "Select"));*/
+//                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), b, "Title", null);
+//                    Toast.makeText(this, path, Toast.LENGTH_SHORT).show();
+//                    Uri imageUri =  Uri.parse(path);
+//                    share.putExtra(Intent.EXTRA_STREAM, imageUri);
+//                    startActivity(Intent.createChooser(share, "Select"));
                 }
                 else if(R.id.add_to_album == itemId){
                     AlbumHelper albumHelper = AlbumHelper.getInstance();
@@ -350,7 +356,12 @@ public class DetailActivity extends AppCompatActivity  {
                     obj.restoreFile(this);
                     finish();
                 } else if((R.id.qrscan)==itemId)  {
-                    obj.getQRCodeContent(this);
+                    String url=obj.getQRCodeContent(this);
+                    if(IsValidUrl(url)){
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+                        startActivity(intent);}
+
 
                 } else if (R.id.labeling == itemId) {
 
@@ -384,6 +395,15 @@ public class DetailActivity extends AppCompatActivity  {
 
             popupMenu.show();
         });
+    }
+
+    public static boolean IsValidUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            return URLUtil.isValidUrl(urlString) && Patterns.WEB_URL.matcher(urlString).matches();
+        } catch (MalformedURLException ignored) {
+        }
+        return false;
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {

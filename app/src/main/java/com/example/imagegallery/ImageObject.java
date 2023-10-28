@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
@@ -30,7 +31,9 @@ import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -83,6 +86,47 @@ public class ImageObject implements Parcelable {
         }
     }
 
+    private String hashImage(Bitmap image)
+    {
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(byteArray);
+
+            // Chuyển đổi giá trị băm thành một chuỗi hex
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+        catch (Exception e)
+        {
+            Log.e("Hash", e.getMessage());
+            return null;
+        }
+    }
+    public static void deleteDuplicateImage(Context context,ArrayList<ImageObject> images)
+    {
+        Bundle hashBundle = new Bundle();
+        for (ImageObject image : images) {
+            Bitmap b = BitmapFactory.decodeFile(image.getFilePath());
+            String hash = image.hashImage(b);
+            if(hashBundle.containsKey(hash))
+            {
+                image.deleteToTrash(context);
+            }
+            else
+            {
+                hashBundle.putString(hash, image.getFilePath());
+            }
+        }
+    }
 
 
     public void setAlbumNames(Context context, ArrayList<String> albumNames) {
@@ -173,6 +217,7 @@ public class ImageObject implements Parcelable {
                 SharedPreferencesManager.deleteLovedImages(context, oldObject.filePath);
                 SharedPreferencesManager.deleteTrashFile(context, this.filePath);
                 SharedPreferencesManager.deleteImageAlbumInfo(context, this);
+                SharedPreferencesManager.deleteTagsForImage(context, oldObject.filePath);
             }
 
             AlbumData album = SharedPreferencesManager.loadAlbumData(context, "Trash");
@@ -291,11 +336,10 @@ public class ImageObject implements Parcelable {
                         float confidence = label.getConfidence();
                         if(confidence > 0.8) {
                             tags.add(eachLabel);
-                            this.addTag(context, eachLabel);
                             Log.d("Taggg", eachLabel + " " + tags.size());
                         }
                     }
-                    //SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                    SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
                     taskCompletionSource.setResult(null);
                 })
                 .addOnFailureListener(e -> {

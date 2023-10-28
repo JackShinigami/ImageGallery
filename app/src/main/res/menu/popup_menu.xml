@@ -9,4 +9,7 @@
     <item
         android:id="@+id/menu_test_download"
         android:title="Test download" />
+    <item
+        android:id="@+id/menu_delete_duplitate"
+        android:title="Delete duplicate images"/>
 </menu>
