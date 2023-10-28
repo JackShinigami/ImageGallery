@@ -336,11 +336,10 @@ public class ImageObject implements Parcelable {
                         float confidence = label.getConfidence();
                         if(confidence > 0.8) {
                             tags.add(eachLabel);
-                            this.addTag(context, eachLabel);
                             Log.d("Taggg", eachLabel + " " + tags.size());
                         }
                     }
-                    //SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
+                    SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);
                     taskCompletionSource.setResult(null);
                 })
                 .addOnFailureListener(e -> {

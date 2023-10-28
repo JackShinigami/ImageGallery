@@ -85,7 +85,7 @@ public class DetailActivity extends AppCompatActivity  {
             saveCroppedImage(cropped);
         }
     });
-    private TaskCompletionSource<Void> tagsLoadingTask = new TaskCompletionSource<>();
+    private TaskCompletionSource<Void> tagsLoadingTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +96,7 @@ public class DetailActivity extends AppCompatActivity  {
         obj.loadImage(this, imageView);
 
         tags.clear();
+        tagsLoadingTask = new TaskCompletionSource<>();
         tags = obj.getTags(this, tagsLoadingTask);
 
 
@@ -109,6 +110,7 @@ public class DetailActivity extends AppCompatActivity  {
         iv_addtag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tagsLoadingTask = new TaskCompletionSource<>();
                 tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
                 Log.d("TAG", "onCreate: " + tags.toString());
                 PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
