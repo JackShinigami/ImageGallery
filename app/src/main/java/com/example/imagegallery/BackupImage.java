@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -63,7 +64,7 @@ public class BackupImage {
         });
     }
 
-public static void downloadImage(Context context){
+public static void downloadImage(Context context, TaskCompletionSource<Void> taskCompletionSource){
 
         File externalFilesDir = Environment.getExternalStorageDirectory();
         File pictures = new File(externalFilesDir, "Pictures");
@@ -88,7 +89,11 @@ public static void downloadImage(Context context){
                 riversRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
                     public void onSuccess(ListResult listResult) {
+                        int numFiles = listResult.getItems().size();
+                        int count = 0;
                         for(StorageReference imageRef : listResult.getItems()){
+                            count++;
+                            int finalCount = count;
                             if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
                                imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
                                 File file = new File(downloadDir, imageRef.getName());
@@ -96,6 +101,10 @@ public static void downloadImage(Context context){
                                     @Override
                                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                         Log.d("DOWNLOAD", "Download successful");
+                                        if(finalCount == numFiles){
+                                            taskCompletionSource.setResult(null);
+                                            Toast.makeText(context, "Download backup successful", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -105,11 +114,16 @@ public static void downloadImage(Context context){
                                     }
                                 });
                             }
+
+
                         }
 
-                        Toast.makeText(context, "Download backup successful", Toast.LENGTH_SHORT).show();
+
+
                     }
                 });
+
+
 
             }
         });

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +19,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+
+import com.google.android.gms.tasks.TaskCompletionSource;
 
 import java.util.ArrayList;
 
@@ -198,8 +202,26 @@ public class ImageFragment extends Fragment {
                             sortType = SortType.NAME;
                             ImageObject.sortByFileName(images, ascending);
                             adapter.notifyDataSetChanged();
-                        } else if (id == R.id.menu_test_download) {
-                            BackupImage.downloadImage(getContext());
+                        } else if (id == R.id.menu_download_backup) {
+                            Thread downloadThread = new Thread(new Runnable() {
+                                TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+                                @Override
+                                public void run() {
+
+                                    try {
+                                        BackupImage.downloadImage(getContext(), taskCompletionSource);
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    taskCompletionSource.getTask().addOnCompleteListener(task -> {
+                                        handler.sendEmptyMessage(0);
+                                    });
+                                }
+                            });
+                            downloadThread.start();
+
                         }
                         else if(id == R.id.menu_delete_duplitate)
                         {
