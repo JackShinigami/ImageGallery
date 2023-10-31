@@ -202,7 +202,8 @@ public class ImageFragment extends Fragment {
                             sortType = SortType.NAME;
                             ImageObject.sortByFileName(images, ascending);
                             adapter.notifyDataSetChanged();
-                        } else if (id == R.id.menu_download_backup) {
+                        }
+                        else if (id == R.id.menu_download_backup) {
                             Thread downloadThread = new Thread(new Runnable() {
                                 TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
                                 @Override
@@ -217,6 +218,7 @@ public class ImageFragment extends Fragment {
 
                                     taskCompletionSource.getTask().addOnCompleteListener(task -> {
                                         handler.sendEmptyMessage(0);
+                                        Toast.makeText(getContext(), "Downloaded successful", Toast.LENGTH_SHORT).show();
                                     });
                                 }
                             });
