@@ -41,7 +41,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, int position) {
         AlbumData album = albums.get(position);
         holder.tvAlbumName.setText(album.getAlbumName());
-        holder.tvAlbumSize.setText(album.getImages().size() + " images");
+        if(album.getImages().size() == 1 || album.getImages().size() == 0){
+            holder.tvAlbumSize.setText(album.getImages().size() + " image");
+        }
+        else{
+            holder.tvAlbumSize.setText(album.getImages().size() + " images");
+        }
         int resID = album.getThumbnailPath();
 
         holder.albumThumbnail.setImageResource(resID);

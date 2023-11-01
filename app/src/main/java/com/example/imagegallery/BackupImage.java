@@ -89,13 +89,23 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                 riversRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
                     public void onSuccess(ListResult listResult) {
-                        int numFiles = listResult.getItems().size();
                         int count = 0;
+
                         for(StorageReference imageRef : listResult.getItems()){
-                            count++;
-                            int finalCount = count;
                             if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
                                imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+                                count++;
+                            }
+                        }
+
+                        final int numFiles = count;
+                        count = 0;
+
+                        for(StorageReference imageRef : listResult.getItems()){
+                            if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
+                               imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+                                count++;
+                                final int finalCount = count;
                                 File file = new File(downloadDir, imageRef.getName());
                                 imageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                                     @Override
@@ -103,14 +113,12 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                         Log.d("DOWNLOAD", "Download successful");
                                         if(finalCount == numFiles){
                                             taskCompletionSource.setResult(null);
-                                            Toast.makeText(context, "Download backup successful", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception exception) {
                                         Log.e("DOWNLOAD", "Download failed", exception);
-                                        Toast.makeText(context, "Download failed", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
