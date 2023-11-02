@@ -57,7 +57,7 @@ public class AlbumFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        albums = new ArrayList<>();
+
 
         if(getArguments() != null){
             defaultAlbums = getArguments().getParcelableArrayList(ARG_PARAM1);
@@ -67,8 +67,10 @@ public class AlbumFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View albumFragment = inflater.inflate(R.layout.fragment_album, container, false);
+        ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.ALBUM_FRAGMENT);
 
+        View albumFragment = inflater.inflate(R.layout.fragment_album, container, false);
+        albums = new ArrayList<>();
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(getContext());
         if(albumNameList != null) {
             for (String albumName : albumNameList) {
@@ -206,4 +208,9 @@ public class AlbumFragment extends Fragment {
         builder.show();
     }
 
+    public void setDefaultAlbums(ArrayList<AlbumData> defaultAlbums) {
+        this.defaultAlbums = defaultAlbums;
+        adapterUtilities = new AlbumAdapter(getContext(), defaultAlbums);
+        rvUitilities.setAdapter(adapterUtilities);
+    }
 }

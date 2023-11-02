@@ -63,6 +63,7 @@ public class ImageFragment extends Fragment {
     }
 
     private RecyclerView recyclerView;
+    private MyAdapter adapter;
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
@@ -192,6 +193,7 @@ public class ImageFragment extends Fragment {
                 if(fragmentName.equals("Search") || fragmentName.equals("Trash"))
                 {
                     popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
                 }
 
                 if(isSelectMode){
@@ -406,6 +408,15 @@ public class ImageFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
+    }
+
+    public void setFragmentAdapter(ArrayList<ImageObject> images) {
+        this.images = images;
+        ImageObject.sortByDate(images, ascending);
+        adapter = new MyAdapter(images);
+        adapter.setColNumber(colNumbers[colNumberIndex]);
+        recyclerView.setAdapter(adapter);
+        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
     }
 
     public void reload(boolean selectMode){

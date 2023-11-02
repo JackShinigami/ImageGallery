@@ -97,109 +97,109 @@ public class DetailActivity extends AppCompatActivity  {
 
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
-        obj.loadImage(this, imageView);
+                obj.loadImage(this, imageView);
 
-        tags.clear();
-        tagsLoadingTask = new TaskCompletionSource<>();
-        tags = obj.getTags(this, tagsLoadingTask);
-
-
-        tagsLoadingTask.getTask().addOnCompleteListener(task ->{
-            Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
-            tags = obj.getTags(this, tagsLoadingTask);
-            Log.d("TAG", "onCreate: " + tags.toString());
-        });
-
-        iv_addtag = findViewById(R.id.iv_addtag);
-        iv_addtag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                tags.clear();
                 tagsLoadingTask = new TaskCompletionSource<>();
-                tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
-                Log.d("TAG", "onCreate: " + tags.toString());
-                PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
-                popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(item -> {
-                    int itemId = item.getItemId();
-                    if(R.id.add == itemId){
-                        Dialog dialog = new Dialog(DetailActivity.this);
-                        dialog.setContentView(R.layout.dialog_addtag);
+                tags = obj.getTags(this, tagsLoadingTask);
 
-                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
-                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
 
-                        btn_submit.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                String tag = tv_tag.getText().toString();
-                                if(tag.isEmpty()){
-                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
-                                }
-                                else if (tags.contains(tag)){
-                                    Toast.makeText(DetailActivity.this, "Tag name already exist", Toast.LENGTH_SHORT).show();
-                                }
-                                else {
-                                    tags.add(tag);
-                                    obj.addTag(DetailActivity.this, tag);
-                                    dialog.dismiss();
-                                }
+                tagsLoadingTask.getTask().addOnCompleteListener(task ->{
+                    Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
+                    tags = obj.getTags(this, tagsLoadingTask);
+                    Log.d("TAG", "onCreate: " + tags.toString());
+                });
+
+                iv_addtag = findViewById(R.id.iv_addtag);
+                iv_addtag.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tagsLoadingTask = new TaskCompletionSource<>();
+                        tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
+                        Log.d("TAG", "onCreate: " + tags.toString());
+                        PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
+                        popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            int itemId = item.getItemId();
+                            if(R.id.add == itemId){
+                                Dialog dialog = new Dialog(DetailActivity.this);
+                                dialog.setContentView(R.layout.dialog_addtag);
+
+                                TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                                Button btn_submit = dialog.findViewById(R.id.btn_submit);
+
+                                btn_submit.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String tag = tv_tag.getText().toString();
+                                        if(tag.isEmpty()){
+                                            Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if (tags.contains(tag)){
+                                            Toast.makeText(DetailActivity.this, "Tag name already exist", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else {
+                                            tags.add(tag);
+                                            obj.addTag(DetailActivity.this, tag);
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                });
+
+                                dialog.show();
                             }
+                            else if(R.id.remove == itemId){
+                                Dialog dialog = new Dialog(DetailActivity.this);
+                                dialog.setContentView(R.layout.dialog_addtag);
+
+                                TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                                Button btn_submit = dialog.findViewById(R.id.btn_submit);
+
+                                btn_submit.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        String tag = tv_tag.getText().toString();
+                                        if(tag.isEmpty()){
+                                            Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                        }
+                                        else if (tags.contains(tag)){
+                                            tags.remove(tag);
+                                            obj.removeTag(DetailActivity.this, tag);
+                                            dialog.dismiss();                                }
+                                        else {
+                                            Toast.makeText(DetailActivity.this, "Tag name not exist", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+                                dialog.show();
+                            }
+                            return true;
                         });
 
-                        dialog.show();
+
+                        popupMenu.show();
+
+
                     }
-                    else if(R.id.remove == itemId){
-                        Dialog dialog = new Dialog(DetailActivity.this);
-                        dialog.setContentView(R.layout.dialog_addtag);
-
-                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
-                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
-
-                        btn_submit.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                String tag = tv_tag.getText().toString();
-                                if(tag.isEmpty()){
-                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
-                                }
-                                else if (tags.contains(tag)){
-                                    tags.remove(tag);
-                                    obj.removeTag(DetailActivity.this, tag);
-                                    dialog.dismiss();                                }
-                                else {
-                                    Toast.makeText(DetailActivity.this, "Tag name not exist", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                        dialog.show();
-                    }
-                    return true;
                 });
 
 
-                popupMenu.show();
+                iv_love = findViewById(R.id.iv_love);
 
-
-            }
-        });
-
-
-        iv_love = findViewById(R.id.iv_love);
-
-        if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
-            iv_love.setVisibility(View.GONE);
+                if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
+                    iv_love.setVisibility(View.GONE);
 
 
 
-        if(obj.isLoved(this))
-            iv_love.setImageResource(R.drawable.ic_loved);
-        else
-            iv_love.setImageResource(R.drawable.ic_not_loved);
+                if(obj.isLoved(this))
+                    iv_love.setImageResource(R.drawable.ic_loved);
+                else
+                    iv_love.setImageResource(R.drawable.ic_not_loved);
 
-        iv_love.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                iv_love.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
                 if(obj.isLoved(view.getContext())){
                     obj.setLoved(view.getContext(), false);
                     iv_love.setImageResource(R.drawable.ic_not_loved);
