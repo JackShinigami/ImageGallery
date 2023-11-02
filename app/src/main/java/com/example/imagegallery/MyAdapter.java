@@ -87,7 +87,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
                             notifyDataSetChanged();
                         }
                         else if(R.id.upload == itemId){
-                            BackupImage.uploadImage(v.getContext(), imageObject);
+                            Thread thread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    BackupImage.uploadImage(v.getContext(), imageObject);
+                                }
+                            });
+
+                            thread.start();
                         }
                         return  true;
                     }

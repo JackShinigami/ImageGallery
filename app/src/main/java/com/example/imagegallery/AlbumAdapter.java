@@ -190,6 +190,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     public void addAlbum(AlbumData album){
         albums.add(album);
+        ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
+        albumNameList.add(album.getAlbumName());
+        SharedPreferencesManager.saveAlbumNameList(context, albumNameList);
+        SharedPreferencesManager.saveAlbumData(context, album);
         notifyDataSetChanged();
     }
 }

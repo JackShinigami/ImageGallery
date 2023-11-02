@@ -169,23 +169,7 @@ public class AlbumFragment extends Fragment {
 
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        ArrayList<String> albumNameList = new ArrayList<>();
-
-        for(AlbumData album : albums) {
-            String name = album.getAlbumName();
-            if(!name.equals("All Images") && !name.equals("Trash")) {
-                albumNameList.add(name);
-                SharedPreferencesManager.saveAlbumData(getContext(), album);
-            }
-        }
-
-        SharedPreferencesManager.saveAlbumNameList(getContext(), albumNameList);
-    }
-
-    private void AddNewAlbum() {
+   private void AddNewAlbum() {
         View addAlbumView = getLayoutInflater().inflate(R.layout.add_album, null);
         EditText txtName = addAlbumView.findViewById(R.id.edit_album_name);
 

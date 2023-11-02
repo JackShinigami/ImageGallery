@@ -119,6 +119,9 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                     @Override
                                     public void onFailure(@NonNull Exception exception) {
                                         Log.e("DOWNLOAD", "Download failed", exception);
+                                        if(finalCount == numFiles){
+                                            taskCompletionSource.setResult(null);
+                                        }
                                     }
                                 });
                             }
