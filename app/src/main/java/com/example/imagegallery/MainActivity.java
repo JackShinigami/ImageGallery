@@ -257,6 +257,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
+            else if(msg.what == 1)
+            {
+                onResume();
+            }
         }
     };
     @SuppressLint("UseCompatLoadingForDrawables")

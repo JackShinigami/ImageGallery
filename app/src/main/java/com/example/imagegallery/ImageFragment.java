@@ -199,6 +199,7 @@ public class ImageFragment extends Fragment {
                 if(fragmentName.equals("Search") || fragmentName.equals("Trash"))
                 {
                     popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
                 }
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -231,7 +232,8 @@ public class ImageFragment extends Fragment {
                                     }
 
                                     taskCompletionSource.getTask().addOnCompleteListener(task -> {
-                                        handler.sendEmptyMessage(0);
+                                        MainActivity mainActivity = (MainActivity) getContext();
+                                        mainActivity.handler.sendEmptyMessage(1);
                                         Toast.makeText(getContext(), "Downloaded successful", Toast.LENGTH_SHORT).show();
                                     });
                                 }
@@ -251,7 +253,8 @@ public class ImageFragment extends Fragment {
                                     {
                                         e.printStackTrace();
                                     }
-                                    handler.sendEmptyMessage(0);
+                                    MainActivity mainActivity = (MainActivity) getContext();
+                                    mainActivity.handler.sendEmptyMessage(1);
                                 }
 
                             });
