@@ -78,17 +78,6 @@ public class ImageFragment extends Fragment {
     }
     private static SortType sortType = SortType.DATE;
 
-    @SuppressLint("HandlerLeak")
-    private final Handler handler = new Handler()
-    {
-        public void handleMessage(android.os.Message msg)
-        {
-            if(msg.what == 0)
-            {
-                getActivity().recreate();
-            }
-        };
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -232,7 +221,8 @@ public class ImageFragment extends Fragment {
                                     }
 
                                     taskCompletionSource.getTask().addOnCompleteListener(task -> {
-                                        handler.sendEmptyMessage(0);
+                                        MainActivity mainActivity = (MainActivity) getContext();
+                                        mainActivity.handler.sendEmptyMessage(1);
                                         Toast.makeText(getContext(), "Downloaded successful", Toast.LENGTH_SHORT).show();
                                     });
                                 }
@@ -252,7 +242,8 @@ public class ImageFragment extends Fragment {
                                     {
                                         e.printStackTrace();
                                     }
-                                    handler.sendEmptyMessage(0);
+                                    MainActivity mainActivity = (MainActivity) getContext();
+                                    mainActivity.handler.sendEmptyMessage(1);
                                 }
 
                             });
@@ -427,7 +418,7 @@ public class ImageFragment extends Fragment {
         fragment.setSelectMode(selectMode);
         ft.replace(R.id.fragment_container, fragment);
         ft.commit();
-
+        mainActivity.handler.sendEmptyMessage(1);
     }
 
     public void setSelectMode(boolean selectMode){
