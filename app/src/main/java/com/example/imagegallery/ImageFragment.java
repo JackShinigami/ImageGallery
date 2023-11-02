@@ -60,6 +60,7 @@ public class ImageFragment extends Fragment {
     }
 
     private RecyclerView recyclerView;
+    private MyAdapter adapter;
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
@@ -110,6 +111,19 @@ public class ImageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        try {
+            ((MainActivity) getContext()).setCurrentFragmentName(fragmentName);
+            ((MainActivity) getContext()).setImageFragment(this);
+
+            if (fragmentName.equals("Gallery"))
+                ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.IMAGE_FRAGMENT);
+            else
+                ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
+        }
+        catch (Exception e)
+        {
+           //Ignore if context is not MainActivity
+        }
 
         View imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = imageFragment.findViewById(R.id.rv_items);
@@ -125,7 +139,7 @@ public class ImageFragment extends Fragment {
 
         ImageObject.sortByDate(images, ascending);
 
-        MyAdapter adapter = new MyAdapter(images);
+        adapter = new MyAdapter(images);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
@@ -265,5 +279,14 @@ public class ImageFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
+    }
+
+    public void setFragmentAdapter(ArrayList<ImageObject> images) {
+        this.images = images;
+        ImageObject.sortByDate(images, ascending);
+        adapter = new MyAdapter(images);
+        adapter.setColNumber(colNumbers[colNumberIndex]);
+        recyclerView.setAdapter(adapter);
+        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
     }
 }

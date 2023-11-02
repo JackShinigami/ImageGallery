@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import static android.content.ContentValues.TAG;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -31,6 +32,7 @@ import android.os.Bundle;
 import android.os.Environment;
 
 import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -66,8 +68,10 @@ public class MainActivity extends AppCompatActivity {
     private FragmentType currentFragment;
     private String currentFragmentName;
 
+    private ImageFragment imageFragment;
+    private AlbumFragment albumFragment;
 
-
+    private boolean loading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,25 +108,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //load currentPhotoPath
-        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
-        if (sharedPref.contains("path") && sharedPref != null) {
-            currentPhotoPath = sharedPref.getString("path", "");
-        }
-
-
-        checkcurrentPhotoPath();
-
-        //test, comment the line below if it doesn't work
-        checkPhotoInAlbum();
-
-
         File externalStorage = Environment.getExternalStorageDirectory();
 
 // Lấy thư mục Pictures
@@ -140,89 +125,191 @@ public class MainActivity extends AppCompatActivity {
         AlbumHelper albumHelper = AlbumHelper.getInstance();
         ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
 
-
         if (FragmentType.IMAGE_FRAGMENT == currentFragment) {
             //Load ImageFragment with images on fragment_container
-            ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
+            imageFragment = ImageFragment.newInstance(images, "Gallery");
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+            fragmentTransaction.replace(R.id.fragment_container, imageFragment, "Gallery");
+            fragmentTransaction.addToBackStack("MainStack");
             fragmentTransaction.commit();
 
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
             btnAlbum.setImageResource(R.drawable.ic_album_launcher);
         } else if (FragmentType.ALBUM_FRAGMENT == currentFragment) {
-            AlbumFragment albumFragment = AlbumFragment.newInstance(defaultAlbums);
+            albumFragment = AlbumFragment.newInstance(defaultAlbums);
 
             FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
-            AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
+            AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment, "Album");
+            AlbumFragmentTransaction.addToBackStack("MainStack");
             AlbumFragmentTransaction.commit();
             btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         } else if (FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment) {
             ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(this, currentFragmentName).getImages();
-            ImageFragment albumImageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
+            imageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
-            AlbumImageFragmentTransaction.replace(R.id.fragment_container, albumImageFragment);
+            AlbumImageFragmentTransaction.replace(R.id.fragment_container, imageFragment, currentFragmentName);
+            AlbumImageFragmentTransaction.addToBackStack("MainStack");
             AlbumImageFragmentTransaction.commit();
             btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         }
 
 
-        btnAlbum.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
+    }
+
+    private ArrayList<ImageObject> images;
+    private ArrayList<AlbumData> defaultAlbums;
+    @SuppressLint("HandlerLeak")
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 0)
+            {
+                if(FragmentType.IMAGE_FRAGMENT == currentFragment)
+                {
+                    imageFragment.setFragmentAdapter(images);
+                    btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+                    btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+
+                    btnGallery.setEnabled(false);
+                    btnAlbum.setEnabled(true);
+                    btnCamera.setEnabled(true);
+                }
+                else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment)
+                {
+                    ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(MainActivity.this, currentFragmentName).getImages();
+                    imageFragment.setFragmentAdapter(currentImages);
+                    btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+                    btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+
+                    btnGallery.setEnabled(true);
+                    btnAlbum.setEnabled(true);
+                    btnCamera.setEnabled(true);
+                }
+                else if(FragmentType.ALBUM_FRAGMENT == currentFragment)
+                {
+                    albumFragment.setDefaultAlbums(defaultAlbums);
+                    btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+                    btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+
+                    btnGallery.setEnabled(true);
+                    btnAlbum.setEnabled(false);
+                    btnCamera.setEnabled(false);
+                }
+
+                btnAlbum.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("UseCompatLoadingForDrawables")
+                    @Override
+                    public void onClick(View v) {
+
+                        albumFragment = AlbumFragment.newInstance(defaultAlbums);
+                        FragmentManager albumFragmentManager = getSupportFragmentManager();
+                        FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
+                        AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment, "Album");
+                        AlbumFragmentTransaction.addToBackStack("MainStack");
+                        AlbumFragmentTransaction.commit();
+                        btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
+                        btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+
+                        btnGallery.setEnabled(true);
+                        btnAlbum.setEnabled(false);
+                        btnCamera.setEnabled(false);
+                        setCurrentFragment(FragmentType.ALBUM_FRAGMENT);
+                    }
+                });
+
+
+                btnGallery.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("UseCompatLoadingForDrawables")
+                    @Override
+                    public void onClick(View view) {
+                        imageFragment = ImageFragment.newInstance(images, "Gallery");
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_container, imageFragment, "Gallery");
+                        fragmentTransaction.addToBackStack("MainStack");
+                        fragmentTransaction.commit();
+                        btnAlbum.setImageResource(R.drawable.ic_album_launcher);
+                        btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
+
+                        btnGallery.setEnabled(false);
+                        btnAlbum.setEnabled(true);
+                        btnCamera.setEnabled(true);
+
+                        setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
+                        setCurrentImages(new ArrayList<>());
+                        setCurrentFragmentName("Gallery");
+                        SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
+                        SharedPreferencesManager.saveStateFragment(MainActivity.this, 0);
+                    }
+                });
+
+
+                btnSearch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                        intent.putParcelableArrayListExtra("images", images);
+                        startActivity(intent);
+
+                    }
+                });
+            }
+        }
+    };
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //load currentPhotoPath
+        SharedPreferences sharedPref = getSharedPreferences(PATHPREFNAME, Context.MODE_PRIVATE);
+        if (sharedPref.contains("path") && sharedPref != null) {
+            currentPhotoPath = sharedPref.getString("path", "");
+        }
+
+
+        checkcurrentPhotoPath();
+
+        //test, comment the line below if it doesn't work
+        checkPhotoInAlbum();
+
+
+        Thread updateImagesThread = new Thread(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
+                try {
+                    File externalStorage = Environment.getExternalStorageDirectory();
 
-                AlbumFragment albumFragment = AlbumFragment.newInstance(defaultAlbums);
-                FragmentManager albumFragmentManager = getSupportFragmentManager();
-                FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
-                AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment);
-                AlbumFragmentTransaction.commit();
-                btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
-                btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
+                    // Lấy thư mục Pictures
+                    File picturesDirectory = new File(externalStorage, "Pictures");
+                    File downloadDirectory = new File(externalStorage, "Download");
+                    File dcimDirectory = new File(externalStorage, "DCIM");
 
-                setCurrentFragment(FragmentType.ALBUM_FRAGMENT);
+                    images = new ArrayList<>();
+
+                    ImageObject.getImage(MainActivity.this, picturesDirectory, images);
+                    ImageObject.getImage(MainActivity.this, downloadDirectory, images);
+                    ImageObject.getImage(MainActivity.this, dcimDirectory, images);
+
+
+                    AlbumHelper albumHelper = AlbumHelper.getInstance();
+                    defaultAlbums = albumHelper.createDefaultAlbum(MainActivity.this);
+
+                    handler.sendEmptyMessage(0);
+                    loading = false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-
-        btnGallery.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void onClick(View view) {
-                ImageFragment imageFragment = ImageFragment.newInstance(images, "Gallery");
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, imageFragment);
-                fragmentTransaction.commit();
-                btnAlbum.setImageResource(R.drawable.ic_album_launcher);
-                btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
-
-                setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
-                setCurrentImages(new ArrayList<>());
-                setCurrentFragmentName("Gallery");
-                SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
-                SharedPreferencesManager.saveStateFragment(MainActivity.this, 0);
-            }
-        });
-
-
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                intent.putParcelableArrayListExtra("images", images);
-                startActivity(intent);
-
-                setCurrentFragment(FragmentType.IMAGE_FRAGMENT);
-                setCurrentImages(new ArrayList<>());
-                setCurrentFragmentName("Gallery");
-                SharedPreferencesManager.saveCurrentName(MainActivity.this, "Gallery");
-                SharedPreferencesManager.saveStateFragment(MainActivity.this, 0);
-            }
-        });
-
+        if(!loading)
+        {
+            loading = true;
+            updateImagesThread.start();
+        }
     }
 
     @Override
@@ -251,8 +338,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishAffinity();
+        //super.onBackPressed();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count == 1 || currentFragment == FragmentType.IMAGE_FRAGMENT) {
+            super.onBackPressed();
+            fragmentManager.popBackStackImmediate(null,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            finishAffinity();
+        } else {
+            fragmentManager.popBackStack();
+            handler.sendEmptyMessage(0);
+        }
     }
 
 
@@ -262,10 +358,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void setCurrentFragment(FragmentType currentFragment) {
         this.currentFragment = currentFragment;
+        SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
     }
 
     public void setCurrentFragmentName(String currentFragmentName) {
         this.currentFragmentName = currentFragmentName;
+        SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
     }
 
     public String getCurrentFragementName() {
@@ -488,5 +586,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setImageFragment(ImageFragment imageFragment) {
+        this.imageFragment = imageFragment;
+    }
 
+    public void updateButtonInAlbum()
+    {
+        btnGallery.setEnabled(true);
+        btnAlbum.setEnabled(true);
+        btnCamera.setEnabled(true);
+    }
 }

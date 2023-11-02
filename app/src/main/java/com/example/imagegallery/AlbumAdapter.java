@@ -74,14 +74,17 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                             ArrayList<ImageObject> images = album.getImages();
 
                             ImageFragment imageFragment = ImageFragment.newInstance(images, album.getAlbumName());
+                            ((MainActivity) context).setImageFragment(imageFragment);
                             FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.replace(R.id.fragment_container, imageFragment);
+                            fragmentTransaction.replace(R.id.fragment_container, imageFragment, album.getAlbumName());
+                            fragmentTransaction.addToBackStack("MainStack");
                             fragmentTransaction.commit();
 
                             ((MainActivity) context).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
                             ((MainActivity) context).setCurrentImages(images);
                             ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
+                            ((MainActivity) context).updateButtonInAlbum();
                             SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
                         }
                     }
