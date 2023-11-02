@@ -9,4 +9,7 @@
     <item
         android:id="@+id/upload"
         android:title="Upload"/>
+    <item
+        android:id="@+id/delete_to_trash"
+        android:title="Delete" />
 </menu>
