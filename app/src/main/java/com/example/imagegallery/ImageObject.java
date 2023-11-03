@@ -157,6 +157,18 @@ public class ImageObject implements Parcelable {
         }
     }
 
+    public void updateAlbumName(Context context, String oldAlbumName, String newAlbumName)
+    {
+        ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
+        if(albumNames != null) {
+            if(albumNames.contains(oldAlbumName)) {
+                albumNames.remove(oldAlbumName);
+                albumNames.add(newAlbumName);
+                SharedPreferencesManager.saveImageAlbumInfo(context, this.filePath, albumNames);
+            }
+        }
+    }
+
     public void setLatLong(float[] latLong) {
         this.latLong = latLong;
     }
@@ -191,6 +203,10 @@ public class ImageObject implements Parcelable {
                 if (album != null) {
                     album.removeImage(this);
                     SharedPreferencesManager.saveAlbumData(context, album);
+                }
+                else
+                {
+                    albumNames.remove(albumName);
                 }
             }
             SharedPreferencesManager.deleteImageAlbumInfo(context, this);
