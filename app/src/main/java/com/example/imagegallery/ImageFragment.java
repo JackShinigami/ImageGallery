@@ -130,7 +130,6 @@ public class ImageFragment extends Fragment {
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
 
         albumHelper = AlbumHelper.getInstance();
-        MainActivity main = (MainActivity) getContext();
 
         btnSort = imageFragment.findViewById(R.id.btnSort);
         btnSort.setOnClickListener(new View.OnClickListener() {
