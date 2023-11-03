@@ -105,6 +105,18 @@ public class ImageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        try {
+            ((MainActivity) getContext()).setCurrentFragmentName(fragmentName);
+            ((MainActivity) getContext()).setImageFragment(this);
+            if (fragmentName.equals("Gallery"))
+                ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.IMAGE_FRAGMENT);
+            else
+                ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.ALBUM_IMAGE_FRAGMENT);
+        }
+        catch (Exception e)
+        {
+            //Ignore if context is not MainActivity
+        }
 
         View imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
         recyclerView = imageFragment.findViewById(R.id.rv_items);
