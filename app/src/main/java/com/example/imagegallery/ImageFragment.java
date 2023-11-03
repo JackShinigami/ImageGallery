@@ -226,6 +226,7 @@ public class ImageFragment extends Fragment {
                 }
             });
         }
+
     }
 
     public void setSelectMode(boolean selectMode){
@@ -279,6 +280,12 @@ public class ImageFragment extends Fragment {
                             }
                             else
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
                             reload(false);
                         }
                         else if(id == R.id.upload_images)
@@ -317,6 +324,12 @@ public class ImageFragment extends Fragment {
                             else
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
 
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
                             reload(false);
                         } else if (id == R.id.restore_images) {
                             ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
@@ -331,6 +344,13 @@ public class ImageFragment extends Fragment {
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
 
                             reload(false);
+                        }
+
+                        try {
+                            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                        }
+                        catch(Exception e){
+
                         }
                         return false;
                     }
