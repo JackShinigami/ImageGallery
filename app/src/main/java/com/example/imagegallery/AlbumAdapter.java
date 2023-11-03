@@ -159,15 +159,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                             }
                             albumNames.add(album.getAlbumName());
                         }
-                        SharedPreferencesManager.updateAlbumNameInPassword(context, oldName, newName);
+
+                        for (ImageObject image : currentAlbum.getImages()) {
+                            image.updateAlbumName(context, oldName, newName);
+                        }
+
+                        albumNames.remove(oldName);
+                        albumNames.add(newName);
+                        SharedPreferencesManager.saveAlbumNameList(context, albumNames);
+
                         currentAlbum.setAlbumName(newName);
+                        SharedPreferencesManager.updateAlbumNameInPassword(context, oldName, newName);
+                        SharedPreferencesManager.saveAlbumData(context, currentAlbum);
+                        SharedPreferencesManager.deleteAlbumData(context, oldName);
+
                         notifyDataSetChanged();
                         dialog.dismiss();
 
 
-                        SharedPreferencesManager.saveAlbumNameList(context, albumNames);
-                        SharedPreferencesManager.saveAlbumData(context, currentAlbum);
-                        SharedPreferencesManager.deleteAlbumData(context, oldName);
+
+
                     }
                 }
                 else {
