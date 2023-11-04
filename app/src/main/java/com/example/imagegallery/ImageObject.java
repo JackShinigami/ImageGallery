@@ -77,7 +77,7 @@ public class ImageObject implements Parcelable {
                     String fileNameLower = fileName.toLowerCase();
                     long date = file.lastModified();
 
-                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp")) {
+                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp") || fileNameLower.endsWith(".heic")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
                         images.add(image);
                     }

@@ -296,8 +296,6 @@ public class MainActivity extends AppCompatActivity {
                     ImageObject.getImage(MainActivity.this, picturesDirectory, images);
                     ImageObject.getImage(MainActivity.this, downloadDirectory, images);
                     ImageObject.getImage(MainActivity.this, dcimDirectory, images);
-
-
                     AlbumHelper albumHelper = AlbumHelper.getInstance();
                     defaultAlbums = albumHelper.createDefaultAlbum(MainActivity.this);
 
