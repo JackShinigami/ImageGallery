@@ -275,9 +275,14 @@ public class MainActivity extends AppCompatActivity {
             currentPhotoPath = sharedPref.getString("path", "");
         }
         //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
-        GPSTracker gpsTracker = new GPSTracker(this);
-        double latitude = gpsTracker.getLatitude();
-        double longitude = gpsTracker.getLongitude();
+        //get location from shared preferences
+        SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        String strlatitude = sharedPreferences.getString("latitude", "0");
+        String strlongitude = sharedPreferences.getString("longitude", "0");
+        double latitude = Double.parseDouble(strlatitude);
+        double longitude = Double.parseDouble(strlongitude);
+        Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
+
         setExif(latitude, longitude);
 
 
@@ -506,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
         GPSTracker gpsTracker = new GPSTracker(this);
         double latitude = gpsTracker.getLatitude();
         double longitude = gpsTracker.getLongitude();
-        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();
 
 
 
@@ -525,35 +530,18 @@ public class MainActivity extends AppCompatActivity {
             String addressLine = address.getAddressLine(0);
             //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
         }
+        //save location to shared preferences
+        SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("latitude", String.valueOf(latitude));
+        editor.putString("longitude", String.valueOf(longitude));
+        editor.commit();
 
         //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
         //add exif
 
-        /*ExifInterface exif = null;
-        try {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                exif = new ExifInterface(photoFile);
-            }
-
-
-        } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
-        if(exif != null){
-            try {
-                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, dec2DMS(latitude));
-                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, dec2DMS(longitude));
-                exif.saveAttributes();
-            } catch (IOException e) {
-               Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-        else{
-            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
-        }*/
-        //Toast.makeText(this, "Latitude: " + dec2DMS(latitude) + " Longitude: " + dec2DMS(longitude), Toast.LENGTH_SHORT).show();
 
     }
 
