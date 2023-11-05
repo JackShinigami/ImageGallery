@@ -28,6 +28,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -272,6 +273,12 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPref.contains("path") && sharedPref != null) {
             currentPhotoPath = sharedPref.getString("path", "");
         }
+        //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
+        GPSTracker gpsTracker = new GPSTracker(this);
+        double latitude = gpsTracker.getLatitude();
+        double longitude = gpsTracker.getLongitude();
+        setExif(latitude, longitude);
+
 
 
         checkcurrentPhotoPath();
@@ -313,8 +320,34 @@ public class MainActivity extends AppCompatActivity {
             updateImagesThread.start();
         }
     }
+    void setExif(double latitude, double longitude)
+    {
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(currentPhotoPath);
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
+        if(exif != null){
+            try {
+                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, dec2DMS(latitude));
+                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, dec2DMS(longitude));
+
+                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, latitude > 0 ? "N" : "S");
+                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, longitude > 0 ? "E" : "W");
+
+                exif.saveAttributes();
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
+
     protected void onPause() {
         super.onPause();
 
@@ -412,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //check if bitmap is null
+
 
 
         galleryAddPic();
@@ -492,6 +525,33 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
         }
 
+        //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
+        //add exif
+
+        /*ExifInterface exif = null;
+        try {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                exif = new ExifInterface(photoFile);
+            }
+
+
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        if(exif != null){
+            try {
+                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, dec2DMS(latitude));
+                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, dec2DMS(longitude));
+                exif.saveAttributes();
+            } catch (IOException e) {
+               Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
+        }*/
         //Toast.makeText(this, "Latitude: " + dec2DMS(latitude) + " Longitude: " + dec2DMS(longitude), Toast.LENGTH_SHORT).show();
 
     }
