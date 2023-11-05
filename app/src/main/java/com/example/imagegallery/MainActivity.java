@@ -75,13 +75,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean loading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
         //currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
-
+        currentPhotoPath="default";
 
         if (currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
             currentImages = SharedPreferencesManager.loadCurrentImages(this);
