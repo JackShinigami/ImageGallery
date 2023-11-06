@@ -3,6 +3,7 @@ package com.example.imagegallery;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -150,18 +151,34 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 String newName = txtName.getText().toString();
                 if(newName.length() != 0) {
                     if(!oldName.equals(newName)) {
+                        ArrayList<String> albumNames = new ArrayList<>();
                         for(AlbumData album : albums) {
                             if(album.getAlbumName().equals(newName)) {
                                 Toast.makeText(context, "Album name already exists", Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                            albumNames.add(album.getAlbumName());
                         }
-                        SharedPreferencesManager.updateAlbumNameInPassword(context, oldName, newName);
+
+                        for (ImageObject image : currentAlbum.getImages()) {
+                            image.updateAlbumName(context, oldName, newName);
+                        }
+
+                        albumNames.remove(oldName);
+                        albumNames.add(newName);
+                        SharedPreferencesManager.saveAlbumNameList(context, albumNames);
+
                         currentAlbum.setAlbumName(newName);
+                        SharedPreferencesManager.updateAlbumNameInPassword(context, oldName, newName);
+                        SharedPreferencesManager.saveAlbumData(context, currentAlbum);
+                        SharedPreferencesManager.deleteAlbumData(context, oldName);
+
                         notifyDataSetChanged();
                         dialog.dismiss();
 
-                        SharedPreferencesManager.deleteAlbumData(context, oldName);
+
+
+
                     }
                 }
                 else {
@@ -191,6 +208,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     public void addAlbum(AlbumData album){
         albums.add(album);
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
+        if(albumNameList == null){
+            albumNameList = new ArrayList<>();
+        }
         albumNameList.add(album.getAlbumName());
         SharedPreferencesManager.saveAlbumNameList(context, albumNameList);
         SharedPreferencesManager.saveAlbumData(context, album);

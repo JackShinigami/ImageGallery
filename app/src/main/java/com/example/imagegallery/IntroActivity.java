@@ -1,7 +1,6 @@
 package com.example.imagegallery;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 
 public class IntroActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,9 +23,9 @@ public class IntroActivity extends AppCompatActivity {
                 android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // Nếu quyền chưa được cấp, hiển thị pop-up xin cấp quyền
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE,
-                            Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_IMAGES,
+                            android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_MEDIA_LOCATION}, 1);
         }
         else {
             Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
@@ -42,7 +42,7 @@ public class IntroActivity extends AppCompatActivity {
             {
                 Log.d("PERMISSION", permissions[i] + " " + grantResults[i]);
             }
-            if(grantResults[grantResults.length - 1] == PackageManager.PERMISSION_GRANTED || grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED || grantResults[2] == PackageManager.PERMISSION_GRANTED)
             {
                 Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
                 Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);

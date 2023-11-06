@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -44,6 +46,8 @@ public class ImageFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private ArrayList<ImageObject> images;
     private String fragmentName;
+    boolean isSelectMode = false;
+    AlbumHelper albumHelper;
     //private String mParam2;
 
     public ImageFragment() {
@@ -65,6 +69,7 @@ public class ImageFragment extends Fragment {
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
+    private Button btnSelect;
     private int[] colNumbers = {2, 3, 4};
     private static int colNumberIndex = 0;
 
@@ -75,17 +80,6 @@ public class ImageFragment extends Fragment {
     }
     private static SortType sortType = SortType.DATE;
 
-    @SuppressLint("HandlerLeak")
-    private final Handler handler = new Handler()
-    {
-        public void handleMessage(android.os.Message msg)
-        {
-            if(msg.what == 0)
-            {
-                getActivity().recreate();
-            }
-        };
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,7 +109,6 @@ public class ImageFragment extends Fragment {
         try {
             ((MainActivity) getContext()).setCurrentFragmentName(fragmentName);
             ((MainActivity) getContext()).setImageFragment(this);
-
             if (fragmentName.equals("Gallery"))
                 ((MainActivity) getContext()).setCurrentFragment(MainActivity.FragmentType.IMAGE_FRAGMENT);
             else
@@ -123,7 +116,7 @@ public class ImageFragment extends Fragment {
         }
         catch (Exception e)
         {
-           //Ignore if context is not MainActivity
+            //Ignore if context is not MainActivity
         }
 
         View imageFragment = inflater.inflate(R.layout.fragment_image, container, false);
@@ -148,6 +141,8 @@ public class ImageFragment extends Fragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), colNumbers[colNumberIndex]));
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
+
+        albumHelper = AlbumHelper.getInstance();
 
         btnSort = imageFragment.findViewById(R.id.btnSort);
         btnSort.setOnClickListener(new View.OnClickListener() {
@@ -190,10 +185,199 @@ public class ImageFragment extends Fragment {
         });
 
         btnOptions = imageFragment.findViewById(R.id.btnOptions);
+        setBtnOptionsClick();
+
+
+        btnSelect = imageFragment.findViewById(R.id.btnSelect);
+        reload(false);
+
+
+        return imageFragment;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+        SharedPreferencesManager.saveCurrentItemPosition(getContext(), firstVisiblePosition);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
+    }
+
+    public void setFragmentAdapter(ArrayList<ImageObject> images) {
+        this.images = images;
+        ImageObject.sortByDate(images, ascending);
+        adapter = new MyAdapter(images);
+        adapter.setColNumber(colNumbers[colNumberIndex]);
+        recyclerView.setAdapter(adapter);
+        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
+    }
+
+    public void reload(boolean selectMode){
+        setSelectMode(selectMode);
+        setBtnOptionsClick();
+        //reload fragment
+        if(isSelectMode){
+            enterSelectMode();
+        }
+
+        else{
+            adapter.setSelectMode(false);
+            btnSelect.setText("Select");
+            btnSelect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    isSelectMode = true;
+                    reload(true);
+                }
+            });
+        }
+
+    }
+
+    public void setSelectMode(boolean selectMode){
+        isSelectMode = selectMode;
+    }
+
+    public void enterSelectMode(){
+        btnSelect.setText("Menu");
+        adapter.setSelectMode(true);
+
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(v.getContext(), btnSelect);
+                popupMenu.getMenuInflater().inflate(R.menu.select_images_menu, popupMenu.getMenu());
+
+                if( fragmentName.equals("Trash"))
+                {
+                    popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.delete_images).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.upload_images).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.restore_images).setVisible(true);
+                    popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
+                }
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        int id = menuItem.getItemId();
+
+                        if(id == R.id.add_to_album)
+                        {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                albumHelper.addImagesToAlbum(getContext(), selectedImages);
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                            adapter.setSelectMode(false);
+                            reload(false);
+                        }
+                        else if(id == R.id.delete_images)
+                        {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                for(ImageObject imageObject : selectedImages){
+                                    imageObject.deleteToTrash(getContext());
+                                    images.remove(imageObject);
+                                }
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
+                            reload(false);
+                        }
+                        else if(id == R.id.upload_images)
+                        {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                Thread thread = new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(ImageObject imageObject : selectedImages){
+                                            BackupImage.uploadImage(getContext(), imageObject);
+                                        }
+                                    }
+                                });
+                                thread.start();
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+
+                            reload(false);
+                        }
+                        else if(id == R.id.select_all){
+                            adapter.SelectAll();
+                        } else if (id == R.id.cancel_action) {
+                            reload(false);
+                        } else if (id == R.id.delete_trash) {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                for(ImageObject imageObject : selectedImages){
+                                    imageObject.deleteFile(getContext());
+                                    images.remove(imageObject);
+                                }
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
+                            reload(false);
+                        } else if (id == R.id.restore_images) {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                for(ImageObject imageObject : selectedImages){
+                                    imageObject.restoreFile(getContext());
+                                    images.remove(imageObject);
+                                }
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+
+                            reload(false);
+                        }
+
+                        try {
+                            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                        }
+                        catch(Exception e){
+
+                        }
+                        return false;
+                    }
+                });
+
+                popupMenu.show();
+            }
+        });
+    }
+
+    void setBtnOptionsClick(){
         btnOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupMenu popupMenu = new PopupMenu(imageFragment.getContext(), btnOptions);
+                PopupMenu popupMenu = new PopupMenu(view.getContext(), btnOptions);
 
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
 
@@ -202,6 +386,12 @@ public class ImageFragment extends Fragment {
                     popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
                     popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
                 }
+
+                if(isSelectMode){
+                    popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
+                    popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
+                }
+
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -270,31 +460,6 @@ public class ImageFragment extends Fragment {
                 });
                 popupMenu.show();
             }
-            });
-
-        return imageFragment;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-        SharedPreferencesManager.saveCurrentItemPosition(getContext(), firstVisiblePosition);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
-    }
-
-    public void setFragmentAdapter(ArrayList<ImageObject> images) {
-        this.images = images;
-        ImageObject.sortByDate(images, ascending);
-        adapter = new MyAdapter(images);
-        adapter.setColNumber(colNumbers[colNumberIndex]);
-        recyclerView.setAdapter(adapter);
-        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
+        });
     }
 }

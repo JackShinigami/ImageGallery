@@ -28,6 +28,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -74,13 +75,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean loading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
         //currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
-
+        currentPhotoPath="default";
 
         if (currentFragment == FragmentType.ALBUM_IMAGE_FRAGMENT) {
             currentImages = SharedPreferencesManager.loadCurrentImages(this);
@@ -272,6 +274,17 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPref.contains("path") && sharedPref != null) {
             currentPhotoPath = sharedPref.getString("path", "");
         }
+        //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
+        //get location from shared preferences
+        SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
+        String strlatitude = sharedPreferences.getString("latitude", "0");
+        String strlongitude = sharedPreferences.getString("longitude", "0");
+        double latitude = Double.parseDouble(strlatitude);
+        double longitude = Double.parseDouble(strlongitude);
+        Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
+
+        setExif(latitude, longitude);
+
 
 
         checkcurrentPhotoPath();
@@ -296,8 +309,6 @@ public class MainActivity extends AppCompatActivity {
                     ImageObject.getImage(MainActivity.this, picturesDirectory, images);
                     ImageObject.getImage(MainActivity.this, downloadDirectory, images);
                     ImageObject.getImage(MainActivity.this, dcimDirectory, images);
-
-
                     AlbumHelper albumHelper = AlbumHelper.getInstance();
                     defaultAlbums = albumHelper.createDefaultAlbum(MainActivity.this);
 
@@ -315,8 +326,34 @@ public class MainActivity extends AppCompatActivity {
             updateImagesThread.start();
         }
     }
+    void setExif(double latitude, double longitude)
+    {
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(currentPhotoPath);
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
+        if(exif != null){
+            try {
+                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, dec2DMS(latitude));
+                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, dec2DMS(longitude));
+
+                exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, latitude > 0 ? "N" : "S");
+                exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, longitude > 0 ? "E" : "W");
+
+                exif.saveAttributes();
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
+
     protected void onPause() {
         super.onPause();
 
@@ -414,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //check if bitmap is null
+
 
 
         galleryAddPic();
@@ -474,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
         GPSTracker gpsTracker = new GPSTracker(this);
         double latitude = gpsTracker.getLatitude();
         double longitude = gpsTracker.getLongitude();
-        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();
 
 
 
@@ -493,8 +530,18 @@ public class MainActivity extends AppCompatActivity {
             String addressLine = address.getAddressLine(0);
             //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
         }
+        //save location to shared preferences
+        SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
-        //Toast.makeText(this, "Latitude: " + dec2DMS(latitude) + " Longitude: " + dec2DMS(longitude), Toast.LENGTH_SHORT).show();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("latitude", String.valueOf(latitude));
+        editor.putString("longitude", String.valueOf(longitude));
+        editor.commit();
+
+        //Toast.makeText(this, currentPhotoPath, Toast.LENGTH_SHORT).show();
+        //add exif
+
+
 
     }
 
