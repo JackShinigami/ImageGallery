@@ -53,6 +53,8 @@ import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -97,128 +99,133 @@ public class DetailActivity extends AppCompatActivity  {
 
         imageView = findViewById(R.id.imageView);
         ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
-                obj.loadImage(this, imageView);
+        obj.loadImage(this, imageView);
 
-                tags.clear();
+        tags.clear();
+        tagsLoadingTask = new TaskCompletionSource<>();
+        tags = obj.getTags(this, tagsLoadingTask);
+
+
+        tagsLoadingTask.getTask().addOnCompleteListener(task ->{
+            Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
+            tags = obj.getTags(this, tagsLoadingTask);
+            Log.d("TAG", "onCreate: " + tags.toString());
+        });
+
+        iv_addtag = findViewById(R.id.iv_addtag);
+        iv_addtag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 tagsLoadingTask = new TaskCompletionSource<>();
-                tags = obj.getTags(this, tagsLoadingTask);
+                tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
+                Log.d("TAG", "onCreate: " + tags.toString());
+                PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
+                popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    int itemId = item.getItemId();
+                    if(R.id.add == itemId){
+                        Dialog dialog = new Dialog(DetailActivity.this);
+                        dialog.setContentView(R.layout.dialog_addtag);
 
+                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
 
-                tagsLoadingTask.getTask().addOnCompleteListener(task ->{
-                    Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
-                    tags = obj.getTags(this, tagsLoadingTask);
-                    Log.d("TAG", "onCreate: " + tags.toString());
-                });
-
-                iv_addtag = findViewById(R.id.iv_addtag);
-                iv_addtag.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        tagsLoadingTask = new TaskCompletionSource<>();
-                        tags = obj.getTags(DetailActivity.this, tagsLoadingTask);
-                        Log.d("TAG", "onCreate: " + tags.toString());
-                        PopupMenu popupMenu = new PopupMenu(DetailActivity.this, iv_addtag);
-                        popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
-                        popupMenu.setOnMenuItemClickListener(item -> {
-                            int itemId = item.getItemId();
-                            if(R.id.add == itemId){
-                                Dialog dialog = new Dialog(DetailActivity.this);
-                                dialog.setContentView(R.layout.dialog_addtag);
-
-                                TextView tv_tag = dialog.findViewById(R.id.et_tagname);
-                                Button btn_submit = dialog.findViewById(R.id.btn_submit);
-
-                                btn_submit.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        String tag = tv_tag.getText().toString();
-                                        if(tag.isEmpty()){
-                                            Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
-                                        }
-                                        else if (tags.contains(tag)){
-                                            Toast.makeText(DetailActivity.this, "Tag name already exist", Toast.LENGTH_SHORT).show();
-                                        }
-                                        else {
-                                            tags.add(tag);
-                                            obj.addTag(DetailActivity.this, tag);
-                                            dialog.dismiss();
-                                        }
-                                    }
-                                });
-
-                                dialog.show();
+                        btn_submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String tag = tv_tag.getText().toString();
+                                if(tag.isEmpty()){
+                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                }
+                                else if (tags.contains(tag)){
+                                    Toast.makeText(DetailActivity.this, "Tag name already exist", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    tags.add(tag);
+                                    obj.addTag(DetailActivity.this, tag);
+                                    dialog.dismiss();
+                                }
                             }
-                            else if(R.id.remove == itemId){
-                                Dialog dialog = new Dialog(DetailActivity.this);
-                                dialog.setContentView(R.layout.dialog_addtag);
-
-                                TextView tv_tag = dialog.findViewById(R.id.et_tagname);
-                                Button btn_submit = dialog.findViewById(R.id.btn_submit);
-
-                                btn_submit.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        String tag = tv_tag.getText().toString();
-                                        if(tag.isEmpty()){
-                                            Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
-                                        }
-                                        else if (tags.contains(tag)){
-                                            tags.remove(tag);
-                                            obj.removeTag(DetailActivity.this, tag);
-                                            dialog.dismiss();                                }
-                                        else {
-                                            Toast.makeText(DetailActivity.this, "Tag name not exist", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-
-                                dialog.show();
-                            }
-                            return true;
                         });
 
-
-                        popupMenu.show();
-
-
+                        dialog.show();
                     }
+                    else if(R.id.remove == itemId){
+                        Dialog dialog = new Dialog(DetailActivity.this);
+                        dialog.setContentView(R.layout.dialog_addtag);
+
+                        TextView tv_tag = dialog.findViewById(R.id.et_tagname);
+                        Button btn_submit = dialog.findViewById(R.id.btn_submit);
+
+                        btn_submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String tag = tv_tag.getText().toString();
+                                if(tag.isEmpty()){
+                                    Toast.makeText(DetailActivity.this, "Tag name cannot be empty", Toast.LENGTH_SHORT).show();
+                                }
+                                else if (tags.contains(tag)){
+                                    tags.remove(tag);
+                                    obj.removeTag(DetailActivity.this, tag);
+                                    dialog.dismiss();                                }
+                                else {
+                                    Toast.makeText(DetailActivity.this, "Tag name not exist", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        dialog.show();
+                    }
+                    return true;
                 });
 
 
-                iv_love = findViewById(R.id.iv_love);
-
-                if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
-                    iv_love.setVisibility(View.GONE);
+                popupMenu.show();
 
 
-
-                if(obj.isLoved(this))
-                    iv_love.setImageResource(R.drawable.ic_loved);
-                else
-                    iv_love.setImageResource(R.drawable.ic_not_loved);
-
-                iv_love.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                if(obj.isLoved(view.getContext())){
-                    obj.setLoved(view.getContext(), false);
-                    iv_love.setImageResource(R.drawable.ic_not_loved);
-
-                    AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
-                    favorite.removeImage(obj);
-                    SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
-                }
-                else{
-                    obj.setLoved(view.getContext(),true);
-                    iv_love.setImageResource(R.drawable.ic_loved);
-
-                    AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
-                    favorite.addImage(obj);
-                    SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
-                }
             }
         });
 
+
+/*        Log.d("IIMAGE", obj.getFilePath());
+        Log.d("IIMAGE", obj.getFileName());
+        Log.d("IIMAGE", obj.getAlbumNames(this).toString());
+        Log.d("IIMAGE", obj.getTags(this, tagsLoadingTask).toString());
+        Log.d("IIMAGE", obj.getAddress(this));*/
+
+            iv_love = findViewById(R.id.iv_love);
+
+            if(SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
+                iv_love.setVisibility(View.GONE);
+
+
+
+            if(obj.isLoved(this))
+                iv_love.setImageResource(R.drawable.ic_loved);
+            else
+                iv_love.setImageResource(R.drawable.ic_not_loved);
+
+            iv_love.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+            if(obj.isLoved(view.getContext())){
+                obj.setLoved(view.getContext(), false);
+                iv_love.setImageResource(R.drawable.ic_not_loved);
+
+                AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
+                favorite.removeImage(obj);
+                SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
+            }
+            else{
+                obj.setLoved(view.getContext(),true);
+                iv_love.setImageResource(R.drawable.ic_loved);
+
+                AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(),"Favorites");
+                favorite.addImage(obj);
+                SharedPreferencesManager.saveAlbumData(view.getContext(),favorite);
+            }
+        }
+    });
 
         //cropping
         btnCrop = findViewById(R.id.btnCrop);
@@ -255,6 +262,7 @@ public class DetailActivity extends AppCompatActivity  {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
+
 
         //zooming and panning
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
@@ -387,6 +395,29 @@ public class DetailActivity extends AppCompatActivity  {
                                 Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
                             });
 
+                } else if (R.id.info_image == itemId) {
+                    Dialog dialog = new Dialog(this);
+                    dialog.setContentView(R.layout.dialog_info_image);
+
+                    TextView img_name = dialog.findViewById(R.id.txtName);
+                    TextView img_path = dialog.findViewById(R.id.txtPath);
+                    TextView img_Location = dialog.findViewById(R.id.txtLocation);
+                    TextView img_tags = dialog.findViewById(R.id.txtTag);
+                    TextView img_date = dialog.findViewById(R.id.txtDate);
+
+
+                    img_name.setText(obj.getFileName());
+                    img_path.setText(obj.getFilePath());
+                    img_Location.setText(obj.getAddress(this));
+
+                    img_tags.setText(obj.getTags(this, tagsLoadingTask).toString());
+
+                    Date date = new Date(obj.getLastModifiedDate());
+                    img_date.setText(date.toString());
+
+
+
+                    dialog.show();
                 }
 
 
@@ -546,6 +577,7 @@ public class DetailActivity extends AppCompatActivity  {
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         File myDir = new File(root + "/Cropped Images");
 
+
         if (!myDir.exists()) {
             myDir.mkdirs();
         }
@@ -574,8 +606,7 @@ public class DetailActivity extends AppCompatActivity  {
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
             getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
-            // Trigger a media scan to update the gallery
-            MediaScannerConnection.scanFile(getApplicationContext(), new String[]{file.getAbsolutePath()}, null, null);
+
 
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error saving image", Toast.LENGTH_SHORT).show();
