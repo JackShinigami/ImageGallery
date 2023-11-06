@@ -11,17 +11,24 @@
 
         <ImageButton
             android:id="@+id/btnChangeGrid"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="?android:attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_grid_changer" />
+            android:src="@drawable/ic_grid_changer"
+            />
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/btnSort"
             android:src="@drawable/ic_arrow_down"
+            android:background="?android:attr/selectableItemBackground"
             android:scaleType="fitCenter"
             android:layout_toEndOf="@+id/btnOptions"/>
         <ImageView
@@ -30,6 +37,7 @@
             android:id="@+id/btnOptions"
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
+            android:background="?android:attr/selectableItemBackground"
             />
         <TextView
             android:layout_width="wrap_content"

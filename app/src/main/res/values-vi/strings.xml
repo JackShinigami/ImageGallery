@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Image Gallery</string>
+    <string name="setting">Cài đặt</string>
+    <string name="theme">Chủ đề</string>
+    <string name="defaultTheme">Như hệ thống</string>
+    <string name="light">Sáng</string>
+    <string name="dark">Tối</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Huỷ</string>
+</resources>
