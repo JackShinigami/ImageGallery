@@ -1,17 +1,13 @@
 package com.example.imagegallery;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +60,7 @@ public class ImageFragment extends Fragment {
     }
 
     private RecyclerView recyclerView;
-    private MyAdapter adapter;
+    private ImageAdapter adapter;
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
@@ -132,7 +128,7 @@ public class ImageFragment extends Fragment {
 
         ImageObject.sortByDate(images, ascending);
 
-        adapter = new MyAdapter(images);
+        adapter = new ImageAdapter(images);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
@@ -212,7 +208,7 @@ public class ImageFragment extends Fragment {
     public void setFragmentAdapter(ArrayList<ImageObject> images) {
         this.images = images;
         ImageObject.sortByDate(images, ascending);
-        adapter = new MyAdapter(images);
+        adapter = new ImageAdapter(images);
         adapter.setColNumber(colNumbers[colNumberIndex]);
         recyclerView.setAdapter(adapter);
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));

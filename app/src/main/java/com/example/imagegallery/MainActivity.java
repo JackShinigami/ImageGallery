@@ -5,7 +5,6 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,18 +16,14 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -56,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnAlbum, btnGallery, btnCamera, btnSearch;
 
     private RecyclerView recyclerView;
-    private MyAdapter adapter;
+    private ImageAdapter adapter;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ArrayList<ImageObject> currentImages;
 
