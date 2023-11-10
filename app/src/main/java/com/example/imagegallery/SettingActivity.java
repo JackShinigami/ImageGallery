@@ -1,6 +1,13 @@
 package com.example.imagegallery;
 
+import static java.lang.Thread.sleep;
+
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,19 +40,37 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
 
     }
 
+
+
     @Override
     public void onThemeChanged(String theme) {
         // change theme of the app
+
+
         if (theme.equals("Dark")) {
+            SharedPreferencesManager.saveThemeState(getApplicationContext(), 0);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            Toast.makeText(getApplicationContext(),"Dark chosen", Toast.LENGTH_SHORT).show();
         } else if (theme.equals("Light")) {
+            SharedPreferencesManager.saveThemeState(getApplicationContext(), 1);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            Toast.makeText(getApplicationContext(),"Light chosen", Toast.LENGTH_SHORT).show();
         } else if (theme.equals("SameSystem")) {
+            SharedPreferencesManager.saveThemeState(getApplicationContext(), 2);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            Toast.makeText(getApplicationContext(),"Follow system chosen", Toast.LENGTH_SHORT).show();
         }
+        recreate();
+
+        // while changing theme, create a progress dialog
+        // and dismiss it after theme is changed
+
+    }
+
+    @Override
+    public void recreate() {
+        finish();
+        // fade out animation
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        startActivity(getIntent());
     }
 }
 

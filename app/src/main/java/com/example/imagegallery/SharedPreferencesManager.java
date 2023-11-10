@@ -15,6 +15,7 @@ public class SharedPreferencesManager {
     private static final String SHARED_PREFERENCES_NAME = "ImageGalleryData_21112003";
     private static final String ALBUM_LIST = "albumList21112003";
     private static final String CURRENT_STATE = "currentState21112003";
+    private static final String CURRENT_THEME = "currentTheme21112003";
     private static final String CURRENT_IMAGES = "currentImages21112003";
     private static final String CURRENT_NAME = "currentName21112003";
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
@@ -164,6 +165,18 @@ public class SharedPreferencesManager {
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
         editor.putInt(CURRENT_STATE, state);
         editor.apply();
+    }
+
+    public static void saveThemeState(Context context, int state) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(CURRENT_THEME, state);
+        editor.apply();
+    }
+
+    public static int loadThemeState(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int state = sharedPreferences.getInt(CURRENT_THEME, 0);
+        return state;
     }
 
     public static int loadStateFragment(Context context) {

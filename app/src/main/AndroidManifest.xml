@@ -33,6 +33,7 @@
         >
         <activity
             android:name=".SettingActivity"
+            android:configChanges="uiMode"
             android:exported="false"
             />
         <activity
