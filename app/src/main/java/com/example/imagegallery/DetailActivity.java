@@ -445,13 +445,28 @@ public class DetailActivity extends AppCompatActivity  {
     private class GestureListener extends GestureDetector.SimpleOnGestureListener{
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if(scaleFactor != 1f)
+            if(scaleFactor >= 1f)
             {
                 posX -= distanceX;
                 posY -= distanceY;
+
+                // block image from going out of screen
+                if(posX > imageView.getWidth()*scaleFactor - imageView.getWidth())
+                    posX = imageView.getWidth()*scaleFactor - imageView.getWidth();
+                if(posY > imageView.getHeight()*scaleFactor - imageView.getHeight())
+                    posY = imageView.getHeight()*scaleFactor - imageView.getHeight();
+                if(posX < imageView.getWidth() - imageView.getWidth()*scaleFactor)
+                    posX = imageView.getWidth() - imageView.getWidth()*scaleFactor;
+                if(posY < imageView.getHeight() - imageView.getHeight()*scaleFactor)
+                    posY = imageView.getHeight() - imageView.getHeight()*scaleFactor;
+
+
                 imageView.setTranslationX(posX);
                 imageView.setTranslationY(posY);
                 return true;
+            } else {
+                imageView.setTranslationX(initialposX);
+                imageView.setTranslationY(initialposY);
             }
             return false;
         }

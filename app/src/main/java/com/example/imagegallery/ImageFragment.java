@@ -1,5 +1,8 @@
 package com.example.imagegallery;
 
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -445,6 +448,10 @@ public class ImageFragment extends Fragment {
 
                             });
                             deleteThread.start();
+                        } else if (id == R.id.setting_menu){
+                            // Open setting activity
+                            Intent intent = new Intent(getContext(), SettingActivity.class);
+                            startActivity(intent);
                         }
                         return false;
                     }

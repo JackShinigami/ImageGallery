@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
         String strlongitude = sharedPreferences.getString("longitude", "0");
         double latitude = Double.parseDouble(strlatitude);
         double longitude = Double.parseDouble(strlongitude);
-        Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
 
         setExif(latitude, longitude);
 
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             exif = new ExifInterface(currentPhotoPath);
         } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         if(exif != null){
@@ -340,11 +340,11 @@ public class MainActivity extends AppCompatActivity {
 
                 exif.saveAttributes();
             } catch (IOException e) {
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                //.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
         else{
-            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
         }
     }
     @Override
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
             longitude = location.getLongitude();
         }
 
-        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();*/
+        //Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();*/
 
         GPSTracker gpsTracker = new GPSTracker(this);
         double latitude = gpsTracker.getLatitude();
@@ -597,7 +597,7 @@ public class MainActivity extends AppCompatActivity {
         bitmap= BitmapFactory.decodeFile(currentPhotoPath);
         if(bitmap==null)
         {
-            Toast.makeText(this, "Bitmap is null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Bitmap is null", Toast.LENGTH_SHORT).show();
             deleteFile(currentPhotoPath);
         }
     }
