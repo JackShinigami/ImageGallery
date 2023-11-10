@@ -32,7 +32,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_layout, parent, false);
+                .inflate(R.layout.item_image_layout, parent, false);
         return new ImageViewHolder(itemView);
     }
 

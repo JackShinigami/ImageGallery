@@ -37,7 +37,7 @@ public class IntroActivity extends AppCompatActivity {
 
 
         if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
             // Nếu quyền chưa được cấp, hiển thị pop-up xin cấp quyền
             ActivityCompat.requestPermissions(this,

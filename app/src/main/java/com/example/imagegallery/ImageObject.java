@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -175,7 +176,23 @@ public class ImageObject implements Parcelable {
     public float[] getLatLong() {
         return latLong;
     }
+    public void loadLatLong(Context context)
+    {
+        try {
+            ExifInterface exif = new ExifInterface(getFilePath());
+            float[] latLong = new float[2];
+            if (exif.getLatLong(latLong)) {
+                setLatLong(latLong);
+                Log.d("ImageObject", getFilePath() + " " + getAddress(context));
+            } else {
+                Log.d("ImageObject", "lat: null long: null");
+                setLatLong(null);
+            }
 
+        } catch (Exception e) {
+            Log.e("Exif", e.toString());
+        }
+    }
     public String getAddress(Context context) {
         if(latLong == null)
             return "Unknown";
