@@ -47,17 +47,22 @@
             android:scaleType="fitCenter"
             android:background="?android:attr/selectableItemBackground"
             />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/tvTitle"
-            android:text="Image Gallery"
-            android:layout_toRightOf="@id/btnSort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:textSize="20sp"
-            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@id/btnSelect"
+            android:layout_toEndOf="@id/btnSort"
+            android:gravity="center"
             android:padding="5dp"
-            />
+            android:text="Image Gallery"
+            android:textSize="20sp" />
 
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
