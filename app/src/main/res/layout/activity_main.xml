@@ -62,7 +62,7 @@
             android:scaleType="fitCenter"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            android:background="@android:color/transparent"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_weight="1"/>
 
     </LinearLayout>
