@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class SharedPreferencesManager {
@@ -452,5 +453,19 @@ public class SharedPreferencesManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(IMAGE_TAGS, json);
         editor.apply();
+    }
+
+    public static void addTimeEditedImage(Context context, String filePath){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(filePath, LocalTime.now().toString());
+        editor.apply();
+    }
+
+    public static String getTimeEditedImage(Context context, String filePath){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String time = sharedPreferences.getString(filePath, null);
+        return time;
     }
 }

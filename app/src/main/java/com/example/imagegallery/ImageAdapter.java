@@ -8,14 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
-import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 
-public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
+public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     ArrayList<ImageObject> data;
     private int colNumber = 3;
     private boolean isSelectMode;
@@ -23,7 +22,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
 
 
 
-    public MyAdapter(ArrayList<ImageObject> data) {
+    public ImageAdapter(ArrayList<ImageObject> data) {
         this.data = data;
         isSelectMode = false;
         selectedItems = new SparseBooleanArray();
@@ -31,14 +30,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder>{
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_layout, parent, false);
-        return new MyViewHolder(itemView);
+        return new ImageViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         ImageObject imageObject = data.get(position);
         AlbumHelper albumHelper = AlbumHelper.getInstance();
 

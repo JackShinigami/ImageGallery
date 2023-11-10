@@ -23,6 +23,8 @@
 
     <item android:id="@+id/delete_trash"
         android:title="Delete from trash" />
+    <item android:id="@+id/info_image"
+        android:title="Info" />
 
     <item android:id="@+id/restore_image"
         android:title="Restore(Trash)" />
