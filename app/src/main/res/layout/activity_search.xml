@@ -19,7 +19,8 @@
             android:text="Name"
             android:textSize="20sp"
             android:gravity="center"
-            android:background="#D8BFD8"/>
+            android:textColor="?android:attr/textColorPrimary"
+            android:background="#e88"/>
 
         <AutoCompleteTextView
             android:id="@+id/search_edit_text"

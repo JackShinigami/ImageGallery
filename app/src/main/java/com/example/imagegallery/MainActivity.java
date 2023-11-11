@@ -5,7 +5,6 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,18 +16,14 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.icu.text.SimpleDateFormat;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -56,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnAlbum, btnGallery, btnCamera, btnSearch;
 
     private RecyclerView recyclerView;
-    private MyAdapter adapter;
+    private ImageAdapter adapter;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private ArrayList<ImageObject> currentImages;
 
@@ -281,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
         String strlongitude = sharedPreferences.getString("longitude", "0");
         double latitude = Double.parseDouble(strlatitude);
         double longitude = Double.parseDouble(strlongitude);
-        Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Latitude: " + strlongitude + " Longitude: " + strlatitude, Toast.LENGTH_SHORT).show();
 
         setExif(latitude, longitude);
 
@@ -332,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             exif = new ExifInterface(currentPhotoPath);
         } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         if(exif != null){
@@ -345,11 +340,11 @@ public class MainActivity extends AppCompatActivity {
 
                 exif.saveAttributes();
             } catch (IOException e) {
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                //.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
         else{
-            Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Exif is null", Toast.LENGTH_SHORT).show();
         }
     }
     @Override
@@ -506,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
             longitude = location.getLongitude();
         }
 
-        Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();*/
+        //Toast.makeText(this, "Latitude: " + latitude + " Longitude: " + longitude, Toast.LENGTH_SHORT).show();*/
 
         GPSTracker gpsTracker = new GPSTracker(this);
         double latitude = gpsTracker.getLatitude();
@@ -602,7 +597,7 @@ public class MainActivity extends AppCompatActivity {
         bitmap= BitmapFactory.decodeFile(currentPhotoPath);
         if(bitmap==null)
         {
-            Toast.makeText(this, "Bitmap is null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Bitmap is null", Toast.LENGTH_SHORT).show();
             deleteFile(currentPhotoPath);
         }
     }
