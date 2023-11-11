@@ -140,7 +140,7 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(albumFragment.getContext(), btnOptions);
-                popupMenu.inflate(R.menu.popup_menu);
+                popupMenu.inflate(R.menu.album_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
