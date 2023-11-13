@@ -19,7 +19,7 @@
     <ImageView
         android:layout_width="66dp"
         android:layout_height="66dp"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_tag"
         android:layout_toLeftOf="@id/iv_love"
         android:id="@+id/iv_addtag"
         android:scaleX="0.8"
@@ -54,50 +54,45 @@
         android:visibility="gone"
         />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    >
-    <Button
-        android:id="@+id/btnRotate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="Rotate"
-        android:layout_weight="1"
-     />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnFlipHorizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_rotate"
+            android:layout_weight="1"
+            android:id="@+id/imgRotate"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_flip"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:id="@+id/imgFlip"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_filter"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:id="@+id/imgFilter"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_crop"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:id="@+id/imgCrop"
+            />
 
-        android:text="Flip"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
-        android:layout_gravity="bottom"
-        android:layout_weight="1"
-        />
 
-
-    <Button
-        android:id="@+id/btnFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="filter"
-        android:layout_weight="1"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="bottom"
-        android:text="crop"
-        android:id="@+id/btnCrop"
-        />
-
-</LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

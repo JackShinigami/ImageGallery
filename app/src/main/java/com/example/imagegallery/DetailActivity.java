@@ -68,7 +68,7 @@ import java.util.Date;
 public class DetailActivity extends AppCompatActivity  {
 
     private ImageView imageView, iv_love, iv_addtag;
-    private Button btnRotate, btnFlipHorizontal, btnFilter, btnCrop;
+    private ImageView imgRotate, imgFlip, imgFilter, imgCrop;
     private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
     private GestureDetector gestureDetector;
@@ -228,8 +228,8 @@ public class DetailActivity extends AppCompatActivity  {
     });
 
         //cropping
-        btnCrop = findViewById(R.id.btnCrop);
-        btnCrop.setOnClickListener(new View.OnClickListener() {
+        imgCrop = findViewById(R.id.imgCrop);
+        imgCrop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getImageFile(obj.getFilePath());
@@ -237,11 +237,11 @@ public class DetailActivity extends AppCompatActivity  {
             }
         });
         //filter
-        btnFilter = findViewById(R.id.btnFilter);
+        imgFilter = findViewById(R.id.imgFilter);
         seekBarFilter = findViewById(R.id.seekBarFilter);
         resetSaturation();
 
-        btnFilter.setOnClickListener(new View.OnClickListener() {
+        imgFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int visibility = seekBarFilter.getVisibility();
@@ -269,8 +269,8 @@ public class DetailActivity extends AppCompatActivity  {
         gestureDetector = new GestureDetector(this, new GestureListener());
 
         //rotating image
-        btnRotate = findViewById(R.id.btnRotate);
-        btnRotate.setOnClickListener(new View.OnClickListener() {
+        imgRotate = findViewById(R.id.imgRotate);
+        imgRotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 rotate(90f);
@@ -281,9 +281,9 @@ public class DetailActivity extends AppCompatActivity  {
         originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
         imageView.setImageBitmap(originalBitmap);
 
-        btnFlipHorizontal = findViewById(R.id.btnFlipHorizontal);
+        imgFlip = findViewById(R.id.imgFlip);
 
-        btnFlipHorizontal.setOnClickListener(new View.OnClickListener() {
+        imgFlip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 flipImage();
