@@ -112,7 +112,7 @@ public class DetailActivity extends AppCompatActivity  {
             Log.d("TAG", "onCreate: " + tags.toString());
         });
 
-        iv_addtag = findViewById(R.id.iv_addtag);
+        iv_addtag = findViewById(R.id.iv_tag);
         iv_addtag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

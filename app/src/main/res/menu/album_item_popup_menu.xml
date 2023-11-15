@@ -5,7 +5,8 @@
         android:title="Edit" />
     <item
         android:id="@+id/delete_album"
-        android:title="Delete" />
+        android:title="Delete"
+        android:icon="@drawable/ic_trash"/>
 
     <item
         android:id="@+id/set_password"
