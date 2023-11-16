@@ -14,16 +14,19 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.text.Editable;
@@ -57,6 +60,7 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -81,14 +85,20 @@ public class DetailActivity extends AppCompatActivity  {
     private float initialposX = 0f;
     private float initialposY = 0f;
     private boolean isFlippedHorizontally = false;
-    private Bitmap originalBitmap, flippedBitmap, rotatedBitmap;
+    private Bitmap originalBitmap, flippedBitmap, rotatedBitmap, croppedBitmap, displayedBitmap;
+
+    private float saturationVal = 1f;
+    ColorMatrix color = new ColorMatrix();
+    ImageObject obj;
 
     private ArrayList<String> tags = new ArrayList<>();
 
     ActivityResultLauncher<CropImageContractOptions> cropImage = registerForActivityResult(new CropImageContract(), result -> {
         if (result.isSuccessful()) {
-            Bitmap cropped = BitmapFactory.decodeFile(result.getUriFilePath(getApplicationContext(), true));
-            saveCroppedImage(cropped);
+            croppedBitmap = BitmapFactory.decodeFile(result.getUriFilePath(getApplicationContext(), true));
+            imageView.setImageBitmap(croppedBitmap);
+            displayedBitmap = croppedBitmap;
+            //saveCroppedImage(croppedBitmap);
         }
     });
     private TaskCompletionSource<Void> tagsLoadingTask;
@@ -98,13 +108,15 @@ public class DetailActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_detail);
 
         imageView = findViewById(R.id.imageView);
-        ImageObject obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
+        obj = (ImageObject) getIntent().getParcelableExtra("imageObject");
         obj.loadImage(this, imageView);
 
         tags.clear();
         tagsLoadingTask = new TaskCompletionSource<>();
         tags = obj.getTags(this, tagsLoadingTask);
         obj.loadLatLong(this);
+
+
 
         tagsLoadingTask.getTask().addOnCompleteListener(task ->{
             Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();
@@ -187,11 +199,7 @@ public class DetailActivity extends AppCompatActivity  {
         });
 
 
-/*        Log.d("IIMAGE", obj.getFilePath());
-        Log.d("IIMAGE", obj.getFileName());
-        Log.d("IIMAGE", obj.getAlbumNames(this).toString());
-        Log.d("IIMAGE", obj.getTags(this, tagsLoadingTask).toString());
-        Log.d("IIMAGE", obj.getAddress(this));*/
+
 
             iv_love = findViewById(R.id.iv_love);
 
@@ -227,13 +235,16 @@ public class DetailActivity extends AppCompatActivity  {
         }
     });
 
+        originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
+        imageView.setImageBitmap(originalBitmap);
+        displayedBitmap = originalBitmap;
+
         //cropping
         imgCrop = findViewById(R.id.imgCrop);
         imgCrop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getImageFile(obj.getFilePath());
-                Log.d("filepath", obj.getFilePath());
             }
         });
         //filter
@@ -252,7 +263,8 @@ public class DetailActivity extends AppCompatActivity  {
         seekBarFilter.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                float saturationVal = (float) i/50 ;
+                Log.d("TAG", "onProgressChanged: " + i);
+                saturationVal = (float) i/25 ;
                 applySaturationFilter(saturationVal);
             }
             @Override
@@ -278,9 +290,6 @@ public class DetailActivity extends AppCompatActivity  {
         });
 
         //flipping image
-        originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
-        imageView.setImageBitmap(originalBitmap);
-
         imgFlip = findViewById(R.id.imgFlip);
 
         imgFlip.setOnClickListener(new View.OnClickListener() {
@@ -508,32 +517,30 @@ public class DetailActivity extends AppCompatActivity  {
 
     private void flipImage()
     {
-        flippedBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-
         isFlippedHorizontally = !isFlippedHorizontally;
-        if (isFlippedHorizontally) {
-            matrix.reset();
-            matrix.setScale(-1, 1);
-            // Create a new flipped bitmap based on the original bitmap
-            flippedBitmap = Bitmap.createBitmap(originalBitmap, 0, 0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
-            imageView.setImageBitmap(flippedBitmap);
-        } else {
-            imageView.setImageBitmap(originalBitmap);
-        }
+        imageView.setScaleX(-imageView.getScaleX());
     }
     private void rotate(float val)
     {
-        currentRotation =  (currentRotation + val);
-        //imageView.animate().rotation(currentRotation).setDuration(500).start();
-        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-        Bitmap bitmap = drawable.getBitmap();
+        currentRotation =  (currentRotation + val)%360;
+        imageView.setRotation(currentRotation);
+    }
 
+    private void saveFlippedBitmap()
+    {
+        Matrix matrix = new Matrix();
+        matrix.setScale(-1, 1);
+        // Create a new flipped bitmap based on the original bitmap
+        flippedBitmap = Bitmap.createBitmap(displayedBitmap, 0, 0, displayedBitmap.getWidth(), displayedBitmap.getHeight(), matrix, true);
+        displayedBitmap = flippedBitmap;
+    }
+    private void saveRotatedBitmap(float val)
+    {
         Matrix matrix = new Matrix();
         matrix.postRotate(val);
 
-        rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        imageView.setImageBitmap(rotatedBitmap);
-
+        rotatedBitmap = Bitmap.createBitmap(displayedBitmap, 0, 0, displayedBitmap.getWidth(), displayedBitmap.getHeight(), matrix, true);
+        displayedBitmap = rotatedBitmap;
     }
 
     private void reset()
@@ -560,19 +567,37 @@ public class DetailActivity extends AppCompatActivity  {
 
         resetSaturation();
     }
+    //interface for applying saturation filter
     private void applySaturationFilter(float val)
     {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(val);
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        color.setSaturation(val);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(color);
         imageView.setColorFilter(filter);
     }
+    private void saveColorFilter(float val)
+    {
+        Bitmap bitmap = displayedBitmap;
+        Bitmap saturatedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+
+        Canvas canvas = new Canvas(saturatedBitmap);
+        Paint paint = new Paint();
+
+        color.setSaturation(val);
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(color);
+        paint.setColorFilter(filter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        displayedBitmap = saturatedBitmap;
+    }
+
 
     private void resetSaturation()
     {
-        seekBarFilter.setProgress(50);
+        seekBarFilter.setProgress(25);
         applySaturationFilter(1);
     }
+
+
 
     private void startCrop(Uri uri) {
         CropImageOptions cropImageOptions = new CropImageOptions();
@@ -588,15 +613,13 @@ public class DetailActivity extends AppCompatActivity  {
         startCrop(uri);
     }
 
-    private void saveCroppedImage(Bitmap bitmap) {
+    private void saveImage(Bitmap bitmap) {
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         File myDir = new File(root + "/Cropped Images");
-
 
         if (!myDir.exists()) {
             myDir.mkdirs();
         }
-
         // Generate a unique file name
         String imageName = "Image_" + new Date().getTime() + ".jpg";
 
@@ -622,10 +645,81 @@ public class DetailActivity extends AppCompatActivity  {
             getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
 
-
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Error saving image", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void overrideImage(Bitmap bitmap)
+    {
+        File newfile = new File(obj.getFilePath());
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(newfile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+
+            // Compress and write the bitmap to the output stream
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close(); // Don't forget to close the output stream
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        Log.d("TAG", "saturation val: " + saturationVal)   ;
+        if(saturationVal != 1.0f) {
+            saveColorFilter(saturationVal);
+        }
+
+        if (isFlippedHorizontally) {
+            saveFlippedBitmap();
+        }
+
+        if (currentRotation != 0f) {
+            saveRotatedBitmap(currentRotation);
+        }
+
+        if (!originalBitmap.sameAs(displayedBitmap))
+        {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_save_edited_image);
+
+            Button btn_save = dialog.findViewById(R.id.btn_save);
+            Button btn_cancel = dialog.findViewById(R.id.btn_cancel);
+
+            btn_save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveImage(displayedBitmap);
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+
+            btn_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+
+            dialog.show();
+        }
+        else
+            super.onBackPressed();
     }
 }
 
