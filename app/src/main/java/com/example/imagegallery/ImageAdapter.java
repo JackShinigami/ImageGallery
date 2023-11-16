@@ -170,8 +170,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     public void SelectAll(){
         for(int i = 0; i < data.size(); i++){
             selectedItems.put(i, true);
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 
 

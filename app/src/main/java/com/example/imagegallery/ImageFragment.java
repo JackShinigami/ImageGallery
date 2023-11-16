@@ -354,14 +354,16 @@ public class ImageFragment extends Fragment {
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
 
                             reload(false);
+
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
                         }
 
-                        try {
-                            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                        }
-                        catch(Exception e){
 
-                        }
                         return false;
                     }
                 });
