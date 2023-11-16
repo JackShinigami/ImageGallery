@@ -14,22 +14,22 @@
             android:text="Select"
             android:id="@+id/btnSelect"
             android:layout_toLeftOf="@+id/btnChangeGrid"
+            android:textSize="12dp"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
             android:layout_centerVertical="true"
             />
 
         <ImageButton
             android:id="@+id/btnChangeGrid"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="5dp"
             android:background="?android:attr/selectableItemBackground"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_grid_changer"
-            />
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:src="@drawable/ic_grid_changer" />
 
         <ImageView
             android:layout_width="60dp"
@@ -38,13 +38,17 @@
             android:src="@drawable/ic_arrow_down"
             android:background="?android:attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            android:layout_toEndOf="@+id/btnOptions"/>
+            android:layout_toEndOf="@+id/btnOptions"
+            android:scaleX="0.7"
+            android:scaleY="0.7"/>
         <ImageView
             android:layout_width="40dp"
             android:layout_height="60dp"
             android:id="@+id/btnOptions"
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
             android:background="?android:attr/selectableItemBackground"
             />
 

@@ -18,6 +18,8 @@
             android:scaleType="fitCenter"
             android:layout_toEndOf="@+id/btnOptions"
             android:layout_centerVertical="true"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
             />
         <ImageView
             android:layout_width="40dp"
@@ -26,6 +28,8 @@
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
             android:layout_centerVertical="true"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
             />
         <TextView
             android:layout_width="wrap_content"
@@ -43,10 +47,15 @@
             android:id="@+id/btnAddAlbum"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_add"
             android:layout_alignParentEnd="true"
-            android:layout_margin="20dp"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/ic_add"
+            android:scaleX="0.7"
+            android:scaleY="0.7"/>
     </RelativeLayout>
 
    <androidx.core.widget.NestedScrollView
@@ -70,7 +79,8 @@
                android:id="@+id/tvMyAlbums"
                android:text="My Albums"
                android:textSize="20sp"
-               android:layout_below="@+id/taskBar"/>
+               android:layout_below="@+id/taskBar"
+               android:layout_margin="5dp"/>
 
            <androidx.recyclerview.widget.RecyclerView
                android:layout_width="match_parent"
@@ -85,6 +95,8 @@
                android:id="@+id/tvUtilities"
                android:text="Utilities"
                android:textSize="20sp"
+               android:layout_marginTop="20dp"
+               android:layout_margin="5dp"
                android:layout_below="@+id/rv_albums"/>
 
            <androidx.recyclerview.widget.RecyclerView
