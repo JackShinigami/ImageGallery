@@ -93,7 +93,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
-                    if(fragmentName.equals("Gallery")){
+                    if(fragmentName.equals("Gallery") || fragmentName.equals("Search")){
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
