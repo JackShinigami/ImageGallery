@@ -19,13 +19,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     private int colNumber = 3;
     private boolean isSelectMode;
     private SparseBooleanArray selectedItems ;
+    private String fragmentName;
 
 
 
-    public ImageAdapter(ArrayList<ImageObject> data) {
+    public ImageAdapter(ArrayList<ImageObject> data, String fragmentName) {
         this.data = data;
         isSelectMode = false;
         selectedItems = new SparseBooleanArray();
+        this.fragmentName = fragmentName;
     }
 
     @NonNull
@@ -82,21 +84,20 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    MainActivity mainActivity = (MainActivity) v.getContext();
                     PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
                     popupMenu.inflate(R.menu.item_image_popup_menu);
 
 
 
-                    if(albumHelper.isDefaultAlbum(mainActivity.getCurrentFragementName())){
+                    if(albumHelper.isDefaultAlbum(fragmentName)){
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
-                    if(mainActivity.getCurrentFragementName().equals("Gallery")){
+                    if(fragmentName.equals("Gallery")){
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
-                    if(mainActivity.getCurrentFragementName().equals("Trash")){
+                    if(fragmentName.equals("Trash")){
                         popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
                     }
 
@@ -112,7 +113,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                             }
                             else if(R.id.remove_from_album == itemId){
                                 albumHelper.removeImageFromAlbum(v.getContext(), imageObject);
-                                data = SharedPreferencesManager.loadAlbumData(mainActivity, mainActivity.getCurrentFragementName()).getImages();
+                                data = SharedPreferencesManager.loadAlbumData(v.getContext(), fragmentName).getImages();
                                 notifyDataSetChanged();
                             }
                             else if(R.id.upload == itemId){

@@ -131,7 +131,7 @@ public class ImageFragment extends Fragment {
 
         ImageObject.sortByDate(images, ascending);
 
-        adapter = new ImageAdapter(images);
+        adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
@@ -211,7 +211,7 @@ public class ImageFragment extends Fragment {
     public void setFragmentAdapter(ArrayList<ImageObject> images) {
         this.images = images;
         ImageObject.sortByDate(images, ascending);
-        adapter = new ImageAdapter(images);
+        adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
         recyclerView.setAdapter(adapter);
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
