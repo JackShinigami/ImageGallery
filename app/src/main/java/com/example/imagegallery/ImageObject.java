@@ -261,7 +261,7 @@ public class ImageObject implements Parcelable {
             SharedPreferencesManager.deleteImageAlbumInfo(context, this);
         }
 
-        File trash = new File(externalStorage, "Trash");
+        File trash = new File(context.getExternalFilesDir(null), "Trash");
         if (!trash.exists())
             trash.mkdir();
 

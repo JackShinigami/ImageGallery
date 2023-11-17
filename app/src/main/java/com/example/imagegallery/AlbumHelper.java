@@ -178,7 +178,7 @@ public class AlbumHelper {
         ArrayList<AlbumData> albums = new ArrayList<>();
 
         File externalStorage = Environment.getExternalStorageDirectory();
-        File trashDirectory = new File(externalStorage, "Trash");
+        File trashDirectory = new File(context.getExternalFilesDir(null), "Trash");
         ArrayList<ImageObject> trashImages = new ArrayList<>();
         if(!trashDirectory.exists()) {
             trashDirectory.mkdir();
