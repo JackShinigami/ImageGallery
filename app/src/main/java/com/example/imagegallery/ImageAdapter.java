@@ -128,6 +128,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                             } else if (R.id.delete_to_trash == itemId) {
                                 imageObject.deleteToTrash(v.getContext());
                                 data.remove(imageObject);
+                                if(SearchActivity.isSearchActivityRunning())
+                                {
+                                    SearchActivity.addDeleteImage(imageObject);
+                                    ((SearchActivity)v.getContext()).onResume();
+                                }
                                 notifyDataSetChanged();
                             }
                             return  true;

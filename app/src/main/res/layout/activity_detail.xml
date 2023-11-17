@@ -11,9 +11,12 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:layout_centerInParent="true"
+        android:layout_below="@id/iv_tag"
+        android:layout_above="@id/editBar"
+        android:scaleType="fitCenter"
         />
 
     <ImageView
@@ -56,51 +59,52 @@
         />
 
     <LinearLayout
+        android:id="@+id/editBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
+        android:layout_alignParentBottom="true">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom"
-            android:src="@drawable/ic_rotate"
-            android:layout_weight="1"
             android:id="@+id/imgRotate"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            />
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:src="@drawable/ic_flip"
             android:layout_gravity="bottom"
             android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_rotate" />
+
+        <ImageView
             android:id="@+id/imgFlip"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            />
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:src="@drawable/ic_filter"
             android:layout_gravity="bottom"
             android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_flip" />
+
+        <ImageView
             android:id="@+id/imgFilter"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            />
-        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:src="@drawable/ic_crop"
             android:layout_gravity="bottom"
             android:layout_weight="1"
-            android:id="@+id/imgCrop"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            />
+            android:src="@drawable/ic_filter" />
+
+        <ImageView
+            android:id="@+id/imgCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_crop" />
 
 
     </LinearLayout>

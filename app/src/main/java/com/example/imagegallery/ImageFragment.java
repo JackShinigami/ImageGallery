@@ -284,8 +284,16 @@ public class ImageFragment extends Fragment {
                             if(selectedImages.size() > 0)
                             {
                                 for(ImageObject imageObject : selectedImages){
+                                    if(SearchActivity.isSearchActivityRunning())
+                                    {
+                                        SearchActivity.addDeleteImage(imageObject);
+                                    }
                                     imageObject.deleteToTrash(getContext());
                                     images.remove(imageObject);
+                                }
+                                if(SearchActivity.isSearchActivityRunning())
+                                {
+                                    ((SearchActivity)getContext()).onResume();
                                 }
                             }
                             else
