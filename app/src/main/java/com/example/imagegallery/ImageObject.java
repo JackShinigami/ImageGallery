@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -54,6 +55,7 @@ public class ImageObject implements Parcelable {
         this.fileName = fileName;
     }
 
+
     public String getFilePath() {
         return filePath;
     }
@@ -85,6 +87,10 @@ public class ImageObject implements Parcelable {
                 }
             }
         }
+    }
+
+    public Uri getImageUri() {
+        return Uri.fromFile(new File(filePath));
     }
 
     private String hashImage(Bitmap image)

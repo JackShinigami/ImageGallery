@@ -17,6 +17,11 @@
         android:title="Add to Album"
         android:orderInCategory="100"
         />
+
+    <item android:id="@+id/slide_show"
+        android:title="Create Slide Show"
+        android:orderInCategory="100"
+        />
     <item android:id="@+id/cancel_action"
         android:title="Cancel"
         android:orderInCategory="100"
@@ -27,7 +32,6 @@
         android:orderInCategory="100"
         android:visible="false"
         />
-
     <item android:id="@+id/delete_trash"
         android:title="Delete"
         android:orderInCategory="100"

@@ -369,8 +369,18 @@ public class ImageFragment extends Fragment {
                             catch(Exception e){
 
                             }
+                        } else if (id == R.id.slide_show)
+                        {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                Intent intent = new Intent(getContext(), SlideShowActivity.class);
+                                intent.putParcelableArrayListExtra("images", selectedImages);
+                                startActivity(intent);
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
                         }
-
 
                         return false;
                     }
