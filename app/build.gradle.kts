@@ -61,4 +61,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.4.1"))
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-messaging")
+
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
 }
