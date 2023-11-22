@@ -380,6 +380,7 @@ public class ImageFragment extends Fragment {
                             }
                             else
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                            reload(false);
                         }
 
                         return false;
