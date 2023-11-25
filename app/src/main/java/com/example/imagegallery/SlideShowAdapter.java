@@ -25,7 +25,7 @@ public class SlideShowAdapter extends  RecyclerView.Adapter<SlideShowAdapter.Sli
     @Override
     public SlideShowViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ImageView imageView = new ImageView(context);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return new SlideShowViewHolder(imageView);
     }

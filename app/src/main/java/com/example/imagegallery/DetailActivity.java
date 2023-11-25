@@ -114,9 +114,13 @@ public class DetailActivity extends AppCompatActivity  {
         tags.clear();
         tagsLoadingTask = new TaskCompletionSource<>();
         tags = obj.getTags(this, tagsLoadingTask);
-        obj.loadLatLong(this);
-
-
+        Thread loadLatLong = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                obj.loadLatLong(DetailActivity.this);
+            }
+        });
+        loadLatLong.start();
 
         tagsLoadingTask.getTask().addOnCompleteListener(task ->{
             Toast.makeText(this, "Tags loaded", Toast.LENGTH_SHORT).show();

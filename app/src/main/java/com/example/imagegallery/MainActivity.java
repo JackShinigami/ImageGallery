@@ -3,6 +3,8 @@ package com.example.imagegallery;
 import static android.content.ContentValues.TAG;
 
 
+import static java.lang.Thread.sleep;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;

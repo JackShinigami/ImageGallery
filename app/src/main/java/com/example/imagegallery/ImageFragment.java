@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -465,6 +466,7 @@ public class ImageFragment extends Fragment {
                                     }
                                     MainActivity mainActivity = (MainActivity) getContext();
                                     mainActivity.handler.sendEmptyMessage(1);
+                                    Log.d("Delete duplicate", "Done");
                                 }
 
                             });

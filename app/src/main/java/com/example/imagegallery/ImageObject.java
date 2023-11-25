@@ -41,13 +41,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
     private String fileName;
-    private float[] latLong;
+    private float[] latLong = null;
 
     ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
@@ -189,7 +192,7 @@ public class ImageObject implements Parcelable {
             float[] latLong = new float[2];
             if (exif.getLatLong(latLong)) {
                 setLatLong(latLong);
-                Log.d("ImageObject", getFilePath() + " " + getAddress(context));
+                Log.d("ImageObject", "lat: " + latLong[0] + " long: " + latLong[1]);
             } else {
                 Log.d("ImageObject", "lat: null long: null");
                 setLatLong(null);
@@ -200,18 +203,31 @@ public class ImageObject implements Parcelable {
         }
     }
     public String getAddress(Context context) {
-        if(latLong == null)
+        if (latLong == null)
             return "Unknown";
-        try {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            // Tìm kiếm địa điểm từ thông tin vị trí
-            List<Address> addresses = geocoder.getFromLocation(latLong[0], latLong[1], 1);
 
-            // Lấy tên của địa điểm từ đối tượng Address
-            String address = addresses.get(0).getAddressLine(0);
-            return address;
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() {
+                try {
+                    Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(latLong[0], latLong[1], 1);
+                    return addresses.get(0).getAddressLine(0);
+                } catch (Exception e) {
+                    Log.e("Address", e.getMessage());
+                    return "Unknown";
+                }
+            }
+        };
+
+        FutureTask<String> future = new FutureTask<>(callable);
+        new Thread(future).start();
+
+        try {
+            // Wait for 1 second and then retrieve the result
+            return future.get(1, TimeUnit.SECONDS);
         } catch (Exception e) {
-            Log.e("Address", e.getMessage());
+            Log.e("Address", "Geocoding operation timed out");
             return "Unknown";
         }
     }
