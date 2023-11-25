@@ -216,6 +216,10 @@ public class ImageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        setSelectMode(false);
+        adapter.setSelectMode(false);
+        setBtnOptionsClick();
+
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
         int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
         SharedPreferencesManager.saveCurrentItemPosition(getContext(), firstVisiblePosition);
