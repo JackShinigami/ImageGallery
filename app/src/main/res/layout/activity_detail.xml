@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DetailActivity"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".DetailActivity"
 
     >
 
@@ -12,47 +12,49 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:adjustViewBounds="true"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/iv_tag"
         android:layout_above="@id/editBar"
+        android:layout_below="@id/iv_tag"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         />
 
     <ImageView
+        android:id="@+id/iv_tag"
         android:layout_width="48dp"
         android:layout_height="66dp"
-        android:src="@drawable/ic_tag"
         android:layout_toLeftOf="@id/iv_love"
-        android:id="@+id/iv_tag"
         android:scaleX="0.7"
         android:scaleY="0.7"
+        android:src="@drawable/ic_tag"
         />
 
     <ImageView
         android:id="@+id/iv_more"
         android:layout_width="48dp"
         android:layout_height="66dp"
+        android:layout_alignParentEnd="true"
         android:scaleX="0.7"
         android:scaleY="0.7"
-        android:layout_alignParentEnd="true"
         android:src="@drawable/ic_more"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ImageView
         android:id="@+id/iv_love"
         android:layout_width="48dp"
         android:layout_height="66dp"
         android:layout_toLeftOf="@id/iv_more"
-        android:src="@drawable/ic_loved"
         android:scaleX="0.7"
         android:scaleY="0.7"
+        android:src="@drawable/ic_loved"
         />
 
     <SeekBar
+        android:id="@+id/seekBarFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBarFilter"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="80dp"
         android:visibility="gone"
@@ -62,9 +64,13 @@
         android:id="@+id/editBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:layout_marginBottom="20dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:text="@string/rotateImage"
+        >
 
         <ImageView
             android:id="@+id/imgRotate"
@@ -74,7 +80,8 @@
             android:layout_weight="1"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:src="@drawable/ic_rotate" />
+            android:src="@drawable/ic_rotate"
+            />
 
         <ImageView
             android:id="@+id/imgFlip"
@@ -84,7 +91,8 @@
             android:layout_weight="1"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:src="@drawable/ic_flip" />
+            android:src="@drawable/ic_flip"
+            />
 
         <ImageView
             android:id="@+id/imgFilter"
@@ -94,7 +102,8 @@
             android:layout_weight="1"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:src="@drawable/ic_filter" />
+            android:src="@drawable/ic_filter"
+            />
 
         <ImageView
             android:id="@+id/imgCrop"
@@ -104,8 +113,8 @@
             android:layout_weight="1"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:src="@drawable/ic_crop" />
-
+            android:src="@drawable/ic_crop"
+            />
 
     </LinearLayout>
 

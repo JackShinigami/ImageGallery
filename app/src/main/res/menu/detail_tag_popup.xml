@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/add"
-        android:title="Add" />
+        android:title="@string/add" />
     <item
         android:id="@+id/remove"
-        android:title="Remove" />
+        android:title="@string/remove" />
 
 
 </menu>

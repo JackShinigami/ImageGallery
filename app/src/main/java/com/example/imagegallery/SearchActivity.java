@@ -106,7 +106,7 @@ public class SearchActivity extends AppCompatActivity {
         background.start();
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ImageFragment imageFragment = ImageFragment.newInstance(newImages, "Search");
+        ImageFragment imageFragment = ImageFragment.newInstance(newImages, getString(R.string.search));
         ft.replace(R.id.fragment_container, imageFragment);
         ft.commit();
 

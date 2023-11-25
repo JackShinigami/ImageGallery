@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/delete_images"
-        android:title="Delete"
+        android:title="@string/delete"
         android:icon="@drawable/ic_trash"
         android:orderInCategory="100"
          />
     <item android:id="@+id/upload_images"
-        android:title="Upload"
+        android:title="@string/upload"
         android:orderInCategory="100"
         />
     <item android:id="@+id/select_all"
-        android:title="Select All"
+        android:title="@string/select_all"
         android:orderInCategory="100"
         />
     <item android:id="@+id/add_to_album"
-        android:title="Add to Album"
+        android:title="@string/add_to_album"
         android:orderInCategory="100"
         />
 
@@ -23,17 +23,17 @@
         android:orderInCategory="100"
         />
     <item android:id="@+id/cancel_action"
-        android:title="Cancel"
+        android:title="@string/cancel"
         android:orderInCategory="100"
         />
 
     <item android:id="@+id/restore_images"
-        android:title="Restore"
+        android:title="@string/restore"
         android:orderInCategory="100"
         android:visible="false"
         />
     <item android:id="@+id/delete_trash"
-        android:title="Delete"
+        android:title="@string/delete_from_trash"
         android:orderInCategory="100"
         android:visible="false"
         />

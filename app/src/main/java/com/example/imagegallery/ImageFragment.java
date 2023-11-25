@@ -122,7 +122,26 @@ public class ImageFragment extends Fragment {
         recyclerView = imageFragment.findViewById(R.id.rv_items);
         tvTitle = imageFragment.findViewById(R.id.tvTitle);
 
-        tvTitle.setText(fragmentName);
+        switch (fragmentName){
+            case "Gallery":
+                tvTitle.setText(getString(R.string.gallery));
+                break;
+            case "Album":
+                tvTitle.setText(getString(R.string.album));
+                break;
+            case "Search":
+                tvTitle.setText(getString(R.string.search));
+                break;
+            case "Trash":
+                tvTitle.setText(getString(R.string.trash));
+                break;
+            case "Favorite":
+                tvTitle.setText(getString(R.string.favorite));
+                break;
+            default:
+                tvTitle.setText(fragmentName);
+                break;
+        }
 
         RecyclerView.ItemDecoration itemDecoration = new
                 DividerItemDecoration(imageFragment.getContext(), DividerItemDecoration.VERTICAL);
@@ -228,7 +247,7 @@ public class ImageFragment extends Fragment {
 
         else{
             adapter.setSelectMode(false);
-            btnSelect.setText("Select");
+            btnSelect.setText(getString(R.string.select));
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -245,7 +264,7 @@ public class ImageFragment extends Fragment {
     }
 
     public void enterSelectMode(){
-        btnSelect.setText("Menu");
+        btnSelect.setText(R.string.menu);
         adapter.setSelectMode(true);
 
         btnSelect.setOnClickListener(new View.OnClickListener() {

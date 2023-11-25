@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,14 +40,16 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AlbumViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
         AlbumData album = albums.get(position);
         holder.tvAlbumName.setText(album.getAlbumName());
         if(album.getImages().size() == 1 || album.getImages().size() == 0){
-            holder.tvAlbumSize.setText(album.getImages().size() + " image");
+            String imageUnit = context.getString(R.string.image_unit_1);
+            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
         else{
-            holder.tvAlbumSize.setText(album.getImages().size() + " images");
+            String imageUnit = context.getString(R.string.image_unit_n);
+            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
         int resID = album.getThumbnailPath();
 
@@ -160,7 +163,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                         ArrayList<String> albumNames = new ArrayList<>();
                         for(AlbumData album : albums) {
                             if(album.getAlbumName().equals(newName)) {
-                                Toast.makeText(context, "Album name already exists", Toast.LENGTH_SHORT).show();
+                                String message = context.getString(R.string.album_name_exists);
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             albumNames.add(album.getAlbumName());
@@ -188,7 +192,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     }
                 }
                 else {
-                    Toast.makeText(context, "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                    String message = context.getString(R.string.album_name_empty);
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 }
             }
         });

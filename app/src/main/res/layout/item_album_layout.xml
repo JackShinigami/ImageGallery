@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="#0000"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    >
 
 
 
@@ -10,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="?android:attr/selectableItemBackground"
        >
         <ImageView
             android:layout_width="66dp"
@@ -29,7 +33,7 @@
             android:layout_marginTop="10dp"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="Album 01"
+            android:text="@string/album_name"
             android:layout_toEndOf="@+id/album_thumbnail"/>
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +42,7 @@
             android:layout_marginLeft="10dp"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:text="10"
+            android:text="@string/example_number"
             android:layout_toEndOf="@+id/album_thumbnail"
             android:layout_below="@+id/tv_album_name"/>
 
@@ -50,6 +54,7 @@
             android:scaleY="0.5"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_more"/>
     </RelativeLayout>
 

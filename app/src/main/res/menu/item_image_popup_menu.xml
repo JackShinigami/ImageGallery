@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/add_to_album"
-        android:title="Add to album" />
+        android:title="@string/add_to_album" />
     <item
         android:id="@+id/remove_from_album"
-        android:title="Remove from Album" />
+        android:title="@string/remove_from_album" />
     <item
         android:id="@+id/upload"
-        android:title="Upload"/>
+        android:title="@string/upload"/>
     <item
         android:id="@+id/delete_to_trash"
-        android:title="Delete" />
+        android:title="@string/delete" />
 </menu>

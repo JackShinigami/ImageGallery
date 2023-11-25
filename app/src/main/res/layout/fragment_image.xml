@@ -11,7 +11,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select"
+            android:text="@string/select"
             android:id="@+id/btnSelect"
             android:layout_toLeftOf="@+id/btnChangeGrid"
             android:textSize="12dp"
@@ -65,7 +65,7 @@
             android:layout_toEndOf="@id/btnSort"
             android:gravity="center"
             android:padding="5dp"
-            android:text="Image Gallery"
+            android:text="@string/gallery"
             android:textSize="20sp" />
 
     </RelativeLayout>

@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Detail Info"
+        android:text="@string/detail_info"
         android:textStyle="bold"
         android:textSize="30sp"
         android:textAlignment="center"
@@ -27,7 +27,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FileName: "
+        android:text="@string/filename"
         android:textSize="20sp"
         android:textStyle="bold"
         />
@@ -48,7 +48,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="FilePath: "
+            android:text="@string/filepath"
             android:textSize="20sp"
             android:textStyle="bold"
             />
@@ -71,7 +71,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location: "
+            android:text="@string/location"
             android:textSize="20sp"
             android:textStyle="bold"
             />
@@ -95,7 +95,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last Updated: "
+            android:text="@string/last_updated"
             android:textSize="20sp"
             android:textStyle="bold"
             />
@@ -124,7 +124,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tag: "
+            android:text="@string/tag"
             android:textSize="20sp"
             android:textStyle="bold"
             />

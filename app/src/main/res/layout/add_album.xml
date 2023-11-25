@@ -10,7 +10,7 @@
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Album"
+        android:text="@string/add_new_album"
         android:textSize="24dp"
         android:textStyle="bold"/>
     <EditText
@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:inputType="text"
-        android:hint="Enter new album name"/>
+        android:hint="@string/enter_new_album_name"/>
 
 </LinearLayout>

@@ -69,12 +69,15 @@ public class MainActivity extends AppCompatActivity {
     private ImageFragment imageFragment;
     private AlbumFragment albumFragment;
 
+    private static Context appContext;
+
     private boolean loading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        appContext = getApplicationContext();
 
         //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
         //currentFragment = FragmentType.IMAGE_FRAGMENT;
@@ -643,5 +646,10 @@ public class MainActivity extends AppCompatActivity {
         btnGallery.setEnabled(true);
         btnAlbum.setEnabled(true);
         btnCamera.setEnabled(true);
+    }
+
+    //get context
+    public static Context getContext(){
+        return appContext;
     }
 }

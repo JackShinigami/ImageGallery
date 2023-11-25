@@ -3,7 +3,11 @@
     <style name="Base.Theme.ImageGallery" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- remove the purple color in the status bar -->
+        <item name="android:statusBarColor" tools:targetApi="l">?android:attr/colorAccent</item>
     </style>
 
-    <style name="Theme.ImageGallery" parent="Base.Theme.ImageGallery" />
+    <style name="Theme.ImageGallery" parent="Base.Theme.ImageGallery">
+        <item name="android:statusBarColor" tools:targetApi="l">?android:attr/colorAccent</item>
+    </style>
 </resources>
