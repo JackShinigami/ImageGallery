@@ -102,4 +102,7 @@
     <string name="search">Tìm kiếm</string>
     <string name="favorite">Yêu thích</string>
     <string name="album">Album</string>
+    <string name="two_columns">Hai cột</string>
+    <string name="three_columns">Ba cột</string>
+    <string name="four_columns">Bốn cột</string>
 </resources>

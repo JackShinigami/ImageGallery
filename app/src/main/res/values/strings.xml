@@ -95,4 +95,7 @@
     <string name="search">Search</string>
     <string name="favorite">Favorite</string>
     <string name="album">Album</string>
+    <string name="two_columns">Two columns</string>
+    <string name="three_columns">Three columns</string>
+    <string name="four_columns">Four columns</string>
 </resources>

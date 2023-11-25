@@ -193,12 +193,29 @@ public class ImageFragment extends Fragment {
             btnSort.setImageResource(R.drawable.ic_arrow_up);
 
         btnChangeGrid = imageFragment.findViewById(R.id.btnChangeGrid);
+        PopupMenu popupMenu = new PopupMenu(getContext(), btnChangeGrid);
+        popupMenu.getMenuInflater().inflate(R.menu.number_columns_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if(id == R.id.two_columns){
+                colNumberIndex = 0;
+
+            }
+            else if(id == R.id.three_columns){
+                colNumberIndex = 1;
+            }
+            else if(id == R.id.four_columns){
+                colNumberIndex = 2;
+            }
+            adapter.setColNumber(colNumbers[colNumberIndex]);
+            recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), adapter.getColNumber()));
+            return false;
+        });
+
         btnChangeGrid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
-                adapter.setColNumber(colNumbers[colNumberIndex]);
-                recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), adapter.getColNumber()));
+                popupMenu.show();
             }
         });
 
@@ -234,6 +251,7 @@ public class ImageFragment extends Fragment {
         adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), colNumbers[colNumberIndex]));
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
     }
 
