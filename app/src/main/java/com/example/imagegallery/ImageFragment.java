@@ -70,7 +70,7 @@ public class ImageFragment extends Fragment {
     private ImageView btnSort, btnOptions;
     private Button btnSelect;
     private int[] colNumbers = {2, 3, 4};
-    private static int colNumberIndex = 0;
+    private static int colNumberIndex = 1;
 
     private static boolean ascending = false;
 
@@ -143,9 +143,7 @@ public class ImageFragment extends Fragment {
                 break;
         }
 
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(imageFragment.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
 
