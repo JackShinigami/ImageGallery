@@ -154,7 +154,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view);
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newName = txtName.getText().toString();
@@ -198,7 +198,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

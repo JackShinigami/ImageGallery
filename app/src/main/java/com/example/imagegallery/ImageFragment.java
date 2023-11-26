@@ -68,7 +68,7 @@ public class ImageFragment extends Fragment {
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
-    private Button btnSelect;
+    private ImageButton btnSelect;
     private int[] colNumbers = {2, 3, 4};
     private static int colNumberIndex = 1;
 
@@ -263,7 +263,7 @@ public class ImageFragment extends Fragment {
 
         else{
             adapter.setSelectMode(false);
-            btnSelect.setText(getString(R.string.select));
+            btnSelect.setImageResource(R.drawable.ic_multiselect);
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -280,7 +280,7 @@ public class ImageFragment extends Fragment {
     }
 
     public void enterSelectMode(){
-        btnSelect.setText(R.string.menu);
+        btnSelect.setImageResource(R.drawable.ic_multiselect_menu);
         adapter.setSelectMode(true);
 
         btnSelect.setOnClickListener(new View.OnClickListener() {

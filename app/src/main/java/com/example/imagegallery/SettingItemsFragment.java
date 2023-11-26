@@ -69,7 +69,9 @@ public class SettingItemsFragment extends Fragment {
             }
 
             // R.string.theme as R.string.defaultTheme
+            // Dependency setting adapter
             SettingPlaceholderContent.addItem(new SettingPlaceholderContent.SettingPlaceholderItem("1", getString(R.string.theme), getString(R.string.defaultTheme)));
+            SettingPlaceholderContent.addItem(new SettingPlaceholderContent.SettingPlaceholderItem("2", getString(R.string.language), getString(R.string.auto)));
             SettingItemRecyclerViewAdapter adapter = new SettingItemRecyclerViewAdapter(SettingPlaceholderContent.ITEMS);
             recyclerView.setAdapter(adapter);
 

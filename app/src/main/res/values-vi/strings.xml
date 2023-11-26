@@ -105,4 +105,9 @@
     <string name="two_columns">Hai cột</string>
     <string name="three_columns">Ba cột</string>
     <string name="four_columns">Bốn cột</string>
+    <string name="save">Lưu</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="en_us">Tiếng Anh (Mĩ)</string>
+    <string name="vie">Tiếng Việt</string>
+    <string name="auto">Tự động</string>
 </resources>

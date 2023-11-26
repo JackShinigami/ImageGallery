@@ -49,7 +49,6 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
         holder.tvProperty.setText(properties.get(position).property);
         holder.tvValue.setText(properties.get(position).value);
 
-        String theme= holder.itemView.getContext().getString(R.string.theme);
         if(position == 0) {
             int themeState = SharedPreferencesManager.loadThemeState(holder.itemView.getContext());
             switch (themeState) {
@@ -63,6 +62,9 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
                     holder.tvValue.setText(holder.itemView.getContext().getString(R.string.defaultTheme));
                     break;
             }
+        } else if(position == 1){
+            // TODO: Make language factory
+
         }
 
 //        switch (position) {
@@ -118,6 +120,8 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
                     askingThemeDialog.show();
 
                     break;
+                case 1:
+
             }
         });
     }

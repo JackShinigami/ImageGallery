@@ -202,7 +202,7 @@ public class AlbumHelper {
 
 
         if(favorite == null){
-            favorite = new AlbumData(context.getString(R.string.favorites), R.drawable.ic_favorite);
+            favorite = new AlbumData(context.getString(R.string.favorites), R.drawable.ic_loved);
             albumHelper.addDefaultAlbum(favorite.getAlbumName());
             SharedPreferencesManager.saveAlbumData(context, favorite);
         }
