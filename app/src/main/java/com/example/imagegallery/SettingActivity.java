@@ -5,6 +5,8 @@ import static java.lang.Thread.sleep;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,20 +15,30 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Locale;
+
 public class SettingActivity extends AppCompatActivity implements SettingPropertyChangedCallBacks {
+
+
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        context = this;
 
         // initialize the fragment
         inflateMainSettingFragment();
 
     }
 
+    public static Context getContext() {
+        return context;
+    }
 
     /**
      * Inflate the main setting fragment
@@ -63,6 +75,23 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
         // while changing theme, create a progress dialog
         // and dismiss it after theme is changed
 
+    }
+
+    @Override
+    public void onLanguageChanged(String lang) {
+        // change language of the app
+        int languageState = SharedPreferencesManager.loadLanguageState(getApplicationContext());
+        String language = "";
+        if (lang.equals("English")) {
+            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 0);
+            language = "en-US";
+        } else if (lang.equals("Vietnamese")) {
+            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 1);
+            language = "vi";
+        }
+
+        LocaleListCompat localeListCompat = LocaleListCompat.create(new Locale(language));
+        AppCompatDelegate.setApplicationLocales(localeListCompat);
     }
 
     @Override
