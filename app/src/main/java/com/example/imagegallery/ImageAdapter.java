@@ -99,6 +99,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
                     if(fragmentName.equals("Trash")){
                         popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.upload).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.delete_to_trash).setVisible(false);
                     }
 
 

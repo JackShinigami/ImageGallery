@@ -103,4 +103,6 @@
     <string name="en_us">English - US</string>
     <string name="vie">Vietnamese</string>
     <string name="auto">Auto</string>
+    <string name="add_tag">Add tag</string>
+    <string name="remove_tag">Remove tag</string>
 </resources>

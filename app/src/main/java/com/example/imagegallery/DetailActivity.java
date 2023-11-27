@@ -140,7 +140,7 @@ public class DetailActivity extends AppCompatActivity  {
                 popupMenu.getMenuInflater().inflate(R.menu.detail_tag_popup, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(item -> {
                     int itemId = item.getItemId();
-                    if(R.id.add == itemId){
+                    if(R.id.add_tag == itemId){
                         Dialog dialog = new Dialog(DetailActivity.this);
                         dialog.setContentView(R.layout.dialog_addtag);
 
@@ -167,7 +167,7 @@ public class DetailActivity extends AppCompatActivity  {
 
                         dialog.show();
                     }
-                    else if(R.id.remove == itemId){
+                    else if(R.id.remove_tag == itemId){
                         Dialog dialog = new Dialog(DetailActivity.this);
                         dialog.setContentView(R.layout.dialog_addtag);
 

@@ -88,7 +88,7 @@
     <string name="album_does_not_exist">Album không tồn tại</string>
     <string name="image_has_been_deleted_from">"Ảnh đã được xoá khỏi "</string>
     <string name="image_does_not_exist_in_this_album">Ảnh không tồn tại trong album</string>
-    <string name="trash">Đã xoá</string>
+    <string name="trash">Thùng rác</string>
     <string name="favorites">Yêu thích</string>
     <string name="password_has_been_set">Mật khẩu đã được thiết lập</string>
     <string name="password_does_not_match">Mật khẩu không khớp</string>
@@ -110,4 +110,6 @@
     <string name="en_us">Tiếng Anh (Mĩ)</string>
     <string name="vie">Tiếng Việt</string>
     <string name="auto">Tự động</string>
+    <string name="add_tag">Thêm thẻ</string>
+    <string name="remove_tag">Gỡ thẻ</string>
 </resources>

@@ -42,7 +42,15 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
         AlbumData album = albums.get(position);
-        holder.tvAlbumName.setText(album.getAlbumName());
+        String albumName = album.getAlbumName();
+
+        if(albumName.equals("Trash"))
+            holder.tvAlbumName.setText(context.getString(R.string.trash));
+        else if(albumName.equals("Favorites"))
+            holder.tvAlbumName.setText(context.getString(R.string.favorites));
+        else
+            holder.tvAlbumName.setText(albumName);
+
         if(album.getImages().size() == 1 || album.getImages().size() == 0){
             String imageUnit = context.getString(R.string.image_unit_1);
             holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
@@ -89,7 +97,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                             ((MainActivity) context).setCurrentImages(images);
                             ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
                             ((MainActivity) context).updateButtonInAlbum();
-                            SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
                         }
                     }
                 });
