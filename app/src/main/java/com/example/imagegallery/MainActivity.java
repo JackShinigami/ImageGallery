@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         appContext = getApplicationContext();
-
         //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
         //currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
@@ -266,6 +265,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    Thread updateImagesThread;
+
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onResume() {
@@ -293,8 +294,7 @@ public class MainActivity extends AppCompatActivity {
         //test, comment the line below if it doesn't work
         checkPhotoInAlbum();
 
-
-        Thread updateImagesThread = new Thread(new Runnable() {
+        updateImagesThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -368,6 +368,16 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
         SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(loading) {
+            updateImagesThread.interrupt();
+            loading = false;
+            Log.d(TAG, "onStop: interrupted");
+        }
     }
 
     @Override

@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -65,9 +66,11 @@ public class ImageObject implements Parcelable {
     public String getFilePath() {
         return filePath;
     }
+
     public long getLastModifiedDate() {
         return lastModifiedDate;
     }
+
     public String getFileName() {
         return fileName;
     }
@@ -75,7 +78,7 @@ public class ImageObject implements Parcelable {
     public static void getImage(Context context, File folder, ArrayList<ImageObject> images) {
         File[] files = folder.listFiles();
 
-        if(files != null) {
+        if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     if (file.getName().equals("cache") || file.getName().equals(".thumbnails"))
@@ -89,6 +92,7 @@ public class ImageObject implements Parcelable {
                     if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp") || fileNameLower.endsWith(".heic")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
                         images.add(image);
+                        Log.d("GetImage", "Image: " + image.getFilePath());
                     }
                 }
             }

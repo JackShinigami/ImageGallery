@@ -46,6 +46,7 @@ public class SearchActivity extends AppCompatActivity {
     private static boolean isRunning = false;
     private boolean loaded = false;
     private Thread background;
+    private boolean isLoading = false;
 
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler()
@@ -55,6 +56,7 @@ public class SearchActivity extends AppCompatActivity {
             if(msg.what == 0)
             {
                 loaded = true;
+                isLoading = false;
                 background.interrupt();
             }
         };
@@ -75,14 +77,16 @@ public class SearchActivity extends AppCompatActivity {
             public void run() {
                 try {
                     for (ImageObject imageObject : images) {
+                        if(!isLoading)
+                            break;
                         try {
                             ExifInterface exif = new ExifInterface(imageObject.getFilePath());
                             float[] latLong = new float[2];
                             if (exif.getLatLong(latLong)) {
                                 imageObject.setLatLong(latLong);
-                                Log.d("ImageObject", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
+                                Log.d("SearchAct", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
                             } else {
-                                Log.d("ImageObject", "lat: null long: null");
+                                Log.d("SearchAct", "lat: null long: null");
                                 imageObject.setLatLong(null);
                             }
 
@@ -103,6 +107,8 @@ public class SearchActivity extends AppCompatActivity {
                 handler.sendEmptyMessage(0);
             }
         });
+
+        isLoading = true;
         background.start();
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -265,6 +271,16 @@ public class SearchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isRunning = false;
+        isLoading = false;
         deleteImages.clear();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        isRunning = false;
+        isLoading = false;
+        deleteImages.clear();
+        finish();
     }
 }
