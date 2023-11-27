@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AlbumViewHolder extends RecyclerView.ViewHolder{
@@ -13,14 +14,14 @@ public class AlbumViewHolder extends RecyclerView.ViewHolder{
     TextView tvAlbumSize;
 
     ImageView albumThumbnail;
+    CardView cardView;
 
-    ImageView moreMenu;
 
     public AlbumViewHolder(@NonNull View itemView) {
         super(itemView);
+        cardView = itemView.findViewById(R.id.card_view_album);
         tvAlbumName = itemView.findViewById(R.id.tv_album_name);
         tvAlbumSize = itemView.findViewById(R.id.tv_album_size);
         albumThumbnail = itemView.findViewById(R.id.album_thumbnail);
-        moreMenu = itemView.findViewById(R.id.iv_more);
     }
 }

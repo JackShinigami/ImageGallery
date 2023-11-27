@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
                         albumFragment = AlbumFragment.newInstance(defaultAlbums);
                         FragmentManager albumFragmentManager = getSupportFragmentManager();
-                        FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
+                        FragmentTransaction AlbumFragmentTransaction = albumFragmentManager.beginTransaction();
                         AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment, "Album");
                         AlbumFragmentTransaction.addToBackStack("MainStack");
                         AlbumFragmentTransaction.commit();

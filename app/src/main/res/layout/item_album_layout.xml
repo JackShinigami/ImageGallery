@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
+    android:id="@+id/card_view_album"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardBackgroundColor="#0000"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    >
-
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="?android:attr/selectableItemBackground"
-       >
+        android:background="?android:attr/selectableItemBackground">
+
         <ImageView
-            android:layout_width="66dp"
-            android:layout_height="66dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:id="@+id/album_thumbnail"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:scaleX="0.6"
-            android:scaleY="0.6"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
             android:src="@drawable/icon_albums"/>
 
         <TextView
@@ -30,32 +27,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_album_name"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
             android:textSize="16sp"
             android:textStyle="bold"
             android:text="@string/album_name"
-            android:layout_toEndOf="@+id/album_thumbnail"/>
+            android:layout_below="@+id/album_thumbnail"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_album_size"
             android:layout_marginLeft="10dp"
             android:textSize="14sp"
-            android:textStyle="bold"
             android:text="@string/example_number"
-            android:layout_toEndOf="@+id/album_thumbnail"
             android:layout_below="@+id/tv_album_name"/>
-
-        <ImageView
-            android:id="@+id/iv_more"
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_more"/>
     </RelativeLayout>
-
 </androidx.cardview.widget.CardView>

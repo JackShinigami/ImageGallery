@@ -13,6 +13,8 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +47,7 @@ public class AlbumFragment extends Fragment {
         return fragment;
     }
 
-    private RecyclerView rvAlbums, rvUitilities;
+    private RecyclerView rvAlbums, rvUtilities;
     private AlbumAdapter adapter, adapterUtilities;
     private ImageView btnAddAlbum;
 
@@ -83,16 +85,27 @@ public class AlbumFragment extends Fragment {
         AlbumData.sortAlbumByDate(albums, ascending);
 
         rvAlbums = albumFragment.findViewById(R.id.rv_albums);
-        rvAlbums.setLayoutManager(new LinearLayoutManager(albumFragment.getContext()));
+//        RecyclerView.ItemDecoration itemDecoration = new
+//                DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+//        rvAlbums.addItemDecoration(itemDecoration);
+        rvAlbums.setHasFixedSize(true);
+        rvAlbums.setItemViewCacheSize(20);
 
         adapter = new AlbumAdapter(albumFragment.getContext(), albums);
         rvAlbums.setAdapter(adapter);
+        rvAlbums.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+
 
         //Utilities section
-        rvUitilities = albumFragment.findViewById(R.id.rv_utilities);
-        rvUitilities.setLayoutManager(new LinearLayoutManager(albumFragment.getContext()));
-        adapterUtilities = new AlbumAdapter(albumFragment.getContext(), defaultAlbums);
-        rvUitilities.setAdapter(adapterUtilities);
+        rvUtilities = albumFragment.findViewById(R.id.rv_utilities);
+        //rvUtilities.addItemDecoration(itemDecoration);
+        rvUtilities.setHasFixedSize(true);
+        rvUtilities.setItemViewCacheSize(20);
+
+        adapterUtilities = new AlbumAdapter(albumFragment.getContext(), albums);
+        rvUtilities.setAdapter(adapterUtilities);
+        rvUtilities.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
 
         btnAddAlbum = albumFragment.findViewById(R.id.btnAddAlbum);
@@ -212,6 +225,6 @@ public class AlbumFragment extends Fragment {
     public void setDefaultAlbums(ArrayList<AlbumData> defaultAlbums) {
         this.defaultAlbums = defaultAlbums;
         adapterUtilities = new AlbumAdapter(getContext(), defaultAlbums);
-        rvUitilities.setAdapter(adapterUtilities);
+        rvUtilities.setAdapter(adapterUtilities);
     }
 }

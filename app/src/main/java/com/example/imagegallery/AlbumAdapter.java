@@ -43,18 +43,18 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
         AlbumData album = albums.get(position);
         holder.tvAlbumName.setText(album.getAlbumName());
-        if(album.getImages().size() == 1 || album.getImages().size() == 0){
-            String imageUnit = context.getString(R.string.image_unit_1);
-            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
-        }
-        else{
-            String imageUnit = context.getString(R.string.image_unit_n);
-            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
-        }
+
+
+        //holder.tvAlbumSize.setText(album.getImages().size());
+
+
         int resID = album.getThumbnailPath();
 
         holder.albumThumbnail.setImageResource(resID);
         AlbumHelper albumHelper = AlbumHelper.getInstance();
+        ViewGroup.LayoutParams layoutParams = holder.cardView.getLayoutParams();
+        layoutParams.width = WindowSize.getWidth() / 3;
+        layoutParams.height = layoutParams.width;
         /*if(albumHelper.isDefaultAlbum(album.getAlbumName())){
             holder.moreMenu.setVisibility(View.INVISIBLE);
         }
@@ -62,10 +62,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             holder.moreMenu.setVisibility(View.VISIBLE);
         }*/
 
-        holder.moreMenu.setOnClickListener(new View.OnClickListener() {
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                showPopupMenu(holder.moreMenu, position);
+            public boolean onLongClick(View v) {
+                showPopupMenu(holder.itemView, position);
+                return false;
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
