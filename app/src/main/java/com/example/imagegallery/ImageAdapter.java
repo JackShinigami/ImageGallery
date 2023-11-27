@@ -1,12 +1,15 @@
 package com.example.imagegallery;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -129,14 +132,36 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
                                 thread.start();
                             } else if (R.id.delete_to_trash == itemId) {
-                                imageObject.deleteToTrash(v.getContext());
-                                data.remove(imageObject);
-                                if(SearchActivity.isSearchActivityRunning())
-                                {
-                                    SearchActivity.addDeleteImage(imageObject);
-                                    ((SearchActivity)v.getContext()).onResume();
-                                }
-                                notifyDataSetChanged();
+                                Dialog dialog = new Dialog(v.getContext());
+                                dialog.setContentView(R.layout.dialog_save_edited_image);
+                                TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                                txtTitle.setText(R.string.delete_image_confirm);
+                                Button btnYes = dialog.findViewById(R.id.btn_save);
+                                Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                                btnYes.setText(R.string.delete);
+                                btnNo.setText(R.string.cancel);
+                                btnYes.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        imageObject.deleteToTrash(v.getContext());
+                                        data.remove(imageObject);
+                                        if(SearchActivity.isSearchActivityRunning())
+                                        {
+                                            SearchActivity.addDeleteImage(imageObject);
+                                            ((SearchActivity)v.getContext()).onResume();
+                                        }
+                                        dialog.dismiss();
+                                        notifyDataSetChanged();
+                                    }
+                                });
+                                btnNo.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                dialog.show();
+
                             }
                             return  true;
                         }

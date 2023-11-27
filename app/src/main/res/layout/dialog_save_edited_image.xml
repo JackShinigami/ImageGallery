@@ -6,14 +6,17 @@
     android:layout_gravity="center"
     >
     <TextView
+        android:id="@+id/tv_message_dialog"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:padding="12dp"
-        android:text="Do you want to save the edited image"
+        android:layout_height="wrap_content"
+        android:text="@string/save_image_confirm"
         android:layout_gravity="center"
         android:textSize="16dp"
         android:textAlignment="center"
         android:textStyle="bold"
+        android:gravity="center"
+        android:padding="15dp"
+
         />
 
     <LinearLayout
@@ -24,9 +27,9 @@
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="cancel"
+            android:text="@string/cancel"
             android:layout_weight="1"
+            android:layout_gravity="center"
             android:layout_margin="5dp"
             />
         <Button
@@ -34,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="save"
+            android:text="@string/save"
             android:layout_weight="1"
             android:layout_margin="5dp"
 

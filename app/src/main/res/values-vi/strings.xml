@@ -112,4 +112,10 @@
     <string name="auto">Tự động</string>
     <string name="add_tag">Thêm thẻ</string>
     <string name="remove_tag">Gỡ thẻ</string>
+    <string name="delete_image_confirm">Bức ảnh này sẽ được xóa khỏi thư viện.</string>
+    <string name="delete_images_confirm">Những bức ảnh này sẽ được xóa khỏi thư viện.</string>
+    <string name="delete_trash_confirm">Bức ảnh này sẽ được sẽ vĩnh viễn.</string>
+    <string name="delete_trashes_confirm">Những bức ảnh này sẽ được xóa vĩnh viễn.</string>
+    <string name="save_image_confirm">Bạn có muốn lưu các thay đổi không?</string>
+
 </resources>

@@ -2,6 +2,7 @@ package com.example.imagegallery;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -320,31 +321,30 @@ public class ImageFragment extends Fragment {
                         }
                         else if(id == R.id.delete_images)
                         {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                for(ImageObject imageObject : selectedImages){
-                                    if(SearchActivity.isSearchActivityRunning())
-                                    {
-                                        SearchActivity.addDeleteImage(imageObject);
-                                    }
-                                    imageObject.deleteToTrash(getContext());
-                                    images.remove(imageObject);
+                            Dialog dialog = new Dialog(getContext());
+                            dialog.setContentView(R.layout.dialog_save_edited_image);
+                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                            txtTitle.setText(R.string.delete_images_confirm);
+                            Button btnYes = dialog.findViewById(R.id.btn_save);
+                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                            btnYes.setText(R.string.delete);
+                            btnNo.setText(R.string.cancel);
+                            btnYes.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    deleteSelectedImages();
+                                    dialog.dismiss();
                                 }
-                                if(SearchActivity.isSearchActivityRunning())
-                                {
-                                    ((SearchActivity)getContext()).onResume();
+                            });
+                            btnNo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
                                 }
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-                            try {
-                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                            }
-                            catch(Exception e){
+                            });
 
-                            }
-                            reload(false);
+                            dialog.show();
+
                         }
                         else if(id == R.id.upload_images)
                         {
@@ -371,24 +371,28 @@ public class ImageFragment extends Fragment {
                         } else if (id == R.id.cancel_action) {
                             reload(false);
                         } else if (id == R.id.delete_trash) {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                for(ImageObject imageObject : selectedImages){
-                                    imageObject.deleteFile(getContext());
-                                    images.remove(imageObject);
+                            Dialog dialog = new Dialog(getContext());
+                            dialog.setContentView(R.layout.dialog_save_edited_image);
+                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                            txtTitle.setText(R.string.delete_trashes_confirm);
+                            Button btnYes = dialog.findViewById(R.id.btn_save);
+                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                            btnYes.setText(R.string.delete);
+                            btnNo.setText(R.string.cancel);
+                            btnYes.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    deleteTrashImages();
+                                    dialog.dismiss();
                                 }
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-
-                            try {
-                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                            }
-                            catch(Exception e){
-
-                            }
-                            reload(false);
+                            });
+                            btnNo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            dialog.show();
                         } else if (id == R.id.restore_images) {
                             ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
                             if(selectedImages.size() > 0)
@@ -521,5 +525,54 @@ public class ImageFragment extends Fragment {
                 popupMenu.show();
             }
         });
+    }
+
+    void deleteSelectedImages(){
+        ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+        if(selectedImages.size() > 0)
+        {
+            for(ImageObject imageObject : selectedImages){
+                if(SearchActivity.isSearchActivityRunning())
+                {
+                    SearchActivity.addDeleteImage(imageObject);
+                }
+                imageObject.deleteToTrash(getContext());
+                images.remove(imageObject);
+            }
+            if(SearchActivity.isSearchActivityRunning())
+            {
+                ((SearchActivity)getContext()).onResume();
+            }
+        }
+        else
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+        try {
+            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+        }
+        catch(Exception e){
+
+        }
+        reload(false);
+    }
+
+    void deleteTrashImages(){
+        ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+        if(selectedImages.size() > 0)
+        {
+            for(ImageObject imageObject : selectedImages){
+                imageObject.deleteFile(getContext());
+                images.remove(imageObject);
+            }
+        }
+        else
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+
+        try {
+            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+        }
+        catch(Exception e){
+
+        }
+        reload(false);
     }
 }

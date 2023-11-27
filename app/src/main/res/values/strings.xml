@@ -105,4 +105,10 @@
     <string name="auto">Auto</string>
     <string name="add_tag">Add tag</string>
     <string name="remove_tag">Remove tag</string>
+    <string name="delete_image_confirm">This photo will be deleted from gallery.</string>
+    <string name="delete_images_confirm">These photos will be deleted from gallery.</string>
+    <string name="delete_trash_confirm">This photo will be deleted permanently.</string>
+    <string name="delete_trashes_confirm">These photos will be deleted permanently.</string>
+    <string name="save_image_confirm">Do you want to save the edited image?</string>
+
 </resources>
