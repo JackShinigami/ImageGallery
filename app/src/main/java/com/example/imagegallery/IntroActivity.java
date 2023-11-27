@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
 
 import android.Manifest;
 import android.content.Intent;
@@ -32,6 +33,24 @@ public class IntroActivity extends AppCompatActivity {
             } else if (SharedPreferencesManager.loadThemeState(this) == 2) {
                 Toast.makeText(this, "IntroActivity", Toast.LENGTH_SHORT).show();
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            }
+
+            if(SharedPreferencesManager.loadLanguageState(this) == -1){
+                // get the current language of system
+                LocaleListCompat localeListCompat = LocaleListCompat.getAdjustedDefault();
+                String language = localeListCompat.get(0).getLanguage();
+                if(language.equals("vi")){
+                    SharedPreferencesManager.saveLanguageState(this, 1);
+                } else if(language.equals("en")){
+                    SharedPreferencesManager.saveLanguageState(this, 0);
+                }
+                AppCompatDelegate.setApplicationLocales(localeListCompat);
+            } else {
+                if(SharedPreferencesManager.loadLanguageState(this) == 0){
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("en"));
+                } else if(SharedPreferencesManager.loadLanguageState(this) == 1){
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("vi"));
+                }
             }
         } catch (Exception e) {
             Toast.makeText(this, "Error: IntroActivity", Toast.LENGTH_SHORT).show();
