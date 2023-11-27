@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,12 +64,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(selectedItems.get(position)){
-                        selectedItems.put(position, false);
-                        holder.imageView.setAlpha(1f);
-                    }else{
-                        selectedItems.put(position, true);
-                        holder.imageView.setAlpha(0.5f);
+                    if(selectedItems.size() < 100){
+                        if(selectedItems.get(position)){
+                            selectedItems.put(position, false);
+                            holder.imageView.setAlpha(1f);
+                        }else{
+                            selectedItems.put(position, true);
+                            holder.imageView.setAlpha(0.5f);
+                        }
                     }
                 }
             });
@@ -204,6 +207,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     public void SelectAll(){
         for(int i = 0; i < data.size(); i++){
             selectedItems.put(i, true);
+            if(i == 100){
+                break;
+            }
         }
         notifyDataSetChanged();
     }
