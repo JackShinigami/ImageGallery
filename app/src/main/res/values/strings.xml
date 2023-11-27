@@ -95,4 +95,12 @@
     <string name="search">Search</string>
     <string name="favorite">Favorite</string>
     <string name="album">Album</string>
+    <string name="two_columns">Two columns</string>
+    <string name="three_columns">Three columns</string>
+    <string name="four_columns">Four columns</string>
+    <string name="save">Save</string>
+    <string name="language">Language</string>
+    <string name="en_us">English - US</string>
+    <string name="vie">Vietnamese</string>
+    <string name="auto">Auto</string>
 </resources>

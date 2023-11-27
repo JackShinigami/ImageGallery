@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 public class IntroActivity extends AppCompatActivity {
@@ -36,6 +37,7 @@ public class IntroActivity extends AppCompatActivity {
             Toast.makeText(this, "Error: IntroActivity", Toast.LENGTH_SHORT).show();
         }
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_intro);
 
 

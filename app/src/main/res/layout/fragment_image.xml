@@ -8,15 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:layout_weight="10">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/select"
+            android:layout_toStartOf="@+id/btnChangeGrid"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_multiselect"
             android:id="@+id/btnSelect"
-            android:layout_toLeftOf="@+id/btnChangeGrid"
-            android:textSize="12dp"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
             android:layout_centerVertical="true"
             />
 

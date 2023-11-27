@@ -1,21 +1,17 @@
 package com.example.imagegallery;
 
-import static android.provider.Settings.System.getString;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
+import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.imagegallery.databinding.DialogLanguageSelectionBinding;
 import com.example.imagegallery.databinding.DialogThemeSelectionBinding;
 import com.example.imagegallery.databinding.SettingListItemBinding;
 import com.example.imagegallery.placeholder.SettingPlaceholderContent.SettingPlaceholderItem;
@@ -49,9 +45,10 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
         holder.tvProperty.setText(properties.get(position).property);
         holder.tvValue.setText(properties.get(position).value);
 
-        String theme= holder.itemView.getContext().getString(R.string.theme);
+        int themeState = SharedPreferencesManager.loadThemeState(holder.itemView.getContext());
+        int languageState = SharedPreferencesManager.loadLanguageState(holder.itemView.getContext());
+
         if(position == 0) {
-            int themeState = SharedPreferencesManager.loadThemeState(holder.itemView.getContext());
             switch (themeState) {
                 case 0:
                     holder.tvValue.setText(holder.itemView.getContext().getString(R.string.dark));
@@ -63,6 +60,16 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
                     holder.tvValue.setText(holder.itemView.getContext().getString(R.string.defaultTheme));
                     break;
             }
+        } else if(position == 1){
+            switch (languageState) {
+                case 0:
+                    holder.tvValue.setText(holder.itemView.getContext().getString(R.string.en_us));
+                    break;
+                case 1:
+                    holder.tvValue.setText(holder.itemView.getContext().getString(R.string.vie));
+                    break;
+            }
+
         }
 
 //        switch (position) {
@@ -118,6 +125,52 @@ public class SettingItemRecyclerViewAdapter extends RecyclerView.Adapter<Setting
                     askingThemeDialog.show();
 
                     break;
+                case 1:
+
+                    View dialogLangView = LayoutInflater.from(v.getContext()).inflate(R.layout.dialog_language_selection, null);
+                    AlertDialog.Builder askingLanguageDialogBuilder = new AlertDialog.Builder(v.getContext());
+                    askingLanguageDialogBuilder.setView(dialogLangView);
+                    askingLanguageDialogBuilder.setNegativeButton(v.getContext().getString(R.string.cancel), (dialog, which) -> {
+                        dialog.dismiss();
+                    });
+
+                    DialogLanguageSelectionBinding bindingLang = DialogLanguageSelectionBinding.bind(dialogLangView);
+
+                    String[] languages = {
+                            v.getContext().getString(R.string.en_us),
+                            v.getContext().getString(R.string.vie)
+                    };
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(v.getContext(), android.R.layout.simple_list_item_single_choice, languages);
+                    bindingLang.lvLanguageList.setAdapter(adapter);
+                    bindingLang.lvLanguageList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+
+                    // set checked item
+                    if(languageState == 0){
+                        bindingLang.lvLanguageList.setItemChecked(0, true);
+                    } else if(languageState == 1){
+                        bindingLang.lvLanguageList.setItemChecked(1, true);
+                    }
+
+
+
+                    // set positive button
+                    askingLanguageDialogBuilder.setPositiveButton(v.getContext().getString(R.string.ok), (dialog, which) -> {
+                        int selectedPosition = bindingLang.lvLanguageList.getCheckedItemPosition();
+                        if(selectedPosition == 0){
+                            ((SettingActivity) v.getContext()).onLanguageChanged("English");
+                        } else if(selectedPosition == 1){
+                            ((SettingActivity) v.getContext()).onLanguageChanged("Vietnamese");
+                        }
+                    });
+
+
+                    // create and show the dialog
+                    AlertDialog askingLanguageDialog = askingLanguageDialogBuilder.create();
+                    askingLanguageDialog.show();
+
+                    break;
+
             }
         });
     }
