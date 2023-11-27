@@ -18,6 +18,8 @@ public class SettingPlaceholderContent {
      * Setting placeholder item. Contains the id, property, and value of each setting property.
      */
 
+    private int currentLanguageState;
+
     public static final List<SettingPlaceholderItem> ITEMS = new ArrayList<SettingPlaceholderItem>();
 
     public static final Map<String, SettingPlaceholderItem> ITEM_MAP = new HashMap<String, SettingPlaceholderItem>();
@@ -33,7 +35,12 @@ public class SettingPlaceholderContent {
 
     }
 
-    public SettingPlaceholderContent() {
+    public SettingPlaceholderContent() {;
+    }
+
+    public static void clearItems() {
+        ITEMS.clear();
+        ITEM_MAP.clear();
     }
 
     public static class SettingPlaceholderItem {
