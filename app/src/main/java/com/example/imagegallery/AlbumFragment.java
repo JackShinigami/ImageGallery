@@ -75,6 +75,7 @@ public class AlbumFragment extends Fragment {
         if(albumNameList != null) {
             for (String albumName : albumNameList) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
+                album.cleanUnexistingImages(getContext());
                 albums.add(album);
             }
         }

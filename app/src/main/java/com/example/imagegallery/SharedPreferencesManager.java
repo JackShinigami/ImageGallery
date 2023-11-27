@@ -189,7 +189,7 @@ public class SharedPreferencesManager {
 
     public static int loadLanguageState(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        int state = sharedPreferences.getInt(CURRENT_LANGUAGE, 0);
+        int state = sharedPreferences.getInt(CURRENT_LANGUAGE, -1);
         return state;
     }
 
