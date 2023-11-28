@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,10 +56,9 @@ public class ImageFragment extends Fragment {
     }
 
 
-    public static ImageFragment newInstance(ArrayList<ImageObject> images, String fragmentName) {
+    public static ImageFragment newInstance(String fragmentName) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, images);
         args.putString(ARG_PARAM2, fragmentName);
         fragment.setArguments(args);
         return fragment;
@@ -80,13 +80,17 @@ public class ImageFragment extends Fragment {
     }
     private static SortType sortType = SortType.DATE;
 
-
+    ImagesViewModel imagesViewModel;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            images = getArguments().getParcelableArrayList(ARG_PARAM1);
+            imagesViewModel = new ViewModelProvider(requireActivity()).get(ImagesViewModel.class);
             fragmentName = getArguments().getString(ARG_PARAM2);
+            if(fragmentName.equals("Gallery"))
+                images = imagesViewModel.getImagesList().getValue();
+            else
+                images = imagesViewModel.getImagesAlbum().getValue();
         }
         if(images == null)
             images = new ArrayList<ImageObject>();
