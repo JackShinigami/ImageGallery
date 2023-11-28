@@ -69,7 +69,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                         holder.imageView.setAlpha(1f);
                     }
                     else{
-                        if(selectedItems.size() < 100){
+                        if(countSeleted() < 100){
                             selectedItems.put(position, true);
                             holder.imageView.setAlpha(0.5f);
                         }
@@ -216,6 +216,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             }
         }
         notifyDataSetChanged();
+    }
+
+    public int countSeleted(){
+        int count = 0;
+        for(int i = 0; i < data.size(); i++){
+            if(selectedItems.get(i)){
+                count++;
+            }
+        }
+        return count;
     }
 
 
