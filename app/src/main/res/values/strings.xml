@@ -50,7 +50,7 @@
     <string name="add">Add</string>
     <string name="remove">Remove</string>
     <string name="remove_from_album">Remove from Album</string>
-    <string name="upload">Upload</string>
+    <string name="backup">Back up</string>
     <string name="download_backup">Download backup</string>
     <string name="delete_duplicate_images">Delete duplicate images</string>
     <string name="search_by_name">Search by name</string>
@@ -110,5 +110,6 @@
     <string name="delete_trash_confirm">This photo will be deleted permanently.</string>
     <string name="delete_trashes_confirm">These photos will be deleted permanently.</string>
     <string name="save_image_confirm">Do you want to save the edited image?</string>
+    <string name="over_100_images">You can only select up to 100 images</string>
 
 </resources>
