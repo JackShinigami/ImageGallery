@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
 
                         albumFragment = AlbumFragment.newInstance(defaultAlbums);
-                        FragmentManager albumFragmentManager = getSupportFragmentManager();
+
                         FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                         AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment, "Album");
                         AlbumFragmentTransaction.addToBackStack("MainStack");
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         imageFragment = ImageFragment.newInstance(images, "Gallery");
-                        FragmentManager fragmentManager = getSupportFragmentManager();
+
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.fragment_container, imageFragment, "Gallery");
                         fragmentTransaction.addToBackStack("MainStack");
@@ -650,6 +650,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setImageFragment(ImageFragment imageFragment) {
         this.imageFragment = imageFragment;
+    }
+
+    public ArrayList<ImageObject> getAllImages(){
+        return images;
     }
 
     public void updateButtonInAlbum()

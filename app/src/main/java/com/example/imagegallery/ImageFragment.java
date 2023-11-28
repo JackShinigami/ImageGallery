@@ -90,16 +90,6 @@ public class ImageFragment extends Fragment {
         }
         if(images == null)
             images = new ArrayList<ImageObject>();
-
-        if(images.size() > 0) {
-            for (ImageObject image : images) {
-                ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(getContext(), image.getFilePath());
-                if (albumNames != null)
-                    image.setAlbumNames(getContext(), albumNames);
-                else
-                    image.setAlbumNames(getContext(), new ArrayList<String>());
-            }
-        }
     }
 
     @Override

@@ -92,7 +92,6 @@ public class ImageObject implements Parcelable {
                     if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp") || fileNameLower.endsWith(".heic")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
                         images.add(image);
-                        Log.d("GetImage", "Image: " + image.getFilePath());
                     }
                 }
             }
@@ -442,7 +441,6 @@ public class ImageObject implements Parcelable {
                         float confidence = label.getConfidence();
                         if(confidence > 0.8) {
                             tags.add(eachLabel);
-                            Log.d("Taggg", eachLabel + " " + tags.size());
                         }
                     }
                     SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);

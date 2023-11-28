@@ -84,9 +84,8 @@ public class SearchActivity extends AppCompatActivity {
                             float[] latLong = new float[2];
                             if (exif.getLatLong(latLong)) {
                                 imageObject.setLatLong(latLong);
-                                Log.d("SearchAct", imageObject.getFilePath() + " " + imageObject.getAddress(getApplicationContext()));
+                                imageObject.getAddress(getApplicationContext());
                             } else {
-                                Log.d("SearchAct", "lat: null long: null");
                                 imageObject.setLatLong(null);
                             }
 
@@ -96,6 +95,8 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     for(ImageObject imageObject : images){
+                        if(!isLoading)
+                            break;
                         taskCompletionSource = new TaskCompletionSource<>();
                         imageObject.getTags(getApplicationContext(), taskCompletionSource);
                     }
