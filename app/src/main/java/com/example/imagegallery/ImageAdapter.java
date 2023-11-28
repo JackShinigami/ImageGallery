@@ -64,13 +64,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(selectedItems.size() < 100){
-                        if(selectedItems.get(position)){
-                            selectedItems.put(position, false);
-                            holder.imageView.setAlpha(1f);
-                        }else{
+                    if(selectedItems.get(position)){
+                        selectedItems.put(position, false);
+                        holder.imageView.setAlpha(1f);
+                    }
+                    else{
+                        if(selectedItems.size() < 100){
                             selectedItems.put(position, true);
                             holder.imageView.setAlpha(0.5f);
+                        }
+                        else{
+                            Toast.makeText(v.getContext(), R.string.over_100_images, Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
