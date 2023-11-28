@@ -87,7 +87,7 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/rv_albums"
-               android:background="#0000"
+               android:background="@color/zxing_transparent"
                android:layout_below="@+id/tvMyAlbums"
                />
 
@@ -106,7 +106,7 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/rv_utilities"
-               android:background="#0000"
+               android:background="@color/zxing_transparent"
                android:layout_below="@+id/tvUtilities"
                />
 
