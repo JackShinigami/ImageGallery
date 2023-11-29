@@ -1,6 +1,8 @@
 package com.example.imagegallery;
 
 
+import static android.provider.Settings.System.getString;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,19 +31,23 @@ public class AlbumHelper {
 
     private static ArrayList<String> questionList;
 
+    Context context = MainActivity.getContext();
+
     private AlbumHelper(){
         defaultAlbums = new HashSet<>();
         questionList = new ArrayList<>();
-        questionList.add("What is your favorite color?");
-        questionList.add("What is your favorite food?");
-        questionList.add("What is your favorite movie?");
-        questionList.add("What is your favorite animal?");
-        questionList.add("What is your favorite sport?");
-        questionList.add("What is your favorite book?");
-        questionList.add("What is your favorite song?");
-        questionList.add("What is your favorite game?");
-        questionList.add("What is your favorite TV show?");
-        questionList.add("What is your favorite subject?");
+
+        // add string from strings.xml resources to questionList (R.string.what_is_your_favorite_color)
+        questionList.add(context.getString(R.string.what_is_your_favorite_color));
+        questionList.add(context.getString(R.string.what_is_your_favorite_food));
+        questionList.add(context.getString(R.string.what_is_your_favorite_movie));
+        questionList.add(context.getString(R.string.what_is_your_favorite_animal));
+        questionList.add(context.getString(R.string.what_is_your_favorite_sport));
+        questionList.add(context.getString(R.string.what_is_your_favorite_book));
+        questionList.add(context.getString(R.string.what_is_your_favorite_song));
+        questionList.add(context.getString(R.string.what_is_your_favorite_game));
+        questionList.add(context.getString(R.string.what_is_your_favorite_tv_show));
+        questionList.add(context.getString(R.string.what_is_your_favorite_subject));
 
     }
 
@@ -75,7 +81,7 @@ public class AlbumHelper {
         builder.setView(view);
 
         ArrayList<String> finalAlbumNameList = albumNameList;
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String albumName = editName.getText().toString();
@@ -85,10 +91,10 @@ public class AlbumHelper {
                        if(albumData.addImage(imageObject)){
                            SharedPreferencesManager.saveAlbumData(context, albumData);
                            imageObject.addAlbumName(context,albumName);
-                           Toast.makeText(context, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
+                           Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
                        }
                        else{
-                           Toast.makeText(context, "Image already exists in this album", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(context, context.getString(R.string.image_already_exists_in_this_album), Toast.LENGTH_SHORT).show();
                        }
                     }
                     else{
@@ -98,16 +104,16 @@ public class AlbumHelper {
                         imageObject.addAlbumName(context,albumName);
                         finalAlbumNameList.add(albumName);
                         SharedPreferencesManager.saveAlbumNameList(context, finalAlbumNameList);
-                        Toast.makeText(context, "Image has been added to " + albumName, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
-                    Toast.makeText(context, "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,context.getString( R.string.album_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(context.getString(R.string.cancel), null);
         builder.create();
         builder.show();
     }
@@ -127,7 +133,7 @@ public class AlbumHelper {
         builder.setView(view);
 
         ArrayList<String> finalAlbumNameList = albumNameList;
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String albumName = editName.getText().toString();
@@ -141,20 +147,20 @@ public class AlbumHelper {
                             }
 
                         }
-                        Toast.makeText(context, "Images have been add to album " + albumName, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        Toast.makeText(context, "Album does not exist", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.album_does_not_exist), Toast.LENGTH_SHORT).show();
                     }
 
                 }
                 else{
-                    Toast.makeText(context, "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, context.getString(R.string.album_name_cannot_be_empty), Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(context.getString(R.string.cancel), null);
         builder.create();
         builder.show();
     }
@@ -167,10 +173,10 @@ public class AlbumHelper {
 
         if(albumData.deleteImage(imageObject)){
             SharedPreferencesManager.saveAlbumData(context, albumData);
-            Toast.makeText(context, "Image has been deleted from " + albumName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.image_has_been_deleted_from) + albumName, Toast.LENGTH_SHORT).show();
         }
         else{
-            Toast.makeText(context, "Image does not exist in this album", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.image_does_not_exist_in_this_album, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -178,7 +184,7 @@ public class AlbumHelper {
         ArrayList<AlbumData> albums = new ArrayList<>();
 
         File externalStorage = Environment.getExternalStorageDirectory();
-        File trashDirectory = new File(externalStorage, "Trash");
+        File trashDirectory = new File(context.getExternalFilesDir(null), "Trash");
         ArrayList<ImageObject> trashImages = new ArrayList<>();
         if(!trashDirectory.exists()) {
             trashDirectory.mkdir();
@@ -191,12 +197,14 @@ public class AlbumHelper {
         AlbumData trash = new AlbumData("Trash", trashImages, R.drawable.ic_trash);
         addDefaultAlbum(trash.getAlbumName());
         albums.add(trash);
+        SharedPreferencesManager.saveAlbumData(context, trash);
+
 
         AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
 
 
         if(favorite == null){
-            favorite = new AlbumData("Favorites", R.drawable.ic_favorite);
+            favorite = new AlbumData("Favorites", R.drawable.ic_loved);
             albumHelper.addDefaultAlbum(favorite.getAlbumName());
             SharedPreferencesManager.saveAlbumData(context, favorite);
         }
@@ -204,7 +212,6 @@ public class AlbumHelper {
         addDefaultAlbum(favorite.getAlbumName());
         albums.add(favorite);
 
-        SharedPreferencesManager.saveAlbumData(context, new AlbumData("Trash", trashImages));
         return albums;
     }
 
@@ -250,20 +257,20 @@ public class AlbumHelper {
         TextView forgetPassword = view.findViewById(R.id.forget_password);
         forgetPassword.setVisibility(View.GONE);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
                     SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
-                    Toast.makeText(context, "Password has been set", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.password_has_been_set, Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    Toast.makeText(context, "Password does not match", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.password_does_not_match, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(context.getString(R.string.cancel), null);
         builder.create();
         builder.show();
     }
@@ -289,22 +296,22 @@ public class AlbumHelper {
             title.setText("Enter Current Password");
             retypePassword.setVisibility(View.GONE);
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if(SharedPreferencesManager.checkAlbumPassword(context, albumName, editPassword.getText().toString())){
-                        Toast.makeText(context, "Password is correct", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.password_is_correct, Toast.LENGTH_SHORT).show();
                         passwordCheckCallBack.onPasswordChecked(true);
                     }
                     else{
-                        Toast.makeText(context, "Password is incorrect", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.password_is_incorrect, Toast.LENGTH_SHORT).show();
                         passwordCheckCallBack.onPasswordChecked(false);
 
                     }
                 }
             });
 
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     passwordCheckCallBack.onPasswordChecked(false);
@@ -333,22 +340,22 @@ public class AlbumHelper {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         questions.setAdapter(arrayAdapter);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(answer.getText().toString().length() != 0){
                     SharedPreferencesManager.saveSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString());
-                    Toast.makeText(context, "Security question has been set", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.security_question_has_been_set, Toast.LENGTH_SHORT).show();
                     passwordCheckCallBack.onPasswordChecked(true);
                 }
                 else{
-                    Toast.makeText(context, "Answer cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.answer_cannot_be_empty, Toast.LENGTH_SHORT).show();
                     passwordCheckCallBack.onPasswordChecked(false);
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -384,11 +391,11 @@ public class AlbumHelper {
         int enterWrongAnswerTimes = SharedPreferencesManager.getEnterWrongAnswerTimes(context);
 
         if(enterWrongAnswerTimes == 5){
-            Toast.makeText(context, "You have entered wrong answer 5 times. Please try again later", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.entered_wrong_answer_5_times, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(answer.getText().toString().length() != 0){
@@ -397,7 +404,7 @@ public class AlbumHelper {
                         SharedPreferencesManager.saveEnterWrongAnswerTimes(context, 0);
                     }
                     else{
-                        Toast.makeText(context, "Security question answer is incorrect", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.security_question_answer_is_incorrect, Toast.LENGTH_SHORT).show();
                         SharedPreferencesManager.saveEnterWrongAnswerTimes(context, enterWrongAnswerTimes + 1);
                         if(enterWrongAnswerTimes == 4){
                             SharedPreferencesManager.saveTimeEnterWrongAnswer(context);
@@ -405,12 +412,12 @@ public class AlbumHelper {
                     }
                 }
                 else{
-                    Toast.makeText(context, "Answer cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.answer_cannot_be_empty, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(context.getString(R.string.cancel), null);
         builder.create();
         builder.show();
     }

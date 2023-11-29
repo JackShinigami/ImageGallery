@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -39,25 +41,35 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AlbumViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
         AlbumData album = albums.get(position);
-        holder.tvAlbumName.setText(album.getAlbumName());
+        String albumName = album.getAlbumName();
+
+        if(albumName.equals("Trash"))
+            holder.tvAlbumName.setText(context.getString(R.string.trash));
+        else if(albumName.equals("Favorites"))
+            holder.tvAlbumName.setText(context.getString(R.string.favorites));
+        else
+            holder.tvAlbumName.setText(albumName);
+
         if(album.getImages().size() == 1 || album.getImages().size() == 0){
-            holder.tvAlbumSize.setText(album.getImages().size() + " image");
+            String imageUnit = context.getString(R.string.image_unit_1);
+            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
         else{
-            holder.tvAlbumSize.setText(album.getImages().size() + " images");
+            String imageUnit = context.getString(R.string.image_unit_n);
+            holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
         int resID = album.getThumbnailPath();
 
         holder.albumThumbnail.setImageResource(resID);
         AlbumHelper albumHelper = AlbumHelper.getInstance();
-        if(albumHelper.isDefaultAlbum(album.getAlbumName())){
+        /*if(albumHelper.isDefaultAlbum(album.getAlbumName())){
             holder.moreMenu.setVisibility(View.INVISIBLE);
         }
         else{
             holder.moreMenu.setVisibility(View.VISIBLE);
-        }
+        }*/
 
         holder.moreMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +85,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     public void onPasswordChecked(boolean isPasswordCorrect) {
                         if(isPasswordCorrect){
                             ArrayList<ImageObject> images = album.getImages();
+                            ImagesViewModel imagesViewModel = new ViewModelProvider((MainActivity) context).get(ImagesViewModel.class);
+                            imagesViewModel.setImagesAlbum(images);
 
-                            ImageFragment imageFragment = ImageFragment.newInstance(images, album.getAlbumName());
+                            ImageFragment imageFragment = ImageFragment.newInstance(album.getAlbumName());
                             ((MainActivity) context).setImageFragment(imageFragment);
                             FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -86,7 +100,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                             ((MainActivity) context).setCurrentImages(images);
                             ((MainActivity) context).setCurrentFragmentName(album.getAlbumName());
                             ((MainActivity) context).updateButtonInAlbum();
-                            SharedPreferencesManager.saveCurrentName(context, album.getAlbumName());
                         }
                     }
                 });
@@ -101,6 +114,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         Context context = itemView.getContext();
         PopupMenu popupMenu = new PopupMenu(context, itemView);
         popupMenu.inflate(R.menu.album_item_popup_menu);
+
+        if(albumHelper.isDefaultAlbum(currentAlbum.getAlbumName())){
+            popupMenu.getMenu().findItem(R.id.delete_album).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.edit_album).setVisible(false);
+
+        }
 
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -145,7 +164,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view);
 
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newName = txtName.getText().toString();
@@ -154,7 +173,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                         ArrayList<String> albumNames = new ArrayList<>();
                         for(AlbumData album : albums) {
                             if(album.getAlbumName().equals(newName)) {
-                                Toast.makeText(context, "Album name already exists", Toast.LENGTH_SHORT).show();
+                                String message = context.getString(R.string.album_name_exists);
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             albumNames.add(album.getAlbumName());
@@ -182,12 +202,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     }
                 }
                 else {
-                    Toast.makeText(context, "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                    String message = context.getString(R.string.album_name_empty);
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();

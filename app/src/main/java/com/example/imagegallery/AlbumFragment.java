@@ -75,6 +75,7 @@ public class AlbumFragment extends Fragment {
         if(albumNameList != null) {
             for (String albumName : albumNameList) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(getContext(), albumName);
+                album.cleanUnexistingImages(getContext());
                 albums.add(album);
             }
         }
@@ -140,7 +141,7 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(albumFragment.getContext(), btnOptions);
-                popupMenu.inflate(R.menu.popup_menu);
+                popupMenu.inflate(R.menu.album_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -175,7 +176,8 @@ public class AlbumFragment extends Fragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(addAlbumView);
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        String strAdd = getString(R.string.add);
+        builder.setPositiveButton(strAdd, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String albumName = txtName.getText().toString();
@@ -183,24 +185,24 @@ public class AlbumFragment extends Fragment {
                 if(albumName.length() != 0) {
                     for(AlbumData album : albums) {
                         if(album.getAlbumName().equals(albumName)) {
-                            Toast.makeText(getContext(), "Album name already exists", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), getString(R.string.album_name_exists), Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
                     AlbumData album = new AlbumData(albumName);
                     adapter.addAlbum(album);
-                    Toast.makeText(getContext(), "Album added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.album_added), Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(getContext(), "Album name cannot be empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.album_name_empty), Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(), "Album not added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.album_not_added), Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -16,8 +16,11 @@
             android:id="@+id/btnSort"
             android:src="@drawable/ic_arrow_down"
             android:scaleType="fitCenter"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_toEndOf="@+id/btnOptions"
             android:layout_centerVertical="true"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
             />
         <ImageView
             android:layout_width="40dp"
@@ -26,12 +29,16 @@
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
             android:layout_centerVertical="true"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:background="?android:attr/selectableItemBackground"
             />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvTitle"
-            android:text="Albums"
+            android:text="@string/albums"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:textSize="20sp"
@@ -43,10 +50,17 @@
             android:id="@+id/btnAddAlbum"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_add"
             android:layout_alignParentEnd="true"
-            android:layout_margin="20dp"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:src="@drawable/ic_add"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:background="?android:attr/selectableItemBackground"
+            />
     </RelativeLayout>
 
    <androidx.core.widget.NestedScrollView
@@ -59,23 +73,21 @@
            android:orientation="vertical"
            >
 
-
-
-
-
-
            <TextView
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/tvMyAlbums"
-               android:text="My Albums"
+               android:text="@string/my_albums"
                android:textSize="20sp"
+               android:layout_margin="5dp"
+               android:background="#0000"
                android:layout_below="@+id/taskBar"/>
 
            <androidx.recyclerview.widget.RecyclerView
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/rv_albums"
+               android:background="@color/zxing_transparent"
                android:layout_below="@+id/tvMyAlbums"
                />
 
@@ -83,23 +95,26 @@
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/tvUtilities"
-               android:text="Utilities"
+               android:text="@string/utilities"
                android:textSize="20sp"
+               android:layout_marginTop="20dp"
+               android:layout_margin="5dp"
+               android:background="#0000"
                android:layout_below="@+id/rv_albums"/>
 
            <androidx.recyclerview.widget.RecyclerView
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:id="@+id/rv_utilities"
+               android:background="@color/zxing_transparent"
                android:layout_below="@+id/tvUtilities"
                />
+
            <FrameLayout
                android:id="@+id/fragment_container"
                android:layout_width="match_parent"
                android:layout_height="match_parent"
                />
-
-
 
        </LinearLayout>
    </androidx.core.widget.NestedScrollView>

@@ -19,6 +19,7 @@ public class SharedPreferencesManager {
     private static final String CURRENT_THEME = "currentTheme21112003";
     private static final String CURRENT_IMAGES = "currentImages21112003";
     private static final String CURRENT_NAME = "currentName21112003";
+    private static final String CURRENT_LANGUAGE = "currentLanguage21112003";
     private static final String CURRENT_ITEM_POSITION = "currentItemPosition21112003";
 
     private static final String IMAGE_LIST = "imageList21112003";
@@ -177,6 +178,18 @@ public class SharedPreferencesManager {
     public static int loadThemeState(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         int state = sharedPreferences.getInt(CURRENT_THEME, 0);
+        return state;
+    }
+
+    public static void saveLanguageState(Context context, int state) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(CURRENT_LANGUAGE, state);
+        editor.apply();
+    }
+
+    public static int loadLanguageState(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int state = sharedPreferences.getInt(CURRENT_LANGUAGE, -1);
         return state;
     }
 

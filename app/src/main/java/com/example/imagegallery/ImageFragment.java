@@ -2,15 +2,18 @@ package com.example.imagegallery;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,10 +56,9 @@ public class ImageFragment extends Fragment {
     }
 
 
-    public static ImageFragment newInstance(ArrayList<ImageObject> images, String fragmentName) {
+    public static ImageFragment newInstance(String fragmentName) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, images);
         args.putString(ARG_PARAM2, fragmentName);
         fragment.setArguments(args);
         return fragment;
@@ -67,9 +69,9 @@ public class ImageFragment extends Fragment {
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
-    private Button btnSelect;
+    private ImageButton btnSelect;
     private int[] colNumbers = {2, 3, 4};
-    private static int colNumberIndex = 0;
+    private static int colNumberIndex = 1;
 
     private static boolean ascending = false;
 
@@ -78,26 +80,20 @@ public class ImageFragment extends Fragment {
     }
     private static SortType sortType = SortType.DATE;
 
-
+    ImagesViewModel imagesViewModel;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            images = getArguments().getParcelableArrayList(ARG_PARAM1);
+            imagesViewModel = new ViewModelProvider(requireActivity()).get(ImagesViewModel.class);
             fragmentName = getArguments().getString(ARG_PARAM2);
+            if(fragmentName.equals("Gallery"))
+                images = imagesViewModel.getImagesList().getValue();
+            else
+                images = imagesViewModel.getImagesAlbum().getValue();
         }
         if(images == null)
             images = new ArrayList<ImageObject>();
-
-        if(images.size() > 0) {
-            for (ImageObject image : images) {
-                ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(getContext(), image.getFilePath());
-                if (albumNames != null)
-                    image.setAlbumNames(getContext(), albumNames);
-                else
-                    image.setAlbumNames(getContext(), new ArrayList<String>());
-            }
-        }
     }
 
     @Override
@@ -121,17 +117,34 @@ public class ImageFragment extends Fragment {
         recyclerView = imageFragment.findViewById(R.id.rv_items);
         tvTitle = imageFragment.findViewById(R.id.tvTitle);
 
-        tvTitle.setText(fragmentName);
+        switch (fragmentName){
+            case "Gallery":
+                tvTitle.setText(getString(R.string.gallery));
+                break;
+            case "Album":
+                tvTitle.setText(getString(R.string.album));
+                break;
+            case "Search":
+                tvTitle.setText(getString(R.string.search));
+                break;
+            case "Trash":
+                tvTitle.setText(getString(R.string.trash));
+                break;
+            case "Favorite":
+                tvTitle.setText(getString(R.string.favorite));
+                break;
+            default:
+                tvTitle.setText(fragmentName);
+                break;
+        }
 
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(imageFragment.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecoration);
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
 
         ImageObject.sortByDate(images, ascending);
 
-        adapter = new ImageAdapter(images);
+        adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
@@ -173,12 +186,29 @@ public class ImageFragment extends Fragment {
             btnSort.setImageResource(R.drawable.ic_arrow_up);
 
         btnChangeGrid = imageFragment.findViewById(R.id.btnChangeGrid);
+        PopupMenu popupMenu = new PopupMenu(getContext(), btnChangeGrid);
+        popupMenu.getMenuInflater().inflate(R.menu.number_columns_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            int id = menuItem.getItemId();
+            if(id == R.id.two_columns){
+                colNumberIndex = 0;
+
+            }
+            else if(id == R.id.three_columns){
+                colNumberIndex = 1;
+            }
+            else if(id == R.id.four_columns){
+                colNumberIndex = 2;
+            }
+            adapter.setColNumber(colNumbers[colNumberIndex]);
+            recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), adapter.getColNumber()));
+            return false;
+        });
+
         btnChangeGrid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                colNumberIndex = (colNumberIndex + 1) % colNumbers.length;
-                adapter.setColNumber(colNumbers[colNumberIndex]);
-                recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), adapter.getColNumber()));
+                popupMenu.show();
             }
         });
 
@@ -196,6 +226,10 @@ public class ImageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        setSelectMode(false);
+        adapter.setSelectMode(false);
+        setBtnOptionsClick();
+
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
         int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
         SharedPreferencesManager.saveCurrentItemPosition(getContext(), firstVisiblePosition);
@@ -211,9 +245,10 @@ public class ImageFragment extends Fragment {
     public void setFragmentAdapter(ArrayList<ImageObject> images) {
         this.images = images;
         ImageObject.sortByDate(images, ascending);
-        adapter = new ImageAdapter(images);
+        adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), colNumbers[colNumberIndex]));
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
     }
 
@@ -227,7 +262,7 @@ public class ImageFragment extends Fragment {
 
         else{
             adapter.setSelectMode(false);
-            btnSelect.setText("Select");
+            btnSelect.setImageResource(R.drawable.ic_multiselect);
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -244,7 +279,7 @@ public class ImageFragment extends Fragment {
     }
 
     public void enterSelectMode(){
-        btnSelect.setText("Menu");
+        btnSelect.setImageResource(R.drawable.ic_multiselect_menu);
         adapter.setSelectMode(true);
 
         btnSelect.setOnClickListener(new View.OnClickListener() {
@@ -280,23 +315,30 @@ public class ImageFragment extends Fragment {
                         }
                         else if(id == R.id.delete_images)
                         {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                for(ImageObject imageObject : selectedImages){
-                                    imageObject.deleteToTrash(getContext());
-                                    images.remove(imageObject);
+                            Dialog dialog = new Dialog(getContext());
+                            dialog.setContentView(R.layout.dialog_save_edited_image);
+                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                            txtTitle.setText(R.string.delete_images_confirm);
+                            Button btnYes = dialog.findViewById(R.id.btn_save);
+                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                            btnYes.setText(R.string.delete);
+                            btnNo.setText(R.string.cancel);
+                            btnYes.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    deleteSelectedImages();
+                                    dialog.dismiss();
                                 }
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-                            try {
-                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                            }
-                            catch(Exception e){
+                            });
+                            btnNo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
 
-                            }
-                            reload(false);
+                            dialog.show();
+
                         }
                         else if(id == R.id.upload_images)
                         {
@@ -323,24 +365,28 @@ public class ImageFragment extends Fragment {
                         } else if (id == R.id.cancel_action) {
                             reload(false);
                         } else if (id == R.id.delete_trash) {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                for(ImageObject imageObject : selectedImages){
-                                    imageObject.deleteFile(getContext());
-                                    images.remove(imageObject);
+                            Dialog dialog = new Dialog(getContext());
+                            dialog.setContentView(R.layout.dialog_save_edited_image);
+                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                            txtTitle.setText(R.string.delete_trashes_confirm);
+                            Button btnYes = dialog.findViewById(R.id.btn_save);
+                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                            btnYes.setText(R.string.delete);
+                            btnNo.setText(R.string.cancel);
+                            btnYes.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    deleteTrashImages();
+                                    dialog.dismiss();
                                 }
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-
-                            try {
-                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                            }
-                            catch(Exception e){
-
-                            }
-                            reload(false);
+                            });
+                            btnNo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            dialog.show();
                         } else if (id == R.id.restore_images) {
                             ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
                             if(selectedImages.size() > 0)
@@ -354,14 +400,27 @@ public class ImageFragment extends Fragment {
                                 Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
 
                             reload(false);
+
+                            try {
+                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                            }
+                            catch(Exception e){
+
+                            }
+                        } else if (id == R.id.slide_show)
+                        {
+                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                            if(selectedImages.size() > 0)
+                            {
+                                Intent intent = new Intent(getContext(), SlideShowActivity.class);
+                                intent.putParcelableArrayListExtra("images", selectedImages);
+                                startActivity(intent);
+                            }
+                            else
+                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                            reload(false);
                         }
 
-                        try {
-                            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                        }
-                        catch(Exception e){
-
-                        }
                         return false;
                     }
                 });
@@ -444,6 +503,7 @@ public class ImageFragment extends Fragment {
                                     }
                                     MainActivity mainActivity = (MainActivity) getContext();
                                     mainActivity.handler.sendEmptyMessage(1);
+                                    Log.d("Delete duplicate", "Done");
                                 }
 
                             });
@@ -459,5 +519,54 @@ public class ImageFragment extends Fragment {
                 popupMenu.show();
             }
         });
+    }
+
+    void deleteSelectedImages(){
+        ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+        if(selectedImages.size() > 0)
+        {
+            for(ImageObject imageObject : selectedImages){
+                if(SearchActivity.isSearchActivityRunning())
+                {
+                    SearchActivity.addDeleteImage(imageObject);
+                }
+                imageObject.deleteToTrash(getContext());
+                images.remove(imageObject);
+            }
+            if(SearchActivity.isSearchActivityRunning())
+            {
+                ((SearchActivity)getContext()).onResume();
+            }
+        }
+        else
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+        try {
+            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+        }
+        catch(Exception e){
+
+        }
+        reload(false);
+    }
+
+    void deleteTrashImages(){
+        ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+        if(selectedImages.size() > 0)
+        {
+            for(ImageObject imageObject : selectedImages){
+                imageObject.deleteFile(getContext());
+                images.remove(imageObject);
+            }
+        }
+        else
+            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+
+        try {
+            ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+        }
+        catch(Exception e){
+
+        }
+        reload(false);
     }
 }

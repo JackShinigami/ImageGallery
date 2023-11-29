@@ -1,5 +1,6 @@
 package com.example.imagegallery;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -188,4 +190,15 @@ public class AlbumData implements Parcelable {
         }
     }
 
+    public void cleanUnexistingImages(Context context){
+        ArrayList<ImageObject> newImages = new ArrayList<>();
+        for(ImageObject image : this.images){
+            File file = new File(image.getFilePath());
+            if(file.exists()){
+                newImages.add(image);
+            }
+        }
+        this.images = newImages;
+        SharedPreferencesManager.saveAlbumData(context, this);
+    }
 }

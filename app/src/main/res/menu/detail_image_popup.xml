@@ -2,31 +2,31 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/set_wallpaper"
-        android:title="Set wallpaper" />
+        android:title="@string/set_wallpaper" />
     <item
         android:id="@+id/set_lockscreen"
-        android:title="Set lockscreen" />
+        android:title="@string/set_lockscreen" />
     <item
         android:id="@+id/share"
-        android:title="Share" />
+        android:title="@string/share" />
     <item android:id="@+id/qrscan"
-        android:title="Scan qr" />
+        android:title="@string/scan_qr" />
     <item
         android:id="@+id/labeling"
-        android:title="labeling" />
+        android:title="@string/labeling" />
     <item
         android:id="@+id/add_to_album"
-        android:title="Add to album" />
+        android:title="@string/add_to_album" />
 
     <item android:id="@+id/delete_image"
-        android:title="Delete" />
+        android:title="@string/delete" />
 
     <item android:id="@+id/delete_trash"
-        android:title="Delete from trash" />
+        android:title="@string/delete_from_trash" />
     <item android:id="@+id/info_image"
-        android:title="Info" />
+        android:title="@string/information" />
 
     <item android:id="@+id/restore_image"
-        android:title="Restore(Trash)" />
+        android:title="@string/restore_trash" />
 
 </menu>

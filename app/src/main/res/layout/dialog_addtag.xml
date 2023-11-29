@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:padding="12dp"
-        android:text="Enter tag name"
+        android:text="@string/enter_tag_name"
         android:layout_gravity="center"
         android:textSize="16dp"
         android:textAlignment="center"
@@ -28,7 +28,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:text="submit"
+        android:text="@string/submit"
         />
 
 </LinearLayout>

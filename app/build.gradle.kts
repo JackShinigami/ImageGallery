@@ -13,7 +13,8 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
-
+        resourceConfigurations += "en"
+        resourceConfigurations += "vi"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,4 +62,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.4.1"))
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-messaging")
+
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+
 }

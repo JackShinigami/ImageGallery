@@ -4,13 +4,19 @@ import static java.lang.Thread.sleep;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.provider.DocumentsContract;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -39,13 +45,16 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class ImageObject implements Parcelable {
     private String filePath;
     private long lastModifiedDate;
     private String fileName;
-    private float[] latLong;
+    private float[] latLong = null;
 
     ImageObject(String filePath, long lastModifiedDate, String fileName) {
         this.filePath = filePath;
@@ -53,12 +62,15 @@ public class ImageObject implements Parcelable {
         this.fileName = fileName;
     }
 
+
     public String getFilePath() {
         return filePath;
     }
+
     public long getLastModifiedDate() {
         return lastModifiedDate;
     }
+
     public String getFileName() {
         return fileName;
     }
@@ -66,7 +78,7 @@ public class ImageObject implements Parcelable {
     public static void getImage(Context context, File folder, ArrayList<ImageObject> images) {
         File[] files = folder.listFiles();
 
-        if(files != null) {
+        if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     if (file.getName().equals("cache") || file.getName().equals(".thumbnails"))
@@ -84,6 +96,10 @@ public class ImageObject implements Parcelable {
                 }
             }
         }
+    }
+
+    public Uri getImageUri() {
+        return Uri.fromFile(new File(filePath));
     }
 
     private String hashImage(Bitmap image)
@@ -175,20 +191,57 @@ public class ImageObject implements Parcelable {
     public float[] getLatLong() {
         return latLong;
     }
+    private boolean locationLoaded = false;
 
-    public String getAddress(Context context) {
-        if(latLong == null)
-            return "Unknown";
+    boolean isLocationLoaded() {
+        return locationLoaded;
+    }
+
+    public void loadLatLong(Context context)
+    {
         try {
-            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            // Tìm kiếm địa điểm từ thông tin vị trí
-            List<Address> addresses = geocoder.getFromLocation(latLong[0], latLong[1], 1);
-
-            // Lấy tên của địa điểm từ đối tượng Address
-            String address = addresses.get(0).getAddressLine(0);
-            return address;
+            if(locationLoaded)
+                return;
+            ExifInterface exif = new ExifInterface(getFilePath());
+            float[] latLong = new float[2];
+            if (exif.getLatLong(latLong)) {
+                setLatLong(latLong);
+                //Log.d("ImageObject", "lat: " + latLong[0] + " long: " + latLong[1]);
+            } else {
+                //Log.d("ImageObject", "lat: null long: null");
+                setLatLong(null);
+            }
+            locationLoaded = true;
         } catch (Exception e) {
-            Log.e("Address", e.getMessage());
+            Log.e("Exif", e.toString());
+        }
+    }
+    public String getAddress(Context context) {
+        if (latLong == null)
+            return "Unknown";
+
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() {
+                try {
+                    Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(latLong[0], latLong[1], 1);
+                    return addresses.get(0).getAddressLine(0);
+                } catch (Exception e) {
+                    Log.e("Address", e.getMessage());
+                    return "Unknown";
+                }
+            }
+        };
+
+        FutureTask<String> future = new FutureTask<>(callable);
+        new Thread(future).start();
+
+        try {
+            // Wait for 1 second and then retrieve the result
+            return future.get(1, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            Log.e("Address", "Geocoding operation timed out");
             return "Unknown";
         }
     }
@@ -244,7 +297,7 @@ public class ImageObject implements Parcelable {
             SharedPreferencesManager.deleteImageAlbumInfo(context, this);
         }
 
-        File trash = new File(externalStorage, "Trash");
+        File trash = new File(context.getExternalFilesDir(null), "Trash");
         if (!trash.exists())
             trash.mkdir();
 
@@ -301,7 +354,7 @@ public class ImageObject implements Parcelable {
             if(albumNames != null && albumNames.size() > 0) {
                 for (String albumName : albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
-                    if(album != null) {
+                    if(album != null && oldObject != null) {
                         album.addImage(oldObject);
                         SharedPreferencesManager.saveAlbumData(context, album);
                     }
@@ -348,11 +401,17 @@ public class ImageObject implements Parcelable {
         return contents;
     }
 
+    private boolean tagLoaded = false;
+
+    boolean isTagLoaded() {
+        return tagLoaded;
+    }
 
     public ArrayList<String> getTags(Context context, TaskCompletionSource<Void> taskCompletionSource) {
         ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
         if(tags == null) {
             autoSetTag(context, taskCompletionSource);
+            tagLoaded = true;
             return new ArrayList<>();
         }
         return tags;
@@ -396,7 +455,6 @@ public class ImageObject implements Parcelable {
                         float confidence = label.getConfidence();
                         if(confidence > 0.8) {
                             tags.add(eachLabel);
-                            Log.d("Taggg", eachLabel + " " + tags.size());
                         }
                     }
                     SharedPreferencesManager.saveTagsForImage(context, this.filePath, tags);

@@ -10,7 +10,7 @@
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Image To Album"
+        android:text="@string/add_image_to_album"
         android:textSize="20dp"
         android:textStyle="bold"/>
     <AutoCompleteTextView
@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:inputType="text"
-        android:hint="Enter album name"/>
+        android:hint="@string/enter_album_name"/>
 
 </LinearLayout>

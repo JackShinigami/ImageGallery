@@ -1,12 +1,16 @@
 package com.example.imagegallery;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,20 +23,22 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     private int colNumber = 3;
     private boolean isSelectMode;
     private SparseBooleanArray selectedItems ;
+    private String fragmentName;
 
 
 
-    public ImageAdapter(ArrayList<ImageObject> data) {
+    public ImageAdapter(ArrayList<ImageObject> data, String fragmentName) {
         this.data = data;
         isSelectMode = false;
         selectedItems = new SparseBooleanArray();
+        this.fragmentName = fragmentName;
     }
 
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_layout, parent, false);
+                .inflate(R.layout.item_image_layout, parent, false);
         return new ImageViewHolder(itemView);
     }
 
@@ -61,9 +67,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                     if(selectedItems.get(position)){
                         selectedItems.put(position, false);
                         holder.imageView.setAlpha(1f);
-                    }else{
-                        selectedItems.put(position, true);
-                        holder.imageView.setAlpha(0.5f);
+                    }
+                    else{
+                        if(countSeleted() < 100){
+                            selectedItems.put(position, true);
+                            holder.imageView.setAlpha(0.5f);
+                        }
+                        else{
+                            Toast.makeText(v.getContext(), R.string.over_100_images, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
@@ -82,22 +94,24 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    MainActivity mainActivity = (MainActivity) v.getContext();
                     PopupMenu popupMenu = new PopupMenu(v.getContext(), holder.imageView);
                     popupMenu.inflate(R.menu.item_image_popup_menu);
 
 
 
-                    if(albumHelper.isDefaultAlbum(mainActivity.getCurrentFragementName())){
+                    if(albumHelper.isDefaultAlbum(fragmentName)){
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
-                    if(mainActivity.getCurrentFragementName().equals("Gallery")){
+                    if(fragmentName.equals("Gallery") || fragmentName.equals("Search")){
                         popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
                     }
 
-                    if(mainActivity.getCurrentFragementName().equals("Trash")){
+                    if(fragmentName.equals("Trash")){
                         popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.remove_from_album).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.upload).setVisible(false);
+                        popupMenu.getMenu().findItem(R.id.delete_to_trash).setVisible(false);
                     }
 
 
@@ -112,7 +126,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                             }
                             else if(R.id.remove_from_album == itemId){
                                 albumHelper.removeImageFromAlbum(v.getContext(), imageObject);
-                                data = SharedPreferencesManager.loadAlbumData(mainActivity, mainActivity.getCurrentFragementName()).getImages();
+                                data = SharedPreferencesManager.loadAlbumData(v.getContext(), fragmentName).getImages();
                                 notifyDataSetChanged();
                             }
                             else if(R.id.upload == itemId){
@@ -125,9 +139,36 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
                                 thread.start();
                             } else if (R.id.delete_to_trash == itemId) {
-                                imageObject.deleteToTrash(v.getContext());
-                                data.remove(imageObject);
-                                notifyDataSetChanged();
+                                Dialog dialog = new Dialog(v.getContext());
+                                dialog.setContentView(R.layout.dialog_save_edited_image);
+                                TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                                txtTitle.setText(R.string.delete_image_confirm);
+                                Button btnYes = dialog.findViewById(R.id.btn_save);
+                                Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                                btnYes.setText(R.string.delete);
+                                btnNo.setText(R.string.cancel);
+                                btnYes.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        imageObject.deleteToTrash(v.getContext());
+                                        data.remove(imageObject);
+                                        if(SearchActivity.isSearchActivityRunning())
+                                        {
+                                            SearchActivity.addDeleteImage(imageObject);
+                                            ((SearchActivity)v.getContext()).onResume();
+                                        }
+                                        dialog.dismiss();
+                                        notifyDataSetChanged();
+                                    }
+                                });
+                                btnNo.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                dialog.show();
+
                             }
                             return  true;
                         }
@@ -170,8 +211,21 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     public void SelectAll(){
         for(int i = 0; i < data.size(); i++){
             selectedItems.put(i, true);
-            notifyDataSetChanged();
+            if(i == 100){
+                break;
+            }
         }
+        notifyDataSetChanged();
+    }
+
+    public int countSeleted(){
+        int count = 0;
+        for(int i = 0; i < data.size(); i++){
+            if(selectedItems.get(i)){
+                count++;
+            }
+        }
+        return count;
     }
 
 

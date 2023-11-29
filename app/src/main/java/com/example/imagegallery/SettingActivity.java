@@ -5,27 +5,40 @@ import static java.lang.Thread.sleep;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Locale;
+
 public class SettingActivity extends AppCompatActivity implements SettingPropertyChangedCallBacks {
+
+
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        context = this;
 
         // initialize the fragment
         inflateMainSettingFragment();
 
     }
 
+    public static Context getContext() {
+        return context;
+    }
 
     /**
      * Inflate the main setting fragment

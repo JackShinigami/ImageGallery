@@ -3,7 +3,22 @@
     <style name="Base.Theme.ImageGallery" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/appColorAccent</item>
+        <item name="colorPrimaryVariant">@color/appColorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="background">@color/black</item>
+        <item name="backgroundColor">@color/black</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/white</item>
+
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
-    <style name="Theme.ImageGallery.Dark" parent="Base.Theme.ImageGallery" />
+    <style name="Theme.ImageGallery.Dark" parent="Base.Theme.ImageGallery">
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
 </resources>

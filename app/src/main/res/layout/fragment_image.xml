@@ -8,28 +8,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:layout_weight="10">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select"
+            android:layout_toStartOf="@+id/btnChangeGrid"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_multiselect"
             android:id="@+id/btnSelect"
-            android:layout_toLeftOf="@+id/btnChangeGrid"
             android:layout_centerVertical="true"
             />
 
         <ImageButton
             android:id="@+id/btnChangeGrid"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="5dp"
             android:background="?android:attr/selectableItemBackground"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_grid_changer"
-            />
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:src="@drawable/ic_grid_changer" />
 
         <ImageView
             android:layout_width="60dp"
@@ -38,26 +36,35 @@
             android:src="@drawable/ic_arrow_down"
             android:background="?android:attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            android:layout_toEndOf="@+id/btnOptions"/>
+            android:layout_toEndOf="@+id/btnOptions"
+            android:scaleX="0.7"
+            android:scaleY="0.7"/>
         <ImageView
             android:layout_width="40dp"
             android:layout_height="60dp"
             android:id="@+id/btnOptions"
             android:src="@drawable/ic_more"
             android:scaleType="fitCenter"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
             android:background="?android:attr/selectableItemBackground"
             />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/tvTitle"
-            android:text="Image Gallery"
-            android:layout_toRightOf="@id/btnSort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:textSize="20sp"
-            android:layout_margin="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@id/btnSelect"
+            android:layout_toEndOf="@id/btnSort"
+            android:gravity="center"
             android:padding="5dp"
-            />
+            android:text="@string/gallery"
+            android:textSize="20sp" />
 
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView

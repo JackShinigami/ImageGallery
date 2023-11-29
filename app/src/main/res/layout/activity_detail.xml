@@ -1,103 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DetailActivity"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".DetailActivity"
 
     >
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
+        android:layout_height="match_parent"
+        android:layout_above="@id/editBar"
+        android:layout_below="@id/iv_tag"
         android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         />
 
     <ImageView
-        android:layout_width="66dp"
+        android:id="@+id/iv_tag"
+        android:layout_width="48dp"
         android:layout_height="66dp"
-        android:src="@drawable/ic_add"
         android:layout_toLeftOf="@id/iv_love"
-        android:id="@+id/iv_addtag"
-        android:scaleX="0.8"
-        android:scaleY="0.8"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:src="@drawable/ic_tag"
         />
 
     <ImageView
         android:id="@+id/iv_more"
-        android:layout_width="66dp"
+        android:layout_width="48dp"
         android:layout_height="66dp"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
         android:layout_alignParentEnd="true"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         android:src="@drawable/ic_more"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <ImageView
         android:id="@+id/iv_love"
-        android:layout_width="66dp"
+        android:layout_width="48dp"
         android:layout_height="66dp"
         android:layout_toLeftOf="@id/iv_more"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
         android:src="@drawable/ic_loved"
-        android:scaleType="center"
         />
 
     <SeekBar
+        android:id="@+id/seekBarFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBarFilter"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="80dp"
         android:visibility="gone"
         />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    >
-    <Button
-        android:id="@+id/btnRotate"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/editBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:text="Rotate"
+        android:layout_marginBottom="20dp"
         android:layout_weight="1"
-     />
+        android:orientation="horizontal"
+        android:text="@string/rotateImage"
+        >
 
-    <Button
-        android:id="@+id/btnFlipHorizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/imgRotate"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_rotate"
+            />
 
-        android:text="Flip"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
-        android:layout_gravity="bottom"
-        android:layout_weight="1"
-        />
+        <ImageView
+            android:id="@+id/imgFlip"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_flip"
+            />
 
+        <ImageView
+            android:id="@+id/imgFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_filter"
+            />
 
-    <Button
-        android:id="@+id/btnFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:text="filter"
-        android:layout_weight="1"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="bottom"
-        android:text="crop"
-        android:id="@+id/btnCrop"
-        />
+        <ImageView
+            android:id="@+id/imgCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/ic_crop"
+            />
 
-</LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

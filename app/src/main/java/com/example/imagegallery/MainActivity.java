@@ -3,11 +3,14 @@ package com.example.imagegallery;
 import static android.content.ContentValues.TAG;
 
 
+import static java.lang.Thread.sleep;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageAdapter adapter;
     private FragmentManager fragmentManager = getSupportFragmentManager();
+
+    private ImagesViewModel imagesViewModel;
+
     private ArrayList<ImageObject> currentImages;
 
     public enum FragmentType {
@@ -67,13 +73,16 @@ public class MainActivity extends AppCompatActivity {
     private ImageFragment imageFragment;
     private AlbumFragment albumFragment;
 
+    private static Context appContext;
+
     private boolean loading = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        imagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
+        appContext = getApplicationContext();
         //Dòng này để khi tắt app bằng nút đỏ debug, mở cmt và cmt dòng ở dưới lại, sau khi chạy xong tắt bằng đt và để lại như cũ
         //currentFragment = FragmentType.IMAGE_FRAGMENT;
         currentFragment = FragmentType.values()[SharedPreferencesManager.loadStateFragment(this)];
@@ -118,13 +127,14 @@ public class MainActivity extends AppCompatActivity {
         ImageObject.getImage(this, downloadDirectory, images);
         ImageObject.getImage(this, dcimDirectory, images);
 
+        imagesViewModel.setImagesList(images);
 
         AlbumHelper albumHelper = AlbumHelper.getInstance();
         ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
 
         if (FragmentType.IMAGE_FRAGMENT == currentFragment) {
             //Load ImageFragment with images on fragment_container
-            imageFragment = ImageFragment.newInstance(images, "Gallery");
+            imageFragment = ImageFragment.newInstance("Gallery");
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, imageFragment, "Gallery");
             fragmentTransaction.addToBackStack("MainStack");
@@ -143,7 +153,9 @@ public class MainActivity extends AppCompatActivity {
             btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
         } else if (FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment) {
             ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(this, currentFragmentName).getImages();
-            imageFragment = ImageFragment.newInstance(currentImages, currentFragmentName);
+            imagesViewModel.setImagesAlbum(currentImages);
+
+            imageFragment = ImageFragment.newInstance(currentFragmentName);
             FragmentTransaction AlbumImageFragmentTransaction = fragmentManager.beginTransaction();
             AlbumImageFragmentTransaction.replace(R.id.fragment_container, imageFragment, currentFragmentName);
             AlbumImageFragmentTransaction.addToBackStack("MainStack");
@@ -155,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private ArrayList<ImageObject> images;
+    //private ArrayList<ImageObject> images;
     private ArrayList<AlbumData> defaultAlbums;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler(){
@@ -164,9 +176,11 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             if(msg.what == 0)
             {
+                imagesViewModel.setImagesList(images);
+
                 if(FragmentType.IMAGE_FRAGMENT == currentFragment)
                 {
-                    imageFragment.setFragmentAdapter(images);
+                    imageFragment.setFragmentAdapter(imagesViewModel.getImagesList().getValue());
                     btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
                     btnAlbum.setImageResource(R.drawable.ic_album_launcher);
 
@@ -202,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
 
                         albumFragment = AlbumFragment.newInstance(defaultAlbums);
-                        FragmentManager albumFragmentManager = getSupportFragmentManager();
+
                         FragmentTransaction AlbumFragmentTransaction = fragmentManager.beginTransaction();
                         AlbumFragmentTransaction.replace(R.id.fragment_container, albumFragment, "Album");
                         AlbumFragmentTransaction.addToBackStack("MainStack");
@@ -222,8 +236,8 @@ public class MainActivity extends AppCompatActivity {
                     @SuppressLint("UseCompatLoadingForDrawables")
                     @Override
                     public void onClick(View view) {
-                        imageFragment = ImageFragment.newInstance(images, "Gallery");
-                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        imageFragment = ImageFragment.newInstance( "Gallery");
+
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.fragment_container, imageFragment, "Gallery");
                         fragmentTransaction.addToBackStack("MainStack");
@@ -248,7 +262,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                        intent.putParcelableArrayListExtra("images", images);
                         startActivity(intent);
 
                     }
@@ -260,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    Thread updateImagesThread;
+    ArrayList<ImageObject> images;
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onResume() {
@@ -287,8 +302,7 @@ public class MainActivity extends AppCompatActivity {
         //test, comment the line below if it doesn't work
         checkPhotoInAlbum();
 
-
-        Thread updateImagesThread = new Thread(new Runnable() {
+        updateImagesThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -304,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
                     ImageObject.getImage(MainActivity.this, picturesDirectory, images);
                     ImageObject.getImage(MainActivity.this, downloadDirectory, images);
                     ImageObject.getImage(MainActivity.this, dcimDirectory, images);
+
                     AlbumHelper albumHelper = AlbumHelper.getInstance();
                     defaultAlbums = albumHelper.createDefaultAlbum(MainActivity.this);
 
@@ -362,6 +377,16 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferencesManager.saveStateFragment(this, currentFragment.ordinal());
         SharedPreferencesManager.saveCurrentName(this, currentFragmentName);
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(loading) {
+            updateImagesThread.interrupt();
+            loading = false;
+            Log.d(TAG, "onStop: interrupted");
+        }
     }
 
     @Override
@@ -636,10 +661,17 @@ public class MainActivity extends AppCompatActivity {
         this.imageFragment = imageFragment;
     }
 
+
+
     public void updateButtonInAlbum()
     {
         btnGallery.setEnabled(true);
         btnAlbum.setEnabled(true);
         btnCamera.setEnabled(true);
+    }
+
+    //get context
+    public static Context getContext(){
+        return appContext;
     }
 }

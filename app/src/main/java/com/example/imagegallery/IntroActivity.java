@@ -5,12 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 public class IntroActivity extends AppCompatActivity {
@@ -28,23 +34,76 @@ public class IntroActivity extends AppCompatActivity {
                 Toast.makeText(this, "IntroActivity", Toast.LENGTH_SHORT).show();
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             }
+
+            if(SharedPreferencesManager.loadLanguageState(this) == -1){
+                // get the current language of system
+                LocaleListCompat localeListCompat = LocaleListCompat.getAdjustedDefault();
+                String language = localeListCompat.get(0).getLanguage();
+                if(language.equals("vi")){
+                    SharedPreferencesManager.saveLanguageState(this, 1);
+                } else if(language.equals("en")){
+                    SharedPreferencesManager.saveLanguageState(this, 0);
+                }
+                AppCompatDelegate.setApplicationLocales(localeListCompat);
+            } else {
+                if(SharedPreferencesManager.loadLanguageState(this) == 0){
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("en"));
+                } else if(SharedPreferencesManager.loadLanguageState(this) == 1){
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("vi"));
+                }
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Error: IntroActivity", Toast.LENGTH_SHORT).show();
         }
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_intro);
 
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
-        if (ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-            // Nếu quyền chưa được cấp, hiển thị pop-up xin cấp quyền
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED||
+                    !Environment.isExternalStorageManager()) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.ACCESS_MEDIA_LOCATION,
+                                Manifest.permission.MANAGE_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.INTERNET,
+                                Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                if (!Environment.isExternalStorageManager()) {
+                    //request for the permission
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+            } else  {
+                Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
+                startActivity(myIntent);
+            }
+
+        } else
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED
+                ) {
+
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_MEDIA_IMAGES,
-                            android.Manifest.permission.CAMERA, android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_MEDIA_LOCATION}, 1);
-        } else {
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,}, 1);
+        }else  {
             Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
             startActivity(myIntent);
         }
@@ -55,12 +114,14 @@ public class IntroActivity extends AppCompatActivity {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
+            boolean isGranted = true;
             for (int i = 0; i < permissions.length; i++) {
                 Log.d("PERMISSION", permissions[i] + " " + grantResults[i]);
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED && !permissions[i].equals(Manifest.permission.MANAGE_EXTERNAL_STORAGE)){
+                    isGranted = false;
+                }
             }
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED ||
-                    grantResults[1] == PackageManager.PERMISSION_GRANTED ||
-                    grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+            if (isGranted) {
                 Toast.makeText(this, "Đã cấp quyền", Toast.LENGTH_SHORT).show();
                 Intent myIntent = new Intent(IntroActivity.this, MainActivity.class);
                 startActivity(myIntent);

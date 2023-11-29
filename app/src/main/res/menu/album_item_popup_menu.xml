@@ -2,12 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/edit_album"
-        android:title="Edit" />
+        android:title="@string/edit" />
     <item
         android:id="@+id/delete_album"
-        android:title="Delete" />
+        android:icon="@drawable/ic_trash"
+        android:title="@string/delete" />
 
     <item
         android:id="@+id/set_password"
-        android:title="Set Password" />
+        android:title="@string/set_password" />
 </menu>
