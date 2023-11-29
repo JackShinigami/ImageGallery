@@ -3,9 +3,11 @@ package com.example.imagegallery;
 import static java.lang.Thread.sleep;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -93,7 +95,13 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
         LocaleListCompat localeListCompat = LocaleListCompat.create(new Locale(language));
         AppCompatDelegate.setApplicationLocales(localeListCompat);
 
-        recreate();
+        // khởi động lại app
+        Intent intent = new Intent(getApplicationContext(), IntroActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        if(context instanceof Activity){
+            ((Activity) context).finishAffinity();
+        }
     }
 
     @Override
