@@ -65,6 +65,25 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
     }
 
     @Override
+    public void onLanguageChanged(String lang) {
+        // change language of the app
+        int languageState = SharedPreferencesManager.loadLanguageState(getApplicationContext());
+        String language = "";
+        if (lang.equals("English")) {
+            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 0);
+            language = "en-US";
+        } else if (lang.equals("Vietnamese")) {
+            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 1);
+            language = "vi";
+        }
+
+        LocaleListCompat localeListCompat = LocaleListCompat.create(new Locale(language));
+        AppCompatDelegate.setApplicationLocales(localeListCompat);
+
+        recreate();
+    }
+
+    @Override
     public void recreate() {
         finish();
         // fade out animation
