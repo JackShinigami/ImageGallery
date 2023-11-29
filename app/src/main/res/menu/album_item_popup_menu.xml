@@ -5,7 +5,6 @@
         android:title="@string/edit" />
     <item
         android:id="@+id/delete_album"
-        android:icon="@drawable/ic_trash"
         android:title="@string/delete" />
 
     <item

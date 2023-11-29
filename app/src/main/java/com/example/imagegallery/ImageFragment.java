@@ -226,8 +226,7 @@ public class ImageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        setSelectMode(false);
-        adapter.setSelectMode(false);
+        reload(false);
         setBtnOptionsClick();
 
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
@@ -263,6 +262,9 @@ public class ImageFragment extends Fragment {
         else{
             adapter.setSelectMode(false);
             btnSelect.setImageResource(R.drawable.ic_multiselect);
+            btnSort.setVisibility(View.VISIBLE);
+            btnChangeGrid.setVisibility(View.VISIBLE);
+            btnOptions.setVisibility(View.VISIBLE);
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -280,6 +282,9 @@ public class ImageFragment extends Fragment {
 
     public void enterSelectMode(){
         btnSelect.setImageResource(R.drawable.ic_multiselect_menu);
+        btnSort.setVisibility(View.INVISIBLE);
+        btnChangeGrid.setVisibility(View.INVISIBLE);
+        btnOptions.setVisibility(View.INVISIBLE);
         adapter.setSelectMode(true);
 
         btnSelect.setOnClickListener(new View.OnClickListener() {
@@ -444,10 +449,6 @@ public class ImageFragment extends Fragment {
                     popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
                 }
 
-                if(isSelectMode){
-                    popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
-                    popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
-                }
 
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
