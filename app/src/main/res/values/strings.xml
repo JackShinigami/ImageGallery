@@ -5,7 +5,7 @@
     <string name="flipImage">Flip</string>
     <string name="filterImage">Filter</string>
     <string name="cropImage">Crop</string>
-    <string name="name">Name</string>
+    <string name="name">Name :</string>
     <string name="add_new_album">Add New Album</string>
     <string name="enter_new_album_name">Enter new album name</string>
     <string name="add_image_to_album">Add Image To Album</string>
@@ -15,9 +15,9 @@
     <string name="detail_info">Detail Information</string>
     <string name="filename">File Name:</string>
     <string name="filepath">File Path:</string>
-    <string name="location">Location:</string>
+    <string name="location">Location :</string>
     <string name="last_updated">Last Updated:</string>
-    <string name="tag">Tag:</string>
+    <string name="tag">Tag :</string>
     <string name="albums">Albums</string>
     <string name="my_albums">My Albums</string>
     <string name="utilities">Utilities</string>
@@ -111,5 +111,7 @@
     <string name="delete_trashes_confirm">These photos will be deleted permanently.</string>
     <string name="save_image_confirm">Do you want to save the edited image?</string>
     <string name="over_100_images">You can only select up to 100 images</string>
+    <string name="enter_a_keyword">Enter a keyword</string>
+    <string name="create_slide_show">Create slide show</string>
 
 </resources>

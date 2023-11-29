@@ -13,7 +13,7 @@
     <string name="flipImage">Lật</string>
     <string name="filterImage">Bộ lọc</string>
     <string name="cropImage">Cắt</string>
-    <string name="name">Tên</string>
+    <string name="name">Tên :</string>
     <string name="add_new_album">Thêm vào album</string>
     <string name="enter_new_album_name">Nhập tên album mới</string>
     <string name="add_image_to_album">Thêm ảnh vào album</string>
@@ -23,9 +23,9 @@
     <string name="detail_info">Thông tin chi tiết</string>
     <string name="filename">Tên tệp:</string>
     <string name="filepath">Đường dẫn:</string>
-    <string name="location">Vị trí:</string>
+    <string name="location">Vị trí :</string>
     <string name="last_updated">Cập nhật lần cuối:</string>
-    <string name="tag">Thẻ:</string>
+    <string name="tag">Thẻ :</string>
     <string name="albums">Album</string>
     <string name="my_albums">Album của tôi</string>
     <string name="utilities">Tiện ích</string>
@@ -118,5 +118,7 @@
     <string name="delete_trashes_confirm">Những bức ảnh này sẽ được xóa vĩnh viễn.</string>
     <string name="save_image_confirm">Bạn có muốn lưu các thay đổi không?</string>
     <string name="over_100_images">Chỉ có thể chọn 100 ảnh cùng lúc.</string>
+    <string name="enter_a_keyword">Nhập từ khoá</string>
+    <string name="create_slide_show">Tạo bản trình chiếu</string>
 
 </resources>

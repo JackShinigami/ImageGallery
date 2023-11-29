@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,10 +56,9 @@ public class ImageFragment extends Fragment {
     }
 
 
-    public static ImageFragment newInstance(ArrayList<ImageObject> images, String fragmentName) {
+    public static ImageFragment newInstance(String fragmentName) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, images);
         args.putString(ARG_PARAM2, fragmentName);
         fragment.setArguments(args);
         return fragment;
@@ -80,13 +80,17 @@ public class ImageFragment extends Fragment {
     }
     private static SortType sortType = SortType.DATE;
 
-
+    ImagesViewModel imagesViewModel;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            images = getArguments().getParcelableArrayList(ARG_PARAM1);
+            imagesViewModel = new ViewModelProvider(requireActivity()).get(ImagesViewModel.class);
             fragmentName = getArguments().getString(ARG_PARAM2);
+            if(fragmentName.equals("Gallery"))
+                images = imagesViewModel.getImagesList().getValue();
+            else
+                images = imagesViewModel.getImagesAlbum().getValue();
         }
         if(images == null)
             images = new ArrayList<ImageObject>();
@@ -222,8 +226,7 @@ public class ImageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        setSelectMode(false);
-        adapter.setSelectMode(false);
+        reload(false);
         setBtnOptionsClick();
 
         GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
@@ -259,6 +262,9 @@ public class ImageFragment extends Fragment {
         else{
             adapter.setSelectMode(false);
             btnSelect.setImageResource(R.drawable.ic_multiselect);
+            btnSort.setVisibility(View.VISIBLE);
+            btnChangeGrid.setVisibility(View.VISIBLE);
+            btnOptions.setVisibility(View.VISIBLE);
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -276,6 +282,9 @@ public class ImageFragment extends Fragment {
 
     public void enterSelectMode(){
         btnSelect.setImageResource(R.drawable.ic_multiselect_menu);
+        btnSort.setVisibility(View.INVISIBLE);
+        btnChangeGrid.setVisibility(View.INVISIBLE);
+        btnOptions.setVisibility(View.INVISIBLE);
         adapter.setSelectMode(true);
 
         btnSelect.setOnClickListener(new View.OnClickListener() {
@@ -440,10 +449,6 @@ public class ImageFragment extends Fragment {
                     popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
                 }
 
-                if(isSelectMode){
-                    popupMenu.getMenu().findItem(R.id.menu_download_backup).setVisible(false);
-                    popupMenu.getMenu().findItem(R.id.menu_delete_duplitate).setVisible(false);
-                }
 
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -531,7 +536,13 @@ public class ImageFragment extends Fragment {
             }
             if(SearchActivity.isSearchActivityRunning())
             {
-                ((SearchActivity)getContext()).onResume();
+                try {
+                    ((SearchActivity) getContext()).onResume();
+                }
+                catch (Exception e)
+                {
+                    //Ignore if context is not SearchActivity
+                }
             }
         }
         else

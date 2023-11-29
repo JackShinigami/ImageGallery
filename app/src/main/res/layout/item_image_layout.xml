@@ -13,4 +13,16 @@
         android:scaleType="centerCrop"
         />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
+        android:text="✓"
+        android:textAlignment="center"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_selected_image"
+        android:visibility="invisible"/>
+
 </androidx.cardview.widget.CardView>

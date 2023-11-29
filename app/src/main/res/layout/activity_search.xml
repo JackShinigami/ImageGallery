@@ -12,22 +12,35 @@
         android:orientation="horizontal"
         android:layout_weight="10">
 
-        <TextView
-            android:id="@+id/txtSearchOptions"
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:layout_weight="3"
-            android:text="@string/name"
-            android:textSize="20sp"
+            android:layout_height="match_parent"
+            android:id="@+id/btnSearch"
+            android:src="@drawable/ic_search"
+            android:scaleType="fitCenter"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:padding="8dp"
+            android:layout_weight="3"/>
+
+        <ImageButton
+            android:id="@+id/btnSearchOptions"
+            android:src="@drawable/ic_search_by_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
             android:gravity="center"
-            android:textColor="?android:attr/textColorPrimary"
-            android:background="#e88"/>
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:background="?android:attr/selectableItemBackground"/>
 
         <AutoCompleteTextView
             android:id="@+id/search_edit_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:hint="@string/enter_a_keyword"/>
     </LinearLayout>
     <FrameLayout
         android:id="@+id/fragment_container"

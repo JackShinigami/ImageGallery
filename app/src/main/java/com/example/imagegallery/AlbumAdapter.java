@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -78,8 +79,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     public void onPasswordChecked(boolean isPasswordCorrect) {
                         if(isPasswordCorrect){
                             ArrayList<ImageObject> images = album.getImages();
+                            ImagesViewModel imagesViewModel = new ViewModelProvider((MainActivity) context).get(ImagesViewModel.class);
+                            imagesViewModel.setImagesAlbum(images);
 
-                            ImageFragment imageFragment = ImageFragment.newInstance(images, album.getAlbumName());
+                            ImageFragment imageFragment = ImageFragment.newInstance(album.getAlbumName());
                             ((MainActivity) context).setImageFragment(imageFragment);
                             FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -191,19 +191,27 @@ public class ImageObject implements Parcelable {
     public float[] getLatLong() {
         return latLong;
     }
+    private boolean locationLoaded = false;
+
+    boolean isLocationLoaded() {
+        return locationLoaded;
+    }
+
     public void loadLatLong(Context context)
     {
         try {
+            if(locationLoaded)
+                return;
             ExifInterface exif = new ExifInterface(getFilePath());
             float[] latLong = new float[2];
             if (exif.getLatLong(latLong)) {
                 setLatLong(latLong);
-                Log.d("ImageObject", "lat: " + latLong[0] + " long: " + latLong[1]);
+                //Log.d("ImageObject", "lat: " + latLong[0] + " long: " + latLong[1]);
             } else {
-                Log.d("ImageObject", "lat: null long: null");
+                //Log.d("ImageObject", "lat: null long: null");
                 setLatLong(null);
             }
-
+            locationLoaded = true;
         } catch (Exception e) {
             Log.e("Exif", e.toString());
         }
@@ -346,7 +354,7 @@ public class ImageObject implements Parcelable {
             if(albumNames != null && albumNames.size() > 0) {
                 for (String albumName : albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
-                    if(album != null) {
+                    if(album != null && oldObject != null) {
                         album.addImage(oldObject);
                         SharedPreferencesManager.saveAlbumData(context, album);
                     }
@@ -393,11 +401,17 @@ public class ImageObject implements Parcelable {
         return contents;
     }
 
+    private boolean tagLoaded = false;
+
+    boolean isTagLoaded() {
+        return tagLoaded;
+    }
 
     public ArrayList<String> getTags(Context context, TaskCompletionSource<Void> taskCompletionSource) {
         ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
         if(tags == null) {
             autoSetTag(context, taskCompletionSource);
+            tagLoaded = true;
             return new ArrayList<>();
         }
         return tags;

@@ -1,8 +1,12 @@
 package com.example.imagegallery;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,9 +59,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
         if(isSelectMode && selectedItems.get(position)){
             holder.imageView.setAlpha(0.5f);
+            holder.imageView.setScaleX(0.9f);
+            holder.imageView.setScaleY(0.9f);
+            holder.textView.setVisibility(View.VISIBLE);
         }
         else{
             holder.imageView.setAlpha(1f);
+            holder.imageView.setScaleX(1f);
+            holder.imageView.setScaleY(1f);
+            holder.textView.setVisibility(View.GONE);
         }
 
         if(isSelectMode){
@@ -67,11 +77,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                     if(selectedItems.get(position)){
                         selectedItems.put(position, false);
                         holder.imageView.setAlpha(1f);
+                        holder.imageView.setScaleX(1f);
+                        holder.imageView.setScaleY(1f);
+                        holder.textView.setVisibility(View.GONE);
                     }
                     else{
                         if(countSeleted() < 100){
                             selectedItems.put(position, true);
                             holder.imageView.setAlpha(0.5f);
+                            holder.imageView.setScaleX(0.9f);
+                            holder.imageView.setScaleY(0.9f);
+                            holder.textView.setVisibility(View.VISIBLE);
                         }
                         else{
                             Toast.makeText(v.getContext(), R.string.over_100_images, Toast.LENGTH_SHORT).show();
@@ -154,8 +170,27 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                                         data.remove(imageObject);
                                         if(SearchActivity.isSearchActivityRunning())
                                         {
-                                            SearchActivity.addDeleteImage(imageObject);
-                                            ((SearchActivity)v.getContext()).onResume();
+                                            try {
+                                                SearchActivity.addDeleteImage(imageObject);
+                                                Context context = v.getContext();
+                                                while (!(context instanceof SearchActivity)) {
+                                                    context = ((ContextWrapper)context).getBaseContext();
+                                                }
+                                                ((SearchActivity) context).onResume();
+                                            }
+                                            catch(Exception e){
+                                                Log.e("Error", e.toString());
+                                            }
+                                        } else {
+                                            try {
+                                                Context context = v.getContext();
+                                                while (!(context instanceof MainActivity)) {
+                                                    context = ((ContextWrapper) context).getBaseContext();
+                                                }
+                                                ((MainActivity) context).handler.sendEmptyMessage(1);
+                                            } catch (Exception e) {
+                                                Log.e("Error", e.toString());
+                                            }
                                         }
                                         dialog.dismiss();
                                         notifyDataSetChanged();
@@ -211,7 +246,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     public void SelectAll(){
         for(int i = 0; i < data.size(); i++){
             selectedItems.put(i, true);
-            if(i == 100){
+            if(i == 99){
                 break;
             }
         }
