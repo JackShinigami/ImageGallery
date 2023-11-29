@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -38,7 +39,7 @@ public class SearchActivity extends AppCompatActivity {
 
     ImagesViewModel imagesViewModel;
     AutoCompleteTextView search_edit_text;
-    TextView txtSearchOptions;
+    ImageButton btnSearchOptions;
     SEARCH_TYPE search_type = SEARCH_TYPE.NAME;
 
     private static ArrayList<ImageObject> deleteImages = new ArrayList<>();
@@ -147,8 +148,8 @@ public class SearchActivity extends AppCompatActivity {
         ft.replace(R.id.fragment_container, imageFragment);
         ft.commit();
 
-        txtSearchOptions = findViewById(R.id.txtSearchOptions);
-        txtSearchOptions.setOnClickListener(new View.OnClickListener() {
+        btnSearchOptions = findViewById(R.id.btnSearchOptions);
+        btnSearchOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showPopupMenu();
@@ -220,8 +221,9 @@ public class SearchActivity extends AppCompatActivity {
 
     private void showPopupMenu()
     {
-        PopupMenu popupMenu = new PopupMenu(SearchActivity.this, txtSearchOptions);
+        PopupMenu popupMenu = new PopupMenu(SearchActivity.this, btnSearchOptions);
         popupMenu.getMenuInflater().inflate(R.menu.search_menu, popupMenu.getMenu());
+
 
         if(!loaded)
         {
@@ -239,19 +241,19 @@ public class SearchActivity extends AppCompatActivity {
                 if(id == R.id.search_name)
                 {
                     search_type = SEARCH_TYPE.NAME;
-                    txtSearchOptions.setText(getString(R.string.name));
+                    btnSearchOptions.setImageResource(R.drawable.ic_search_by_name);
                     updateDataSearch();
                 }
                 else if(id == R.id.search_location)
                 {
                     search_type = SEARCH_TYPE.LOCATION;
-                    txtSearchOptions.setText(getString(R.string.location));
+                    btnSearchOptions.setImageResource(R.drawable.ic_search_by_location);
                     updateDataSearch();
                 }
                 else if(id == R.id.search_tag)
                 {
                     search_type = SEARCH_TYPE.TAG;
-                    txtSearchOptions.setText(getString(R.string.tag));
+                    btnSearchOptions.setImageResource(R.drawable.ic_search_by_tag);
                     updateDataSearch();
                 }
                 return false;
