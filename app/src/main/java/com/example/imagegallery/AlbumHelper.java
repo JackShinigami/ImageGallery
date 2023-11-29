@@ -89,6 +89,7 @@ public class AlbumHelper {
                     if(finalAlbumNameList.contains(albumName)){
                         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
                        if(albumData.addImage(imageObject)){
+                           albumData.setLastModifiedDate();
                            SharedPreferencesManager.saveAlbumData(context, albumData);
                            imageObject.addAlbumName(context,albumName);
                            Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
@@ -142,6 +143,7 @@ public class AlbumHelper {
                         for(ImageObject imageObject : images){
                             AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
                             if(albumData.addImage(imageObject)){
+                                albumData.setLastModifiedDate();
                                 SharedPreferencesManager.saveAlbumData(context, albumData);
                                 imageObject.addAlbumName(context,albumName);
                             }
@@ -170,6 +172,7 @@ public class AlbumHelper {
         MainActivity mainActivity = (MainActivity) context;
         String albumName = mainActivity.getCurrentFragementName();
         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
+        albumData.setLastModifiedDate();
 
         if(albumData.deleteImage(imageObject)){
             SharedPreferencesManager.saveAlbumData(context, albumData);
