@@ -347,7 +347,7 @@ public class SearchActivity extends AppCompatActivity {
             updateDataSearch();
             search_edit_text.setAdapter(new AutoCompleteAdapter(data));
 
-            newImages = imagesViewModel.getImagesList().getValue();
+            newImages = imagesViewModel.getImagesAlbum().getValue();
             imageFragment.setFragmentAdapter(newImages);
         }
     }

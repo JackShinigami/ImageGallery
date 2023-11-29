@@ -536,7 +536,13 @@ public class ImageFragment extends Fragment {
             }
             if(SearchActivity.isSearchActivityRunning())
             {
-                ((SearchActivity)getContext()).onResume();
+                try {
+                    ((SearchActivity) getContext()).onResume();
+                }
+                catch (Exception e)
+                {
+                    //Ignore if context is not SearchActivity
+                }
             }
         }
         else

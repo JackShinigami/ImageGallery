@@ -1,8 +1,12 @@
 package com.example.imagegallery;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -166,8 +170,27 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                                         data.remove(imageObject);
                                         if(SearchActivity.isSearchActivityRunning())
                                         {
-                                            SearchActivity.addDeleteImage(imageObject);
-                                            ((SearchActivity)v.getContext()).onResume();
+                                            try {
+                                                SearchActivity.addDeleteImage(imageObject);
+                                                Context context = v.getContext();
+                                                while (!(context instanceof SearchActivity)) {
+                                                    context = ((ContextWrapper)context).getBaseContext();
+                                                }
+                                                ((SearchActivity) context).onResume();
+                                            }
+                                            catch(Exception e){
+                                                Log.e("Error", e.toString());
+                                            }
+                                        } else {
+                                            try {
+                                                Context context = v.getContext();
+                                                while (!(context instanceof MainActivity)) {
+                                                    context = ((ContextWrapper) context).getBaseContext();
+                                                }
+                                                ((MainActivity) context).handler.sendEmptyMessage(1);
+                                            } catch (Exception e) {
+                                                Log.e("Error", e.toString());
+                                            }
                                         }
                                         dialog.dismiss();
                                         notifyDataSetChanged();
