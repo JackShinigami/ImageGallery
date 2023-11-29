@@ -21,6 +21,8 @@ public class SlideShowActivity extends AppCompatActivity {
     int currentposition = 0;
     private Runnable runnable;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean userScrollChange = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +33,31 @@ public class SlideShowActivity extends AppCompatActivity {
         ArrayList<ImageObject> imageObjects = getIntent().getParcelableArrayListExtra("images");
        // viewPager2.setAdapter(new SlideShowAdapter(this, imageObjects));
         viewPager2.setAdapter(new SlideShowAdapter(this, imageObjects));
+        viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                userScrollChange = state != ViewPager2.SCROLL_STATE_IDLE;
+            }
+        });
 
         runnable = new Runnable() {
             @Override
             public void run() {
-                if(currentposition >= imageObjects.size()){
-                    currentposition = 0;
+                if(!userScrollChange) {
+                    if (viewPager2.getCurrentItem() == imageObjects.size() - 1) {
+                        viewPager2.setCurrentItem(0);
+                    } else {
+                        viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1);
+                    }
                 }
-                viewPager2.setCurrentItem(currentposition++, true);
                 handler.postDelayed(runnable, 1000);
             }
         };
         handler.postDelayed(runnable, 1000);
-
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
