@@ -55,7 +55,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
         layoutParams.width = WindowSize.getWidth() / colNumber;
         layoutParams.height = layoutParams.width;
 
-        imageObject.loadImage(holder.imageView.getContext(), holder.imageView, layoutParams.width/3, layoutParams.height/3);
+        imageObject.loadImage(holder.imageView.getContext(), holder.imageView, layoutParams.width, layoutParams.height);
 
         if(isSelectMode && selectedItems.get(position)){
             holder.imageView.setAlpha(0.5f);

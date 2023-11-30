@@ -71,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
             else if(msg.what == 2)
             {
                 imagesViewModel.setImagesAlbum(newImages);
-                imageFragment.setFragmentAdapter(newImages);
+                imageFragment.setFragmentAdapter(newImages, getApplicationContext());
                 dialog_loading.dismiss();
                 isSearching = false;
             }
@@ -348,7 +348,7 @@ public class SearchActivity extends AppCompatActivity {
             search_edit_text.setAdapter(new AutoCompleteAdapter(data));
 
             newImages = imagesViewModel.getImagesAlbum().getValue();
-            imageFragment.setFragmentAdapter(newImages);
+            imageFragment.setFragmentAdapter(newImages, getApplicationContext());
         }
     }
 

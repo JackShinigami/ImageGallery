@@ -3,6 +3,7 @@ package com.example.imagegallery;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -140,16 +141,17 @@ public class ImageFragment extends Fragment {
 
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setItemViewCacheSize(30);
 
-        ImageObject.sortByDate(images, ascending);
+        if(SortType.DATE == sortType)
+            ImageObject.sortByDate(images, ascending);
+        else if(SortType.NAME == sortType)
+            ImageObject.sortByFileName(images, ascending);
 
         adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
 
         recyclerView.setAdapter(adapter);
-
-
         recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), colNumbers[colNumberIndex]));
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
 
@@ -241,14 +243,19 @@ public class ImageFragment extends Fragment {
         SharedPreferencesManager.saveCurrentItemPosition(getContext(), 0);
     }
 
-    public void setFragmentAdapter(ArrayList<ImageObject> images) {
+    public void setFragmentAdapter(ArrayList<ImageObject> images, Context context) {
         this.images = images;
-        ImageObject.sortByDate(images, ascending);
+
+        if(SortType.DATE == sortType)
+            ImageObject.sortByDate(images, ascending);
+        else if(SortType.NAME == sortType)
+            ImageObject.sortByFileName(images, ascending);
+
         adapter = new ImageAdapter(images, fragmentName);
         adapter.setColNumber(colNumbers[colNumberIndex]);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), colNumbers[colNumberIndex]));
-        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
+        recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(context));
     }
 
     public void reload(boolean selectMode){
@@ -492,23 +499,43 @@ public class ImageFragment extends Fragment {
                         }
                         else if(id == R.id.menu_delete_duplitate)
                         {
+                            TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+                            final int[] count = {0};
                             Thread deleteThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-                                        ImageObject.deleteDuplicateImage(getContext(), images);
+                                        count[0] = ImageObject.deleteDuplicateImage(getContext(), images, taskCompletionSource);
                                     }
                                     catch (Exception e)
                                     {
                                         e.printStackTrace();
                                     }
-                                    MainActivity mainActivity = (MainActivity) getContext();
-                                    mainActivity.handler.sendEmptyMessage(1);
                                     Log.d("Delete duplicate", "Done");
                                 }
 
                             });
                             deleteThread.start();
+                            taskCompletionSource.getTask().addOnCompleteListener(task -> {
+                                try {
+                                    MainActivity mainActivity = (MainActivity) getContext();
+                                    mainActivity.handler.sendEmptyMessage(1);
+                                    Toast.makeText(getContext(), getString(R.string.delete_duplicate_done) + ": " + count[0] + " " + getString(R.string.images), Toast.LENGTH_SHORT).show();
+                                }
+                                catch (Exception e)
+                                {
+                                    //Ignore if context is not MainActivity
+                                }
+                            });
+                            taskCompletionSource.getTask().addOnFailureListener(task -> {
+                                try {
+                                    Toast.makeText(getContext(), getString(R.string.delete_duplicate_error), Toast.LENGTH_SHORT).show();
+                                }
+                                catch (Exception e)
+                                {
+                                    //Ignore if context is not MainActivity
+                                }
+                            });
                         } else if (id == R.id.setting_menu){
                             // Open setting activity
                             Intent intent = new Intent(getContext(), SettingActivity.class);

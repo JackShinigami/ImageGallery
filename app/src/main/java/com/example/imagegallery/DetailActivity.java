@@ -217,17 +217,9 @@ public class DetailActivity extends AppCompatActivity  {
                     if (obj.isLoved(view.getContext())) {
                         obj.setLoved(view.getContext(), false);
                         iv_love.setImageResource(R.drawable.ic_not_loved);
-
-                        AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(), "Favorites");
-                        favorite.removeImage(obj);
-                        SharedPreferencesManager.saveAlbumData(view.getContext(), favorite);
                     } else {
                         obj.setLoved(view.getContext(), true);
                         iv_love.setImageResource(R.drawable.ic_loved);
-
-                        AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(), "Favorites");
-                        favorite.addImage(obj);
-                        SharedPreferencesManager.saveAlbumData(view.getContext(), favorite);
                     }
                 }
             });

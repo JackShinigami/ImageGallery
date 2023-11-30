@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(FragmentType.IMAGE_FRAGMENT == currentFragment)
                 {
-                    imageFragment.setFragmentAdapter(imagesViewModel.getImagesList().getValue());
+                    imageFragment.setFragmentAdapter(imagesViewModel.getImagesList().getValue(), appContext);
                     btnGallery.setImageResource(R.drawable.ic_gallery_launcher_selected);
                     btnAlbum.setImageResource(R.drawable.ic_album_launcher);
 
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 else if(FragmentType.ALBUM_IMAGE_FRAGMENT == currentFragment)
                 {
                     ArrayList<ImageObject> currentImages = SharedPreferencesManager.loadAlbumData(MainActivity.this, currentFragmentName).getImages();
-                    imageFragment.setFragmentAdapter(currentImages);
+                    imageFragment.setFragmentAdapter(currentImages, appContext);
                     btnAlbum.setImageResource(R.drawable.ic_album_launcher_selected);
                     btnGallery.setImageResource(R.drawable.ic_gallery_launcher);
 
@@ -308,7 +308,6 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     File externalStorage = Environment.getExternalStorageDirectory();
 
-                    // Lấy thư mục Pictures
                     File picturesDirectory = new File(externalStorage, "Pictures");
                     File downloadDirectory = new File(externalStorage, "Download");
                     File dcimDirectory = new File(externalStorage, "DCIM");

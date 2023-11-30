@@ -113,5 +113,7 @@
     <string name="over_100_images">You can only select up to 100 images</string>
     <string name="enter_a_keyword">Enter a keyword</string>
     <string name="create_slide_show">Create slide show</string>
-
+    <string name="delete_duplicate_done">Finished deleting duplicate images</string>
+    <string name="delete_duplicate_error">Error when deleting duplicate images</string>
+    <string name="images">images</string>
 </resources>

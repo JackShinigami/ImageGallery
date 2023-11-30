@@ -120,5 +120,7 @@
     <string name="over_100_images">Chỉ có thể chọn 100 ảnh cùng lúc.</string>
     <string name="enter_a_keyword">Nhập từ khoá</string>
     <string name="create_slide_show">Tạo bản trình chiếu</string>
-
+    <string name="delete_duplicate_done">Hoàn tất xoá ảnh trùng</string>
+    <string name="delete_duplicate_error">Lỗi khi xoá ảnh trùng</string>
+    <string name="images">Ảnh</string>
 </resources>
