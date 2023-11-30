@@ -92,9 +92,10 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                         int count = 0;
 
                         for(StorageReference imageRef : listResult.getItems()){
-
-                            if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
-                               imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+                            String name = imageRef.getName().toLowerCase();
+                            if(name.endsWith(".jpg") || name.endsWith(".png") ||
+                               name.endsWith(".jpeg") || name.endsWith(".gif") ||
+                               name.endsWith(".webp") || name.endsWith(".heic")){
                                 count++;
                             }
                         }
@@ -104,8 +105,10 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
 
                         for(StorageReference imageRef : listResult.getItems()){
 
-                            if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
-                               imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+                            String name = imageRef.getName().toLowerCase();
+                            if(name.endsWith(".jpg") || name.endsWith(".png") ||
+                                    name.endsWith(".jpeg") || name.endsWith(".gif") ||
+                                    name.endsWith(".webp") || name.endsWith(".heic")){
                                 count++;
                                 final int finalCount = count;
                                 File file = new File(downloadDir, imageRef.getName());
