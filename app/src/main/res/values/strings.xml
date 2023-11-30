@@ -116,4 +116,9 @@
     <string name="delete_duplicate_done">Finished deleting duplicate images</string>
     <string name="delete_duplicate_error">Error when deleting duplicate images</string>
     <string name="images">images</string>
+    <string name="backup_success">Backup successful</string>
+    <string name="backup_fail">Backup failed</string>
+    <string name="download_successful">Download successful</string>
+    <string name="no_image_selected">No image selected</string>
+
 </resources>

@@ -57,7 +57,7 @@
     <string name="add">Thêm</string>
     <string name="remove">Xoá</string>
     <string name="remove_from_album">Xoá khỏi album</string>
-    <string name="backup">Lưu dự trữ</string>
+    <string name="backup">Sao lưu</string>
     <string name="download_backup">Tải xuống backup</string>
     <string name="delete_duplicate_images">Xoá ảnh trùng</string>
     <string name="search_by_name">Tìm kiếm theo tên</string>
@@ -123,4 +123,9 @@
     <string name="delete_duplicate_done">Hoàn tất xoá ảnh trùng</string>
     <string name="delete_duplicate_error">Lỗi khi xoá ảnh trùng</string>
     <string name="images">Ảnh</string>
+    <string name="backup_success">Sao lưu thành công.</string>
+    <string name="backup_fail">Sao lưu thât bại.</string>
+    <string name="download_successful">Tải sao lưu thành công.</string>
+    <string name="no_image_selected">0 ảnh được chọn</string>
+
 </resources>

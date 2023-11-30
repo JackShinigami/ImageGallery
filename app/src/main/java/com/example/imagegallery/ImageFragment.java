@@ -297,147 +297,7 @@ public class ImageFragment extends Fragment {
         btnSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(v.getContext(), btnSelect);
-                popupMenu.getMenuInflater().inflate(R.menu.select_images_menu, popupMenu.getMenu());
-
-                if( fragmentName.equals("Trash"))
-                {
-                    popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
-                    popupMenu.getMenu().findItem(R.id.delete_images).setVisible(false);
-                    popupMenu.getMenu().findItem(R.id.upload_images).setVisible(false);
-                    popupMenu.getMenu().findItem(R.id.restore_images).setVisible(true);
-                    popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
-                }
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        int id = menuItem.getItemId();
-
-                        if(id == R.id.add_to_album)
-                        {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                albumHelper.addImagesToAlbum(getContext(), selectedImages);
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-                            adapter.setSelectMode(false);
-                            reload(false);
-                        }
-                        else if(id == R.id.delete_images)
-                        {
-                            Dialog dialog = new Dialog(getContext());
-                            dialog.setContentView(R.layout.dialog_save_edited_image);
-                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
-                            txtTitle.setText(R.string.delete_images_confirm);
-                            Button btnYes = dialog.findViewById(R.id.btn_save);
-                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
-                            btnYes.setText(R.string.delete);
-                            btnNo.setText(R.string.cancel);
-                            btnYes.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    deleteSelectedImages();
-                                    dialog.dismiss();
-                                }
-                            });
-                            btnNo.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-
-                            dialog.show();
-
-                        }
-                        else if(id == R.id.upload_images)
-                        {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                Thread thread = new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        for(ImageObject imageObject : selectedImages){
-                                            BackupImage.uploadImage(getContext(), imageObject);
-                                        }
-                                    }
-                                });
-                                thread.start();
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-
-                            reload(false);
-                        }
-                        else if(id == R.id.select_all){
-                            adapter.SelectAll();
-                        } else if (id == R.id.cancel_action) {
-                            reload(false);
-                        } else if (id == R.id.delete_trash) {
-                            Dialog dialog = new Dialog(getContext());
-                            dialog.setContentView(R.layout.dialog_save_edited_image);
-                            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
-                            txtTitle.setText(R.string.delete_trashes_confirm);
-                            Button btnYes = dialog.findViewById(R.id.btn_save);
-                            Button btnNo = dialog.findViewById(R.id.btn_cancel);
-                            btnYes.setText(R.string.delete);
-                            btnNo.setText(R.string.cancel);
-                            btnYes.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    deleteTrashImages();
-                                    dialog.dismiss();
-                                }
-                            });
-                            btnNo.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            dialog.show();
-                        } else if (id == R.id.restore_images) {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                for(ImageObject imageObject : selectedImages){
-                                    imageObject.restoreFile(getContext());
-                                    images.remove(imageObject);
-                                }
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-
-                            reload(false);
-
-                            try {
-                                ((MainActivity) getContext()).handler.sendEmptyMessage(1);
-                            }
-                            catch(Exception e){
-
-                            }
-                        } else if (id == R.id.slide_show)
-                        {
-                            ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
-                            if(selectedImages.size() > 0)
-                            {
-                                Intent intent = new Intent(getContext(), SlideShowActivity.class);
-                                intent.putParcelableArrayListExtra("images", selectedImages);
-                                startActivity(intent);
-                            }
-                            else
-                                Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
-                            reload(false);
-                        }
-
-                        return false;
-                    }
-                });
-
-                popupMenu.show();
+                showSelectMenu(v.getContext());
             }
         });
     }
@@ -490,7 +350,7 @@ public class ImageFragment extends Fragment {
                                     taskCompletionSource.getTask().addOnCompleteListener(task -> {
                                         MainActivity mainActivity = (MainActivity) getContext();
                                         mainActivity.handler.sendEmptyMessage(1);
-                                        Toast.makeText(getContext(), "Downloaded successful", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), R.string.download_successful, Toast.LENGTH_SHORT).show();
                                     });
                                 }
                             });
@@ -573,7 +433,7 @@ public class ImageFragment extends Fragment {
             }
         }
         else
-            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
         try {
             ((MainActivity) getContext()).handler.sendEmptyMessage(1);
         }
@@ -593,7 +453,7 @@ public class ImageFragment extends Fragment {
             }
         }
         else
-            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
 
         try {
             ((MainActivity) getContext()).handler.sendEmptyMessage(1);
@@ -602,5 +462,149 @@ public class ImageFragment extends Fragment {
 
         }
         reload(false);
+    }
+
+    void showSelectMenu(Context context){
+        PopupMenu popupMenu = new PopupMenu(context, btnSelect);
+        popupMenu.getMenuInflater().inflate(R.menu.select_images_menu, popupMenu.getMenu());
+
+        if( fragmentName.equals("Trash"))
+        {
+            popupMenu.getMenu().findItem(R.id.add_to_album).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.delete_images).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.upload_images).setVisible(false);
+            popupMenu.getMenu().findItem(R.id.restore_images).setVisible(true);
+            popupMenu.getMenu().findItem(R.id.delete_trash).setVisible(true);
+        }
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+
+                if(id == R.id.add_to_album)
+                {
+                    ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                    if(selectedImages.size() > 0)
+                    {
+                        albumHelper.addImagesToAlbum(getContext(), selectedImages);
+                    }
+                    else
+                        Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
+                    adapter.setSelectMode(false);
+                    reload(false);
+                }
+                else if(id == R.id.delete_images)
+                {
+                    Dialog dialog = new Dialog(getContext());
+                    dialog.setContentView(R.layout.dialog_save_edited_image);
+                    TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                    txtTitle.setText(R.string.delete_images_confirm);
+                    Button btnYes = dialog.findViewById(R.id.btn_save);
+                    Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                    btnYes.setText(R.string.delete);
+                    btnNo.setText(R.string.cancel);
+                    btnYes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            deleteSelectedImages();
+                            dialog.dismiss();
+                        }
+                    });
+                    btnNo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+
+                }
+                else if(id == R.id.upload_images)
+                {
+                    ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                    if(selectedImages.size() > 0)
+                    {
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(ImageObject imageObject : selectedImages){
+                                    BackupImage.uploadImage(getContext(), imageObject);
+                                }
+                            }
+                        });
+                        thread.start();
+                    }
+                    else
+                        Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
+
+                    reload(false);
+                }
+                else if(id == R.id.select_all){
+                    adapter.SelectAll();
+                } else if (id == R.id.cancel_action) {
+                    reload(false);
+                } else if (id == R.id.delete_trash) {
+                    Dialog dialog = new Dialog(getContext());
+                    dialog.setContentView(R.layout.dialog_save_edited_image);
+                    TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                    txtTitle.setText(R.string.delete_trashes_confirm);
+                    Button btnYes = dialog.findViewById(R.id.btn_save);
+                    Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                    btnYes.setText(R.string.delete);
+                    btnNo.setText(R.string.cancel);
+                    btnYes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            deleteTrashImages();
+                            dialog.dismiss();
+                        }
+                    });
+                    btnNo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                } else if (id == R.id.restore_images) {
+                    ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                    if(selectedImages.size() > 0)
+                    {
+                        for(ImageObject imageObject : selectedImages){
+                            imageObject.restoreFile(getContext());
+                            images.remove(imageObject);
+                        }
+                    }
+                    else
+                        Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
+
+                    reload(false);
+
+                    try {
+                        ((MainActivity) getContext()).handler.sendEmptyMessage(1);
+                    }
+                    catch(Exception e){
+
+                    }
+                } else if (id == R.id.slide_show)
+                {
+                    ArrayList<ImageObject> selectedImages = adapter.getSelectedImages();
+                    if(selectedImages.size() > 0)
+                    {
+                        Intent intent = new Intent(getContext(), SlideShowActivity.class);
+                        intent.putParcelableArrayListExtra("images", selectedImages);
+                        startActivity(intent);
+                    }
+                    else
+                        Toast.makeText(getContext(), R.string.no_image_selected, Toast.LENGTH_SHORT).show();
+                    reload(false);
+                }
+
+                return false;
+            }
+        });
+
+        popupMenu.show();
     }
 }

@@ -26,15 +26,6 @@ public class AlbumData implements Parcelable {
     private int thumbnailPath;
 
 
-    public AlbumData(String albumName, ArrayList<ImageObject> images) {
-        long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
-        this.albumName = albumName;
-        this.images = images;
-        this.createdDate = now;
-        this.lastModifiedDate = now;
-        this.thumbnailPath = R.drawable.icon_albums;
-    }
-
     public AlbumData(String albumName, ArrayList<ImageObject> images, int thumbnailPath){
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
         this.albumName = albumName;
@@ -57,7 +48,6 @@ public class AlbumData implements Parcelable {
 
     public AlbumData(String albumName, int thumbnailPath){
         long now = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
         this.albumName = albumName;
         this.images = new ArrayList<>();
         this.createdDate = now;

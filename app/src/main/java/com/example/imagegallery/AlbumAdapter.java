@@ -42,6 +42,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        AlbumHelper albumHelper = AlbumHelper.getInstance();
         AlbumData album = albums.get(position);
         String albumName = album.getAlbumName();
 
@@ -60,20 +61,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             String imageUnit = context.getString(R.string.image_unit_n);
             holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
+
         int resID = album.getThumbnailPath();
-
         holder.albumThumbnail.setImageResource(resID);
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
-        /*if(albumHelper.isDefaultAlbum(album.getAlbumName())){
-            holder.moreMenu.setVisibility(View.INVISIBLE);
-        }
-        else{
-            holder.moreMenu.setVisibility(View.VISIBLE);
-        }*/
-
         holder.moreMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 showPopupMenu(holder.moreMenu, position);
             }
         });
@@ -84,6 +78,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     @Override
                     public void onPasswordChecked(boolean isPasswordCorrect) {
                         if(isPasswordCorrect){
+                            //Create ImageFragment to load images in album
                             ArrayList<ImageObject> images = album.getImages();
                             ImagesViewModel imagesViewModel = new ViewModelProvider((MainActivity) context).get(ImagesViewModel.class);
                             imagesViewModel.setImagesAlbum(images);
@@ -125,6 +120,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int itemId = item.getItemId();
+
                 if(R.id.edit_album == itemId){
                     EditAlbumName(itemView, position);
                 }
@@ -140,14 +136,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 else if(R.id.set_password == itemId){
                     albumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
                 }
+
                 return true;
             }
-
-
-        });
+        });// to implement on click event on items of menu
         popupMenu.show();
-
-    }
+    }//showPopupMenu
 
     private void EditAlbumName(View itemView, int position) {
         AlbumData currentAlbum = albums.get(position);
@@ -168,10 +162,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newName = txtName.getText().toString();
+
                 if(newName.length() != 0) {
+
                     if(!oldName.equals(newName)) {
                         ArrayList<String> albumNames = new ArrayList<>();
+
                         for(AlbumData album : albums) {
+
                             if(album.getAlbumName().equals(newName)) {
                                 String message = context.getString(R.string.album_name_exists);
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
@@ -195,10 +193,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
                         notifyDataSetChanged();
                         dialog.dismiss();
-
-
-
-
                     }
                 }
                 else {
@@ -206,19 +200,19 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        });//positive button
 
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
-        });
+        });//negative button
 
         builder.create();
         builder.show();
 
-    }
+    }//EditAlbumName
 
 
     @Override
@@ -236,5 +230,5 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         SharedPreferencesManager.saveAlbumNameList(context, albumNameList);
         SharedPreferencesManager.saveAlbumData(context, album);
         notifyDataSetChanged();
-    }
+    }//addAlbum
 }

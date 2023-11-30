@@ -30,7 +30,7 @@ public class AlbumHelper {
     private static boolean isSecurityQuestionSet = false;
 
     private static ArrayList<String> questionList;
-
+    private static ArrayList<String> savedQuestions;
     Context context = MainActivity.getContext();
 
     private AlbumHelper(){
@@ -48,6 +48,19 @@ public class AlbumHelper {
         questionList.add(context.getString(R.string.what_is_your_favorite_game));
         questionList.add(context.getString(R.string.what_is_your_favorite_tv_show));
         questionList.add(context.getString(R.string.what_is_your_favorite_subject));
+
+        savedQuestions = new ArrayList<>();
+        savedQuestions.add("what is your favorite color");
+        savedQuestions.add("what is your favorite food");
+        savedQuestions.add("what is your favorite movie");
+        savedQuestions.add("what is your favorite animal");
+        savedQuestions.add("what is your favorite sport");
+        savedQuestions.add("what is your favorite book");
+        savedQuestions.add("what is your favorite song");
+        savedQuestions.add("what is your favorite game");
+        savedQuestions.add("what is your favorite tv show");
+        savedQuestions.add("what is your favorite subject");
+
 
     }
 
@@ -69,6 +82,7 @@ public class AlbumHelper {
     public void addImageToAlbum(Context context, ImageObject imageObject){
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, albumNameList);
+
         if(albumNameList == null){
             albumNameList = new ArrayList<>();
         }
@@ -85,10 +99,14 @@ public class AlbumHelper {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String albumName = editName.getText().toString();
+
                 if(albumName.length() != 0){
+
                     if(finalAlbumNameList.contains(albumName)){
                         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
-                       if(albumData.addImage(imageObject)){
+
+                        if(albumData.addImage(imageObject)){
+                           albumData.setLastModifiedDate();
                            SharedPreferencesManager.saveAlbumData(context, albumData);
                            imageObject.addAlbumName(context,albumName);
                            Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
@@ -98,13 +116,7 @@ public class AlbumHelper {
                        }
                     }
                     else{
-                        AlbumData albumData = new AlbumData(albumName);
-                        albumData.addImage(imageObject);
-                        SharedPreferencesManager.saveAlbumData(context, albumData);
-                        imageObject.addAlbumName(context,albumName);
-                        finalAlbumNameList.add(albumName);
-                        SharedPreferencesManager.saveAlbumNameList(context, finalAlbumNameList);
-                        Toast.makeText(context, context.getString(R.string.image_has_been_added_to) + albumName, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.album_does_not_exist), Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
@@ -121,6 +133,7 @@ public class AlbumHelper {
     public void addImagesToAlbum(Context context, ArrayList<ImageObject> images){
         ArrayList<String> albumNameList = SharedPreferencesManager.loadAlbumNameList(context);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, albumNameList);
+
         if(albumNameList == null){
             albumNameList = new ArrayList<>();
         }
@@ -137,11 +150,16 @@ public class AlbumHelper {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String albumName = editName.getText().toString();
+
                 if(albumName.length() != 0){
+
                     if(finalAlbumNameList.contains(albumName)){
+
                         for(ImageObject imageObject : images){
                             AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
+
                             if(albumData.addImage(imageObject)){
+                                albumData.setLastModifiedDate();
                                 SharedPreferencesManager.saveAlbumData(context, albumData);
                                 imageObject.addAlbumName(context,albumName);
                             }
@@ -170,14 +188,12 @@ public class AlbumHelper {
         MainActivity mainActivity = (MainActivity) context;
         String albumName = mainActivity.getCurrentFragementName();
         AlbumData albumData = SharedPreferencesManager.loadAlbumData(context, albumName);
+        albumData.setLastModifiedDate();
 
         if(albumData.deleteImage(imageObject)){
             SharedPreferencesManager.saveAlbumData(context, albumData);
-            Toast.makeText(context, context.getString(R.string.image_has_been_deleted_from) + albumName, Toast.LENGTH_SHORT).show();
         }
-        else{
-            Toast.makeText(context, R.string.image_does_not_exist_in_this_album, Toast.LENGTH_SHORT).show();
-        }
+
     }
 
     public ArrayList<AlbumData> createDefaultAlbum(Context context){
@@ -186,6 +202,7 @@ public class AlbumHelper {
         File externalStorage = Environment.getExternalStorageDirectory();
         File trashDirectory = new File(context.getExternalFilesDir(null), "Trash");
         ArrayList<ImageObject> trashImages = new ArrayList<>();
+
         if(!trashDirectory.exists()) {
             trashDirectory.mkdir();
         }
@@ -217,6 +234,7 @@ public class AlbumHelper {
 
     public void setAlbumPassword(Context context, String albumName){
         isSecurityQuestionSet = SharedPreferencesManager.isSecurityQuestionSet(context);
+
         if(SharedPreferencesManager.hasSetPassword(context, albumName)){
             checkAlbumPassword(context, albumName, new PasswordCheckCallBack() {
                 @Override
@@ -228,6 +246,7 @@ public class AlbumHelper {
             });
         }
         else {
+
             if(!isSecurityQuestionSet){
                 setSecurityQuestion(context, new PasswordCheckCallBack() {
                     @Override
@@ -260,6 +279,7 @@ public class AlbumHelper {
         builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 if(editPassword.getText().toString().equals(editConfirmPassword.getText().toString())){
                     SharedPreferencesManager.saveAlbumPassword(context, albumName, editPassword.getText().toString());
                     Toast.makeText(context, R.string.password_has_been_set, Toast.LENGTH_SHORT).show();
@@ -299,6 +319,7 @@ public class AlbumHelper {
             builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+
                     if(SharedPreferencesManager.checkAlbumPassword(context, albumName, editPassword.getText().toString())){
                         Toast.makeText(context, R.string.password_is_correct, Toast.LENGTH_SHORT).show();
                         passwordCheckCallBack.onPasswordChecked(true);
@@ -343,8 +364,10 @@ public class AlbumHelper {
         builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 if(answer.getText().toString().length() != 0){
-                    SharedPreferencesManager.saveSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString());
+                    String question = savedQuestions.get(questions.getSelectedItemPosition());
+                    SharedPreferencesManager.saveSecurityQuestion(context, question, answer.getText().toString());
                     Toast.makeText(context, R.string.security_question_has_been_set, Toast.LENGTH_SHORT).show();
                     passwordCheckCallBack.onPasswordChecked(true);
                 }
@@ -369,6 +392,7 @@ public class AlbumHelper {
 
         if(SharedPreferencesManager.getEnterWrongAnswerTimes(context) == 5){
             long time = SharedPreferencesManager.getTimeEnterWrongAnswer(context);
+
             if(time != 0){
                 long currentTime = System.currentTimeMillis();
                 if(currentTime - time > 300000){
@@ -399,13 +423,16 @@ public class AlbumHelper {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(answer.getText().toString().length() != 0){
-                    if(SharedPreferencesManager.checkSecurityQuestion(context, questions.getSelectedItem().toString(), answer.getText().toString())){
+                    String question = savedQuestions.get(questions.getSelectedItemPosition());
+
+                    if(SharedPreferencesManager.checkSecurityQuestion(context, question, answer.getText().toString())){
                         setPassword(context, albumName);
                         SharedPreferencesManager.saveEnterWrongAnswerTimes(context, 0);
                     }
                     else{
                         Toast.makeText(context, R.string.security_question_answer_is_incorrect, Toast.LENGTH_SHORT).show();
                         SharedPreferencesManager.saveEnterWrongAnswerTimes(context, enterWrongAnswerTimes + 1);
+
                         if(enterWrongAnswerTimes == 4){
                             SharedPreferencesManager.saveTimeEnterWrongAnswer(context);
                         }

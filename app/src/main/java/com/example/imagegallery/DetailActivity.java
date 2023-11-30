@@ -532,7 +532,6 @@ public class DetailActivity extends AppCompatActivity  {
         @Override
         public boolean onDoubleTap(@NonNull MotionEvent e) {
             reset();
-            Toast.makeText(DetailActivity.this, "Double tap", Toast.LENGTH_SHORT).show();
             return true;
         }
     }
@@ -710,7 +709,6 @@ public class DetailActivity extends AppCompatActivity  {
     @Override
     public void onBackPressed() {
 
-        Log.d("TAG", "saturation val: " + saturationVal)   ;
         if(saturationVal != 1.0f) {
             saveColorFilter(saturationVal);
         }
