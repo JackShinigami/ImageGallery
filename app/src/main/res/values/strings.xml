@@ -113,5 +113,9 @@
     <string name="over_100_images">You can only select up to 100 images</string>
     <string name="enter_a_keyword">Enter a keyword</string>
     <string name="create_slide_show">Create slide show</string>
+    <string name="backup_success">Backup successful</string>
+    <string name="backup_fail">Backup failed</string>
+    <string name="download_successful">Download successful</string>
+    <string name="no_image_selected">No image selected</string>
 
 </resources>

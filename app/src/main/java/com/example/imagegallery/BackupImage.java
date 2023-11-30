@@ -49,14 +49,14 @@ public class BackupImage {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // Upload successful
                         Log.d("UPLOAD", "Upload successful");
-                        Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.backup_success, Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Upload failed
                         Log.e("UPLOAD", "Upload failed", exception);
-                        Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.backup_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -92,6 +92,7 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                         int count = 0;
 
                         for(StorageReference imageRef : listResult.getItems()){
+
                             if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
                                imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
                                 count++;
@@ -102,6 +103,7 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                         count = 0;
 
                         for(StorageReference imageRef : listResult.getItems()){
+
                             if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
                                imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
                                 count++;
@@ -111,6 +113,7 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                     @Override
                                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                         Log.d("DOWNLOAD", "Download successful");
+
                                         if(finalCount == numFiles){
                                             taskCompletionSource.setResult(null);
                                         }
@@ -119,26 +122,17 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                     @Override
                                     public void onFailure(@NonNull Exception exception) {
                                         Log.e("DOWNLOAD", "Download failed", exception);
+
                                         if(finalCount == numFiles){
                                             taskCompletionSource.setResult(null);
-                                        }
-                                    }
-                                });
-                            }
-
-
-                        }
-
-
-
-                    }
-                });
-
-
-
-            }
-        });
-    }
-
-
-}
+                                        }// if
+                                    }// onFailure
+                                });// addOnFailureListener
+                            } // if
+                        }// for
+                    }// onSuccess
+                });// listAll
+            } // onComplete
+        }); // getToken
+    }// downloadImage
+}// BackupImage

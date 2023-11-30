@@ -61,8 +61,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             String imageUnit = context.getString(R.string.image_unit_n);
             holder.tvAlbumSize.setText(album.getImages().size() + " " + imageUnit);
         }
-        int resID = album.getThumbnailPath();
 
+        int resID = album.getThumbnailPath();
         holder.albumThumbnail.setImageResource(resID);
         holder.moreMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +78,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     @Override
                     public void onPasswordChecked(boolean isPasswordCorrect) {
                         if(isPasswordCorrect){
+                            //Create ImageFragment to load images in album
                             ArrayList<ImageObject> images = album.getImages();
                             ImagesViewModel imagesViewModel = new ViewModelProvider((MainActivity) context).get(ImagesViewModel.class);
                             imagesViewModel.setImagesAlbum(images);
@@ -119,6 +120,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int itemId = item.getItemId();
+
                 if(R.id.edit_album == itemId){
                     EditAlbumName(itemView, position);
                 }
@@ -134,6 +136,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                 else if(R.id.set_password == itemId){
                     albumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
                 }
+
                 return true;
             }
         });// to implement on click event on items of menu
@@ -159,10 +162,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newName = txtName.getText().toString();
+
                 if(newName.length() != 0) {
+
                     if(!oldName.equals(newName)) {
                         ArrayList<String> albumNames = new ArrayList<>();
+
                         for(AlbumData album : albums) {
+
                             if(album.getAlbumName().equals(newName)) {
                                 String message = context.getString(R.string.album_name_exists);
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
