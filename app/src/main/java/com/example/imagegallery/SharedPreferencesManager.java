@@ -275,38 +275,37 @@ public class SharedPreferencesManager {
         sharedPreferences.apply();
     }
 
-    public static void saveAlbumPassword(Context context, String ALbumName, String password) {
+    public static void saveAlbumPassword(Context context, String AlbumName, String password) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         SharedPreferences.Editor editor = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE).edit();
-        album_passwords.putString(ALbumName, hashedPassword);
+        album_passwords.putString(AlbumName, hashedPassword);
         Gson gson = new Gson();
         String json = gson.toJson(album_passwords);
         editor.putString(ALBUM_PASSWORD, json);
         editor.apply();
-        //todo update album name for album password when  change album name or delete album name
     }
 
-    public static boolean hasSetPassword(Context context, String ALbumName) {
+    public static boolean hasSetPassword(Context context, String AlbumName) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
         if(json == null)
             return false;
         album_passwords = gson.fromJson(json, Bundle.class);
-        String storedHashedPassword = album_passwords.getString(ALbumName);
+        String storedHashedPassword = album_passwords.getString(AlbumName);
         if(storedHashedPassword == null)
             return false;
         return true;
     }
 
-    public static boolean checkAlbumPassword(Context context, String ALbumName, String enteredPassword) {
+    public static boolean checkAlbumPassword(Context context, String AlbumName, String enteredPassword) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString(ALBUM_PASSWORD, null);
         if(json == null)
             return false;
         album_passwords = gson.fromJson(json, Bundle.class);
-        String storedHashedPassword = album_passwords.getString(ALbumName);
+        String storedHashedPassword = album_passwords.getString(AlbumName);
 
         if(storedHashedPassword == null)
             return false;

@@ -43,6 +43,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -89,7 +90,9 @@ public class ImageObject implements Parcelable {
                     String fileNameLower = fileName.toLowerCase();
                     long date = file.lastModified();
 
-                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png") || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif") || fileNameLower.endsWith(".webp") || fileNameLower.endsWith(".heic")) {
+                    if (fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".png")
+                            || fileNameLower.endsWith(".jpeg") || fileNameLower.endsWith(".gif")
+                            || fileNameLower.endsWith(".webp") || fileNameLower.endsWith(".heic")) {
                         ImageObject image = new ImageObject(file.getAbsolutePath(), date, fileName);
                         images.add(image);
                     }
@@ -127,21 +130,30 @@ public class ImageObject implements Parcelable {
             return null;
         }
     }
-    public static void deleteDuplicateImage(Context context,ArrayList<ImageObject> images)
+    public static int deleteDuplicateImage(Context context,ArrayList<ImageObject> images, TaskCompletionSource<Void> taskCompletionSource)
     {
-        Bundle hashBundle = new Bundle();
-        for (ImageObject image : images) {
-            Bitmap b = BitmapFactory.decodeFile(image.getFilePath());
-            String hash = image.hashImage(b);
-            if(hashBundle.containsKey(hash))
-            {
-                image.deleteToTrash(context);
+        int count = 0;
+        try {
+            HashMap<String, String> hashMap = new HashMap<>();
+            for (ImageObject image : images) {
+                Bitmap b = BitmapFactory.decodeFile(image.getFilePath());
+                String hash = image.hashImage(b);
+                if (hashMap.containsKey(hash)) {
+                    image.deleteToTrash(context);
+                    count++;
+                } else {
+                    hashMap.put(hash, image.getFilePath());
+                }
             }
-            else
-            {
-                hashBundle.putString(hash, image.getFilePath());
-            }
+            taskCompletionSource.setResult(null);
+
         }
+        catch (Exception e)
+        {
+            Log.e("Hash", e.getMessage());
+            taskCompletionSource.setException(e);
+        }
+        return count;
     }
 
 
@@ -280,8 +292,9 @@ public class ImageObject implements Parcelable {
     }
     public void deleteToTrash(Context context) {
         File file = new File(this.filePath);
-        File externalStorage = Environment.getExternalStorageDirectory();
+
         ArrayList<String> albumNames = getAlbumNames(context);
+
         if (albumNames != null && albumNames.size() > 0 ){
             for (String albumName : albumNames) {
                 AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
@@ -305,7 +318,6 @@ public class ImageObject implements Parcelable {
 
         SharedPreferencesManager.saveTrashFile(context, newFile.getAbsolutePath(), this);
         SharedPreferencesManager.saveImageAlbumInfo(context, newFile.getAbsolutePath(), albumNames);
-
         ArrayList<String> tags = SharedPreferencesManager.loadTagsForImage(context, this.filePath);
         if(tags != null) {
             SharedPreferencesManager.saveTagsForImage(context, newFile.getAbsolutePath(), tags);
@@ -337,6 +349,7 @@ public class ImageObject implements Parcelable {
     public void restoreFile(Context context){
         File file = new File(this.filePath);
         File externalStorage = Environment.getExternalStorageDirectory();
+
         if(file.exists()) {
             ImageObject oldObject = SharedPreferencesManager.loadTrashFile(context, this.filePath);
             String oldFilePath;
@@ -348,9 +361,7 @@ public class ImageObject implements Parcelable {
 
             File newFile = safeNewFile(oldFilePath);
             file.renameTo(newFile);
-
             ArrayList<String> albumNames = SharedPreferencesManager.loadImageAlbumInfo(context, this.filePath);
-
             if(albumNames != null && albumNames.size() > 0) {
                 for (String albumName : albumNames) {
                     AlbumData album = SharedPreferencesManager.loadAlbumData(context, albumName);
@@ -363,7 +374,6 @@ public class ImageObject implements Parcelable {
                         albumNames.remove(albumName);
                     }
                 }
-
                 SharedPreferencesManager.saveImageAlbumInfo(context, oldFilePath, albumNames);
             }
 
@@ -545,10 +555,16 @@ public class ImageObject implements Parcelable {
         if(loved) {
             SharedPreferencesManager.saveLovedImages(context, this.filePath);
             this.addAlbumName(context, "Favorites");
+            AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
+            favorite.addImage(this);
+            SharedPreferencesManager.saveAlbumData(context, favorite);
         }
         else {
             SharedPreferencesManager.deleteLovedImages(context, this.filePath);
             this.removeAlbumName(context, "Favorites");
+            AlbumData favorite = SharedPreferencesManager.loadAlbumData(context, "Favorites");
+            favorite.removeImage(this);
+            SharedPreferencesManager.saveAlbumData(context, favorite);
         }
     }
 }

@@ -19,7 +19,7 @@
         />
 
     <item android:id="@+id/slide_show"
-        android:title="Create Slide Show"
+        android:title="@string/create_slide_show"
         android:orderInCategory="100"
         />
     <item android:id="@+id/cancel_action"

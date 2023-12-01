@@ -1,8 +1,12 @@
 package com.example.imagegallery;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +31,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
 
 
+
+
     public ImageAdapter(ArrayList<ImageObject> data, String fragmentName) {
         this.data = data;
         isSelectMode = false;
@@ -45,13 +51,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         ImageObject imageObject = data.get(position);
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        AlbumHelper albumHelper = AlbumHelper.getInstance(holder.imageView.getContext());
 
         ViewGroup.LayoutParams layoutParams = holder.imageView.getLayoutParams();
         layoutParams.width = WindowSize.getWidth() / colNumber;
         layoutParams.height = layoutParams.width;
 
-        imageObject.loadImage(holder.imageView.getContext(), holder.imageView, layoutParams.width/3, layoutParams.height/3);
+        imageObject.loadImage(holder.imageView.getContext(), holder.imageView, layoutParams.width, layoutParams.height);
 
         if(isSelectMode && selectedItems.get(position)){
             holder.imageView.setAlpha(0.5f);
@@ -166,8 +172,27 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                                         data.remove(imageObject);
                                         if(SearchActivity.isSearchActivityRunning())
                                         {
-                                            SearchActivity.addDeleteImage(imageObject);
-                                            ((SearchActivity)v.getContext()).onResume();
+                                            try {
+                                                SearchActivity.addDeleteImage(imageObject);
+                                                Context context = v.getContext();
+                                                while (!(context instanceof SearchActivity)) {
+                                                    context = ((ContextWrapper)context).getBaseContext();
+                                                }
+                                                ((SearchActivity) context).onResume();
+                                            }
+                                            catch(Exception e){
+                                                Log.e("Error", e.toString());
+                                            }
+                                        } else {
+                                            try {
+                                                Context context = v.getContext();
+                                                while (!(context instanceof MainActivity)) {
+                                                    context = ((ContextWrapper) context).getBaseContext();
+                                                }
+                                                ((MainActivity) context).handler.sendEmptyMessage(1);
+                                            } catch (Exception e) {
+                                                Log.e("Error", e.toString());
+                                            }
                                         }
                                         dialog.dismiss();
                                         notifyDataSetChanged();

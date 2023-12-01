@@ -30,33 +30,28 @@ public class BackupImage {
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 String token = task.getResult();
-                Log.d("TOKEN", token);
 
                 StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
                 StorageReference riversRef = mStorageRef.child(token + "/" + imageObject.getFileName());
                 Uri file = Uri.fromFile(new File(imageObject.getFilePath()));
                 UploadTask uploadTask = riversRef.putFile(file);
-
                 uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Update progress bar
-                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                        Log.d("UPLOAD", "Upload is " + progress + "% done");
+
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // Upload successful
-                        Log.d("UPLOAD", "Upload successful");
-                        Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.backup_success, Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Upload failed
                         Log.e("UPLOAD", "Upload failed", exception);
-                        Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.backup_fail, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -81,8 +76,6 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 String token = task.getResult();
-                Log.d("TOKEN", token);
-
                 StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
                 StorageReference riversRef = mStorageRef.child(token);
 
@@ -92,8 +85,10 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                         int count = 0;
 
                         for(StorageReference imageRef : listResult.getItems()){
-                            if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
-                               imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+                            String name = imageRef.getName().toLowerCase();
+                            if(name.endsWith(".jpg") || name.endsWith(".png") ||
+                               name.endsWith(".jpeg") || name.endsWith(".gif") ||
+                               name.endsWith(".webp") || name.endsWith(".heic")){
                                 count++;
                             }
                         }
@@ -102,8 +97,11 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                         count = 0;
 
                         for(StorageReference imageRef : listResult.getItems()){
-                            if(imageRef.getName().endsWith(".jpg") || imageRef.getName().endsWith(".png") ||
-                               imageRef.getName().endsWith(".jpeg") || imageRef.getName().endsWith(".gif")){
+
+                            String name = imageRef.getName().toLowerCase();
+                            if(name.endsWith(".jpg") || name.endsWith(".png") ||
+                                    name.endsWith(".jpeg") || name.endsWith(".gif") ||
+                                    name.endsWith(".webp") || name.endsWith(".heic")){
                                 count++;
                                 final int finalCount = count;
                                 File file = new File(downloadDir, imageRef.getName());
@@ -111,6 +109,7 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                     @Override
                                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                                         Log.d("DOWNLOAD", "Download successful");
+
                                         if(finalCount == numFiles){
                                             taskCompletionSource.setResult(null);
                                         }
@@ -119,26 +118,17 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
                                     @Override
                                     public void onFailure(@NonNull Exception exception) {
                                         Log.e("DOWNLOAD", "Download failed", exception);
+
                                         if(finalCount == numFiles){
                                             taskCompletionSource.setResult(null);
-                                        }
-                                    }
-                                });
-                            }
-
-
-                        }
-
-
-
-                    }
-                });
-
-
-
-            }
-        });
-    }
-
-
-}
+                                        }// if
+                                    }// onFailure
+                                });// addOnFailureListener
+                            } // if
+                        }// for
+                    }// onSuccess
+                });// listAll
+            } // onComplete
+        }); // getToken
+    }// downloadImage
+}// BackupImage

@@ -14,7 +14,7 @@
     <string name="filterImage">Bộ lọc</string>
     <string name="cropImage">Cắt</string>
     <string name="name">Tên :</string>
-    <string name="add_new_album">Thêm vào album</string>
+    <string name="add_new_album">Thêm album mới</string>
     <string name="enter_new_album_name">Nhập tên album mới</string>
     <string name="add_image_to_album">Thêm ảnh vào album</string>
     <string name="enter_album_name">Nhập tên album</string>
@@ -57,8 +57,8 @@
     <string name="add">Thêm</string>
     <string name="remove">Xoá</string>
     <string name="remove_from_album">Xoá khỏi album</string>
-    <string name="backup">Lưu dự trữ</string>
-    <string name="download_backup">Tải xuống backup</string>
+    <string name="backup">Sao lưu</string>
+    <string name="download_backup">Tải ảnh đã sao lưu</string>
     <string name="delete_duplicate_images">Xoá ảnh trùng</string>
     <string name="search_by_name">Tìm kiếm theo tên</string>
     <string name="search_by_location">Tìm kiếm theo vị trí</string>
@@ -119,5 +119,16 @@
     <string name="save_image_confirm">Bạn có muốn lưu các thay đổi không?</string>
     <string name="over_100_images">Chỉ có thể chọn 100 ảnh cùng lúc.</string>
     <string name="enter_a_keyword">Nhập từ khoá</string>
+    <string name="create_slide_show">Tạo bản trình chiếu</string>
+    <string name="delete_duplicate_done">Hoàn tất xoá ảnh trùng</string>
+    <string name="delete_duplicate_error">Lỗi khi xoá ảnh trùng</string>
+    <string name="images">Ảnh</string>
+    <string name="backup_success">Sao lưu thành công.</string>
+    <string name="backup_fail">Sao lưu thât bại.</string>
+    <string name="download_successful">Tải sao lưu thành công.</string>
+    <string name="no_image_selected">0 ảnh được chọn</string>
+    <string name="clear_password">Xóa mật khẩu</string>
+    <string name="enter_current_password">Nhập mật khẩu hiện tại</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
 
 </resources>

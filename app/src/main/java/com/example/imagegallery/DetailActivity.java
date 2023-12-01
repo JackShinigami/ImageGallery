@@ -217,17 +217,9 @@ public class DetailActivity extends AppCompatActivity  {
                     if (obj.isLoved(view.getContext())) {
                         obj.setLoved(view.getContext(), false);
                         iv_love.setImageResource(R.drawable.ic_not_loved);
-
-                        AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(), "Favorites");
-                        favorite.removeImage(obj);
-                        SharedPreferencesManager.saveAlbumData(view.getContext(), favorite);
                     } else {
                         obj.setLoved(view.getContext(), true);
                         iv_love.setImageResource(R.drawable.ic_loved);
-
-                        AlbumData favorite = SharedPreferencesManager.loadAlbumData(view.getContext(), "Favorites");
-                        favorite.addImage(obj);
-                        SharedPreferencesManager.saveAlbumData(view.getContext(), favorite);
                     }
                 }
             });
@@ -347,17 +339,61 @@ public class DetailActivity extends AppCompatActivity  {
 //                    share.putExtra(Intent.EXTRA_STREAM, imageUri);
 //                    startActivity(Intent.createChooser(share, "Select"));
                     } else if (R.id.add_to_album == itemId) {
-                        AlbumHelper albumHelper = AlbumHelper.getInstance();
+                        AlbumHelper albumHelper = AlbumHelper.getInstance(this);
                         albumHelper.addImageToAlbum(this, obj);
                     } else if (R.id.delete_image == itemId) {
-                        obj.deleteToTrash(this);
-                        if (SearchActivity.isSearchActivityRunning()) {
-                            SearchActivity.addDeleteImage(obj);
-                        }
-                        finish();
+                        Dialog dialog = new Dialog(this);
+                        dialog.setContentView(R.layout.dialog_save_edited_image);
+                        TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                        txtTitle.setText(R.string.delete_images_confirm);
+                        Button btnYes = dialog.findViewById(R.id.btn_save);
+                        Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                        btnYes.setText(R.string.delete);
+                        btnNo.setText(R.string.cancel);
+                        btnYes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                obj.deleteToTrash(getApplicationContext());
+                                if (SearchActivity.isSearchActivityRunning()) {
+                                    SearchActivity.addDeleteImage(obj);
+                                }
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                        btnNo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        dialog.show();
                     } else if (R.id.delete_trash == itemId) {
-                        obj.deleteFile(this);
-                        finish();
+                        Dialog dialog = new Dialog(this);
+                        dialog.setContentView(R.layout.dialog_save_edited_image);
+                        TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+                        txtTitle.setText(R.string.delete_trashes_confirm);
+                        Button btnYes = dialog.findViewById(R.id.btn_save);
+                        Button btnNo = dialog.findViewById(R.id.btn_cancel);
+                        btnYes.setText(R.string.delete);
+                        btnNo.setText(R.string.cancel);
+                        btnYes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                obj.deleteFile(getApplicationContext());
+                                finish();
+                                dialog.dismiss();
+                            }
+                        });
+                        btnNo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        dialog.show();
                     } else if (R.id.restore_image == itemId) {
                         obj.restoreFile(this);
                         finish();
@@ -496,7 +532,6 @@ public class DetailActivity extends AppCompatActivity  {
         @Override
         public boolean onDoubleTap(@NonNull MotionEvent e) {
             reset();
-            Toast.makeText(DetailActivity.this, "Double tap", Toast.LENGTH_SHORT).show();
             return true;
         }
     }
@@ -674,7 +709,6 @@ public class DetailActivity extends AppCompatActivity  {
     @Override
     public void onBackPressed() {
 
-        Log.d("TAG", "saturation val: " + saturationVal)   ;
         if(saturationVal != 1.0f) {
             saveColorFilter(saturationVal);
         }
