@@ -544,11 +544,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        if(addresses != null){
+        /*if(addresses != null){
             Address address = addresses.get(0);
             String addressLine = address.getAddressLine(0);
             //Toast.makeText(this, addressLine, Toast.LENGTH_SHORT).show();
-        }
+        }*/
         //save location to shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences("location", Context.MODE_PRIVATE);
 
