@@ -55,9 +55,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
         if(isSelectMode && selectedItems.get(position)){
             holder.imageView.setAlpha(0.5f);
+            holder.imageView.setScaleX(0.9f);
+            holder.imageView.setScaleY(0.9f);
+            holder.textView.setVisibility(View.VISIBLE);
         }
         else{
             holder.imageView.setAlpha(1f);
+            holder.imageView.setScaleX(1f);
+            holder.imageView.setScaleY(1f);
+            holder.textView.setVisibility(View.GONE);
         }
 
         if(isSelectMode){
@@ -67,11 +73,17 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                     if(selectedItems.get(position)){
                         selectedItems.put(position, false);
                         holder.imageView.setAlpha(1f);
+                        holder.imageView.setScaleX(1f);
+                        holder.imageView.setScaleY(1f);
+                        holder.textView.setVisibility(View.GONE);
                     }
                     else{
                         if(countSeleted() < 100){
                             selectedItems.put(position, true);
                             holder.imageView.setAlpha(0.5f);
+                            holder.imageView.setScaleX(0.9f);
+                            holder.imageView.setScaleY(0.9f);
+                            holder.textView.setVisibility(View.VISIBLE);
                         }
                         else{
                             Toast.makeText(v.getContext(), R.string.over_100_images, Toast.LENGTH_SHORT).show();
@@ -211,7 +223,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     public void SelectAll(){
         for(int i = 0; i < data.size(); i++){
             selectedItems.put(i, true);
-            if(i == 100){
+            if(i == 99){
                 break;
             }
         }

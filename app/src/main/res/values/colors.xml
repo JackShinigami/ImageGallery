@@ -6,5 +6,6 @@
     <color name="appColorPrimary">@color/white</color>
     <color name="appColorPrimaryDark">@color/black</color>
     <color name="appColorAccent">#0bf</color>
+    <color name="transparent">#0000</color>
 
 </resources>
