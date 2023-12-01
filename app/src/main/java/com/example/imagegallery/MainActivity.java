@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
         imagesViewModel.setImagesList(images);
 
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        AlbumHelper albumHelper = AlbumHelper.getInstance(this);
         ArrayList<AlbumData> defaultAlbums = albumHelper.createDefaultAlbum(this);
 
         if (FragmentType.IMAGE_FRAGMENT == currentFragment) {
@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
                     ImageObject.getImage(MainActivity.this, downloadDirectory, images);
                     ImageObject.getImage(MainActivity.this, dcimDirectory, images);
 
-                    AlbumHelper albumHelper = AlbumHelper.getInstance();
+                    AlbumHelper albumHelper = AlbumHelper.getInstance(MainActivity.this);
                     defaultAlbums = albumHelper.createDefaultAlbum(MainActivity.this);
 
                     handler.sendEmptyMessage(0);

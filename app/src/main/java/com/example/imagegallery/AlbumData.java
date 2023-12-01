@@ -22,7 +22,6 @@ public class AlbumData implements Parcelable {
     private String albumName;
     private long createdDate;
     private long lastModifiedDate;
-
     private int thumbnailPath;
 
 

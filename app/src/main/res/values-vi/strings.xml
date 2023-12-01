@@ -14,7 +14,7 @@
     <string name="filterImage">Bộ lọc</string>
     <string name="cropImage">Cắt</string>
     <string name="name">Tên :</string>
-    <string name="add_new_album">Thêm vào album</string>
+    <string name="add_new_album">Thêm album mới</string>
     <string name="enter_new_album_name">Nhập tên album mới</string>
     <string name="add_image_to_album">Thêm ảnh vào album</string>
     <string name="enter_album_name">Nhập tên album</string>
@@ -127,5 +127,8 @@
     <string name="backup_fail">Sao lưu thât bại.</string>
     <string name="download_successful">Tải sao lưu thành công.</string>
     <string name="no_image_selected">0 ảnh được chọn</string>
+    <string name="clear_password">Xóa mật khẩu</string>
+    <string name="enter_current_password">Nhập mật khẩu hiện tại</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
 
 </resources>

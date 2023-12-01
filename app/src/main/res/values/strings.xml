@@ -120,5 +120,8 @@
     <string name="backup_fail">Backup failed</string>
     <string name="download_successful">Download successful</string>
     <string name="no_image_selected">No image selected</string>
+    <string name="clear_password">Clear password</string>
+    <string name="enter_current_password">Enter Current Password</string>
+    <string name="reset_password">Reset password</string>
 
 </resources>

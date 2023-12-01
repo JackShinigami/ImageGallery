@@ -31,6 +31,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
 
 
 
+
+
     public ImageAdapter(ArrayList<ImageObject> data, String fragmentName) {
         this.data = data;
         isSelectMode = false;
@@ -49,7 +51,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         ImageObject imageObject = data.get(position);
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        AlbumHelper albumHelper = AlbumHelper.getInstance(holder.imageView.getContext());
 
         ViewGroup.LayoutParams layoutParams = holder.imageView.getLayoutParams();
         layoutParams.width = WindowSize.getWidth() / colNumber;

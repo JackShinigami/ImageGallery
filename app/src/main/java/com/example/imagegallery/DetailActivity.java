@@ -339,7 +339,7 @@ public class DetailActivity extends AppCompatActivity  {
 //                    share.putExtra(Intent.EXTRA_STREAM, imageUri);
 //                    startActivity(Intent.createChooser(share, "Select"));
                     } else if (R.id.add_to_album == itemId) {
-                        AlbumHelper albumHelper = AlbumHelper.getInstance();
+                        AlbumHelper albumHelper = AlbumHelper.getInstance(this);
                         albumHelper.addImageToAlbum(this, obj);
                     } else if (R.id.delete_image == itemId) {
                         Dialog dialog = new Dialog(this);

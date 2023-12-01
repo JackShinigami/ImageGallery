@@ -42,7 +42,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull AlbumViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        AlbumHelper albumHelper = AlbumHelper.getInstance(context);
         AlbumData album = albums.get(position);
         String albumName = album.getAlbumName();
 
@@ -64,6 +64,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
         int resID = album.getThumbnailPath();
         holder.albumThumbnail.setImageResource(resID);
+
         holder.moreMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,9 +105,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
 
     private void showPopupMenu(View itemView, int position) {
         AlbumData currentAlbum = albums.get(position);
-        AlbumHelper albumHelper = AlbumHelper.getInstance();
+        AlbumHelper albumHelper = AlbumHelper.getInstance(context);
 
-        Context context = itemView.getContext();
+
         PopupMenu popupMenu = new PopupMenu(context, itemView);
         popupMenu.inflate(R.menu.album_item_popup_menu);
 
@@ -125,28 +126,24 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
                     EditAlbumName(itemView, position);
                 }
                 else if(R.id.delete_album == itemId){
-                    SharedPreferencesManager.deleteAlbumData(context, albums.get(position).getAlbumName());
-                    for(ImageObject image : albums.get(position).getImages()){
-                        image.removeAlbumName(context, albums.get(position).getAlbumName());
-                    }
-                    SharedPreferencesManager.deleteAlbumPassword(context, albums.get(position).getAlbumName());
-                    albums.remove(position);
-                    notifyDataSetChanged();
+                    DeleteAlbum(position);
                 }
                 else if(R.id.set_password == itemId){
                     albumHelper.setAlbumPassword(context, currentAlbum.getAlbumName());
                 }
+                else if(R.id.clear_password == itemId){
+                    albumHelper.clearPassword(context, currentAlbum.getAlbumName());
+                }
 
                 return true;
             }
-        });// to implement on click event on items of menu
+        });// to implement on click event on items of menuA
         popupMenu.show();
     }//showPopupMenu
 
     private void EditAlbumName(View itemView, int position) {
         AlbumData currentAlbum = albums.get(position);
         String oldName = currentAlbum.getAlbumName();
-        Context context = itemView.getContext();
 
         View view = LayoutInflater.from(context).inflate(R.layout.add_album, null);
         TextView txtTitle = view.findViewById(R.id.txtTitle);
@@ -231,4 +228,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         SharedPreferencesManager.saveAlbumData(context, album);
         notifyDataSetChanged();
     }//addAlbum
+
+    public void DeleteAlbum(int position){
+        SharedPreferencesManager.deleteAlbumData(context, albums.get(position).getAlbumName());
+        for(ImageObject image : albums.get(position).getImages()){
+            image.removeAlbumName(context, albums.get(position).getAlbumName());
+        }
+        SharedPreferencesManager.deleteAlbumPassword(context, albums.get(position).getAlbumName());
+        albums.remove(position);
+        notifyDataSetChanged();
+    }
 }

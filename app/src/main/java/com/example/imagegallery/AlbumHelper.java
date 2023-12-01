@@ -31,23 +31,10 @@ public class AlbumHelper {
 
     private static ArrayList<String> questionList;
     private static ArrayList<String> savedQuestions;
-    Context context = MainActivity.getContext();
 
     private AlbumHelper(){
         defaultAlbums = new HashSet<>();
-        questionList = new ArrayList<>();
 
-        // add string from strings.xml resources to questionList (R.string.what_is_your_favorite_color)
-        questionList.add(context.getString(R.string.what_is_your_favorite_color));
-        questionList.add(context.getString(R.string.what_is_your_favorite_food));
-        questionList.add(context.getString(R.string.what_is_your_favorite_movie));
-        questionList.add(context.getString(R.string.what_is_your_favorite_animal));
-        questionList.add(context.getString(R.string.what_is_your_favorite_sport));
-        questionList.add(context.getString(R.string.what_is_your_favorite_book));
-        questionList.add(context.getString(R.string.what_is_your_favorite_song));
-        questionList.add(context.getString(R.string.what_is_your_favorite_game));
-        questionList.add(context.getString(R.string.what_is_your_favorite_tv_show));
-        questionList.add(context.getString(R.string.what_is_your_favorite_subject));
 
         savedQuestions = new ArrayList<>();
         savedQuestions.add("what is your favorite color");
@@ -64,10 +51,26 @@ public class AlbumHelper {
 
     }
 
-    public static AlbumHelper getInstance(){
+    public static AlbumHelper getInstance(Context context){
         if(albumHelper == null){
             albumHelper = new AlbumHelper();
         }
+
+        questionList = new ArrayList<>();
+
+        // add string from strings.xml resources to questionList (R.string.what_is_your_favorite_color)
+        questionList.add(context.getString(R.string.what_is_your_favorite_color));
+        questionList.add(context.getString(R.string.what_is_your_favorite_food));
+        questionList.add(context.getString(R.string.what_is_your_favorite_movie));
+        questionList.add(context.getString(R.string.what_is_your_favorite_animal));
+        questionList.add(context.getString(R.string.what_is_your_favorite_sport));
+        questionList.add(context.getString(R.string.what_is_your_favorite_book));
+        questionList.add(context.getString(R.string.what_is_your_favorite_song));
+        questionList.add(context.getString(R.string.what_is_your_favorite_game));
+        questionList.add(context.getString(R.string.what_is_your_favorite_tv_show));
+        questionList.add(context.getString(R.string.what_is_your_favorite_subject));
+
+
         return albumHelper;
     }
 
@@ -256,8 +259,6 @@ public class AlbumHelper {
                         }
                     }
                 });
-
-
             }
             else{
                 setPassword(context, albumName);
@@ -313,7 +314,7 @@ public class AlbumHelper {
             });
 
             LinearLayout retypePassword = view.findViewById(R.id.retype_password_layout);
-            title.setText("Enter Current Password");
+            title.setText(R.string.enter_current_password);
             retypePassword.setVisibility(View.GONE);
 
             builder.setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
@@ -386,7 +387,21 @@ public class AlbumHelper {
             }
         });
         builder.create();
-        builder.show(); }
+        builder.show();
+    }
+
+    void clearPassword(Context context, String albumName){
+        if(SharedPreferencesManager.hasSetPassword(context, albumName)){
+            checkAlbumPassword(context, albumName, new PasswordCheckCallBack() {
+                @Override
+                public void onPasswordChecked(boolean isPasswordCorrect) {
+                    if(isPasswordCorrect){
+                       SharedPreferencesManager.deleteAlbumPassword(context, albumName);
+                    }
+                }
+            });
+        }
+    }
 
     public void resetAlbumPassword(Context context, String albumName){
 
@@ -405,7 +420,7 @@ public class AlbumHelper {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(view);
         TextView txtTitle = view.findViewById(R.id.txtTitle);
-        txtTitle.setText("Reset Password");
+        txtTitle.setText(R.string.reset_password);
         Spinner questions = view.findViewById(R.id.security_question_spinner);
         EditText answer = view.findViewById(R.id.security_question_answer);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, questionList);

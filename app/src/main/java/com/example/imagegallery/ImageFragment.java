@@ -155,7 +155,7 @@ public class ImageFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(imageFragment.getContext(), colNumbers[colNumberIndex]));
         recyclerView.scrollToPosition(SharedPreferencesManager.loadCurrentItemPosition(getContext()));
 
-        albumHelper = AlbumHelper.getInstance();
+        albumHelper = AlbumHelper.getInstance(getContext());
 
         btnSort = imageFragment.findViewById(R.id.btnSort);
         btnSort.setOnClickListener(new View.OnClickListener() {
