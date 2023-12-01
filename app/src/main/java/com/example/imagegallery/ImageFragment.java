@@ -361,6 +361,10 @@ public class ImageFragment extends Fragment {
                         {
                             TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
                             final int[] count = {0};
+                            Dialog dialog_loading = new Dialog(getContext());
+                            dialog_loading.setContentView(R.layout.dialog_loading);
+                            dialog_loading.setCancelable(false);
+                            dialog_loading.show();
                             Thread deleteThread = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -379,6 +383,7 @@ public class ImageFragment extends Fragment {
                             taskCompletionSource.getTask().addOnCompleteListener(task -> {
                                 try {
                                     MainActivity mainActivity = (MainActivity) getContext();
+                                    dialog_loading.dismiss();
                                     mainActivity.handler.sendEmptyMessage(1);
                                     Toast.makeText(getContext(), getString(R.string.delete_duplicate_done) + ": " + count[0] + " " + getString(R.string.images), Toast.LENGTH_SHORT).show();
                                 }
@@ -389,6 +394,7 @@ public class ImageFragment extends Fragment {
                             });
                             taskCompletionSource.getTask().addOnFailureListener(task -> {
                                 try {
+                                    dialog_loading.dismiss();
                                     Toast.makeText(getContext(), getString(R.string.delete_duplicate_error), Toast.LENGTH_SHORT).show();
                                 }
                                 catch (Exception e)
