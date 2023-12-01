@@ -30,7 +30,6 @@ public class BackupImage {
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 String token = task.getResult();
-                Log.d("TOKEN", token);
 
                 StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
                 StorageReference riversRef = mStorageRef.child(token + "/" + imageObject.getFileName());
@@ -39,15 +38,12 @@ public class BackupImage {
                 uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Update progress bar
-                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                        Log.d("UPLOAD", "Upload is " + progress + "% done");
+
                     }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // Upload successful
-                        Log.d("UPLOAD", "Upload successful");
                         Toast.makeText(context, R.string.backup_success, Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -80,8 +76,6 @@ public static void downloadImage(Context context, TaskCompletionSource<Void> tas
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 String token = task.getResult();
-                Log.d("TOKEN", token);
-
                 StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
                 StorageReference riversRef = mStorageRef.child(token);
 

@@ -335,6 +335,11 @@ public class ImageFragment extends Fragment {
                             adapter.notifyDataSetChanged();
                         }
                         else if (id == R.id.menu_download_backup) {
+                            Dialog dialog_loading = new Dialog(getContext());
+                            dialog_loading.setContentView(R.layout.dialog_loading);
+                            dialog_loading.setCancelable(false);
+                            dialog_loading.show();
+
                             Thread downloadThread = new Thread(new Runnable() {
                                 TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
                                 @Override
@@ -350,6 +355,7 @@ public class ImageFragment extends Fragment {
                                     taskCompletionSource.getTask().addOnCompleteListener(task -> {
                                         MainActivity mainActivity = (MainActivity) getContext();
                                         mainActivity.handler.sendEmptyMessage(1);
+                                        dialog_loading.dismiss();
                                         Toast.makeText(getContext(), R.string.download_successful, Toast.LENGTH_SHORT).show();
                                     });
                                 }
