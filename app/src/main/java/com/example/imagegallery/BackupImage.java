@@ -36,7 +36,6 @@ public class BackupImage {
                 StorageReference riversRef = mStorageRef.child(token + "/" + imageObject.getFileName());
                 Uri file = Uri.fromFile(new File(imageObject.getFilePath()));
                 UploadTask uploadTask = riversRef.putFile(file);
-
                 uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {

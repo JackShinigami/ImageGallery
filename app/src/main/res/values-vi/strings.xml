@@ -58,7 +58,7 @@
     <string name="remove">Xoá</string>
     <string name="remove_from_album">Xoá khỏi album</string>
     <string name="backup">Sao lưu</string>
-    <string name="download_backup">Tải xuống backup</string>
+    <string name="download_backup">Tải ảnh đã sao lưu</string>
     <string name="delete_duplicate_images">Xoá ảnh trùng</string>
     <string name="search_by_name">Tìm kiếm theo tên</string>
     <string name="search_by_location">Tìm kiếm theo vị trí</string>
