@@ -457,7 +457,6 @@ public class ImageObject implements Parcelable {
         ArrayList<String> tags = new ArrayList<>();
         InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(getFilePath()), 0);
 
-
         labeler.process(image)
                 .addOnSuccessListener(labels -> {
                     for (com.google.mlkit.vision.label.ImageLabel label : labels) {
@@ -471,9 +470,6 @@ public class ImageObject implements Parcelable {
                     taskCompletionSource.setResult(null);
                 })
                 .addOnFailureListener(e -> {
-                    // Task failed with an exception
-                    // ...
-
                     Log.d("Taggg", "Failed "+ e.getMessage());
                 });
     }
