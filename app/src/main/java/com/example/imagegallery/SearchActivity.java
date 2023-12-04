@@ -9,11 +9,14 @@ import androidx.lifecycle.ViewModelProvider;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
@@ -168,6 +171,11 @@ public class SearchActivity extends AppCompatActivity {
             dialog_loading = new Dialog(this);
             dialog_loading.setContentView(R.layout.dialog_loading);
             dialog_loading.setCancelable(false);
+
+
+            Window window = dialog_loading.getWindow();
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
             dialog_loading.show();
             Thread searchThread = new Thread(new Runnable() {
                 @Override
@@ -266,6 +274,11 @@ public class SearchActivity extends AppCompatActivity {
         dialog_loading = new Dialog(this);
         dialog_loading.setContentView(R.layout.dialog_loading);
         dialog_loading.setCancelable(false);
+
+
+        Window window = dialog_loading.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         dialog_loading.show();
         Thread updateData = new Thread(new Runnable() {
             @Override

@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -370,6 +373,10 @@ public class ImageFragment extends Fragment {
                             Dialog dialog_loading = new Dialog(getContext());
                             dialog_loading.setContentView(R.layout.dialog_loading);
                             dialog_loading.setCancelable(false);
+
+                            Window window = dialog_loading.getWindow();
+                            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
                             dialog_loading.show();
                             Thread deleteThread = new Thread(new Runnable() {
                                 @Override

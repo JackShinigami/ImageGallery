@@ -31,7 +31,6 @@ public class IntroActivity extends AppCompatActivity {
             } else if (SharedPreferencesManager.loadThemeState(this) == 1) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             } else if (SharedPreferencesManager.loadThemeState(this) == 2) {
-                Toast.makeText(this, "IntroActivity", Toast.LENGTH_SHORT).show();
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             }
 
@@ -53,7 +52,7 @@ public class IntroActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Error: IntroActivity", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Error: IntroActivity", Toast.LENGTH_SHORT).show();
         }
         super.onCreate(savedInstanceState);
 

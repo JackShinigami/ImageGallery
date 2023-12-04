@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:backgroundTint="@color/transparent"
+                android:background="@color/transparent"
+              android:orientation="vertical"
+    >
+
     <ProgressBar
+        android:id="@+id/progressBar"
+        android:background="@color/transparent"
+        android:backgroundTint="@color/appColorAccent"
+        android:indeterminateTint="@color/appColorAccent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/progressBar"
         />
 </LinearLayout>
