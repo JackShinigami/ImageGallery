@@ -61,17 +61,21 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
     public void onThemeChanged(String theme) {
         // change theme of the app
 
-
-        if (theme.equals("Dark")) {
-            SharedPreferencesManager.saveThemeState(getApplicationContext(), 0);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else if (theme.equals("Light")) {
-            SharedPreferencesManager.saveThemeState(getApplicationContext(), 1);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else if (theme.equals("SameSystem")) {
-            SharedPreferencesManager.saveThemeState(getApplicationContext(), 2);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        switch (theme) {
+            case "Dark":
+                SharedPreferencesManager.saveThemeState(getApplicationContext(), 0);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "Light":
+                SharedPreferencesManager.saveThemeState(getApplicationContext(), 1);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "SameSystem":
+                SharedPreferencesManager.saveThemeState(getApplicationContext(), 2);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
         }
+
         recreate();
 
         // while changing theme, create a progress dialog
@@ -84,12 +88,15 @@ public class SettingActivity extends AppCompatActivity implements SettingPropert
         // change language of the app
         int languageState = SharedPreferencesManager.loadLanguageState(getApplicationContext());
         String language = "";
-        if (lang.equals("English")) {
-            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 0);
-            language = "en-US";
-        } else if (lang.equals("Vietnamese")) {
-            SharedPreferencesManager.saveLanguageState(getApplicationContext(), 1);
-            language = "vi";
+        switch (lang) {
+            case "English":
+                SharedPreferencesManager.saveLanguageState(getApplicationContext(), 0);
+                language = "en-US";
+                break;
+            case "Vietnamese":
+                SharedPreferencesManager.saveLanguageState(getApplicationContext(), 1);
+                language = "vi";
+                break;
         }
 
         LocaleListCompat localeListCompat = LocaleListCompat.create(new Locale(language));

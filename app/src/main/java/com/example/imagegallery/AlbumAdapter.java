@@ -149,7 +149,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder>{
         TextView txtTitle = view.findViewById(R.id.txtTitle);
         EditText txtName = view.findViewById(R.id.edit_album_name);
 
-        txtTitle.setText("Edit Album Name");
+        txtTitle.setText(R.string.edit_album_name);
         txtName.setText(oldName);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

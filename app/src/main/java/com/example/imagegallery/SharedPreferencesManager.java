@@ -177,7 +177,7 @@ public class SharedPreferencesManager {
 
     public static int loadThemeState(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        int state = sharedPreferences.getInt(CURRENT_THEME, 0);
+        int state = sharedPreferences.getInt(CURRENT_THEME, 2);
         return state;
     }
 
