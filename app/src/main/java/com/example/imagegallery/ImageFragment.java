@@ -73,7 +73,7 @@ public class ImageFragment extends Fragment {
     private TextView tvTitle;
     private ImageButton btnChangeGrid;
     private ImageView btnSort, btnOptions;
-    private ImageButton btnSelect;
+    private ImageButton btnSelect, btnCancel;
     private int[] colNumbers = {2, 3, 4};
     private static int colNumberIndex = 1;
 
@@ -222,6 +222,15 @@ public class ImageFragment extends Fragment {
 
 
         btnSelect = imageFragment.findViewById(R.id.btnSelect);
+
+        btnCancel = imageFragment.findViewById(R.id.btnCancel);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reload(false);
+            }
+        });
         reload(false);
 
 
@@ -275,6 +284,7 @@ public class ImageFragment extends Fragment {
             btnSort.setVisibility(View.VISIBLE);
             btnChangeGrid.setVisibility(View.VISIBLE);
             btnOptions.setVisibility(View.VISIBLE);
+            btnCancel.setVisibility(View.GONE);
             btnSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -294,6 +304,7 @@ public class ImageFragment extends Fragment {
         btnSelect.setImageResource(R.drawable.ic_multiselect_menu);
         btnSort.setVisibility(View.INVISIBLE);
         btnChangeGrid.setVisibility(View.INVISIBLE);
+        btnCancel.setVisibility(View.VISIBLE);
         btnOptions.setVisibility(View.INVISIBLE);
         adapter.setSelectMode(true);
 
@@ -561,9 +572,8 @@ public class ImageFragment extends Fragment {
                 }
                 else if(id == R.id.select_all){
                     adapter.SelectAll();
-                } else if (id == R.id.cancel_action) {
-                    reload(false);
-                } else if (id == R.id.delete_trash) {
+                }
+                else if (id == R.id.delete_trash) {
                     Dialog dialog = new Dialog(getContext());
                     dialog.setContentView(R.layout.dialog_save_edited_image);
                     TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
