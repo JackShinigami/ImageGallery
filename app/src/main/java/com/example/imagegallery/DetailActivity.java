@@ -5,6 +5,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.widget.ViewPager2;
 
 
 import android.annotation.TargetApi;
@@ -71,7 +73,9 @@ import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity  {
 
-    private ImageView imageView, iv_love, iv_addtag;
+    private ImageView imageView;
+    private ImageObject obj;
+    private ImageView iv_love, iv_addtag;
     private ImageView imgRotate, imgFlip, imgFilter, imgCrop;
     private SeekBar seekBarFilter;
     private ScaleGestureDetector scaleGestureDetector;
@@ -89,9 +93,9 @@ public class DetailActivity extends AppCompatActivity  {
 
     private float saturationVal = 1f;
     ColorMatrix color = new ColorMatrix();
-    ImageObject obj;
 
     private ArrayList<String> tags = new ArrayList<>();
+    private ArrayList<ImageObject> imgobjs = new ArrayList<>();
 
     ActivityResultLauncher<CropImageContractOptions> cropImage = registerForActivityResult(new CropImageContract(), result -> {
         if (result.isSuccessful()) {
@@ -200,32 +204,9 @@ public class DetailActivity extends AppCompatActivity  {
             });
 
 
-            iv_love = findViewById(R.id.iv_love);
-
-            if (SharedPreferencesManager.loadCurrentName(this).equals("Trash"))
-                iv_love.setVisibility(View.GONE);
-
-
-            if (obj.isLoved(this))
-                iv_love.setImageResource(R.drawable.ic_loved);
-            else
-                iv_love.setImageResource(R.drawable.ic_not_loved);
-
-            iv_love.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (obj.isLoved(view.getContext())) {
-                        obj.setLoved(view.getContext(), false);
-                        iv_love.setImageResource(R.drawable.ic_not_loved);
-                    } else {
-                        obj.setLoved(view.getContext(), true);
-                        iv_love.setImageResource(R.drawable.ic_loved);
-                    }
-                }
-            });
-
             originalBitmap = BitmapFactory.decodeFile(obj.getFilePath());
             imageView.setImageBitmap(originalBitmap);
+
             displayedBitmap = originalBitmap;
 
             //cropping
