@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ContextThemeWrapper;
@@ -103,8 +104,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), DetailActivity.class);
-                    intent.putExtra("imageObject", imageObject);
+                    Intent intent = new Intent(v.getContext(), ViewImageActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("position", position);
+                    intent.putExtra("positionBundle", bundle);
                     v.getContext().startActivity(intent);
                 }
             });

@@ -8,6 +8,7 @@
 
     >
 
+<!--
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -18,12 +19,22 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         />
+-->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/editBar"
+        android:layout_below="@id/iv_tag"
+        android:layout_centerInParent="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
 
     <ImageView
         android:id="@+id/iv_tag"
         android:layout_width="48dp"
         android:layout_height="66dp"
-        android:layout_toLeftOf="@id/iv_love"
+        android:layout_toLeftOf="@id/iv_more"
         android:scaleX="0.7"
         android:scaleY="0.7"
         android:src="@drawable/ic_tag"
@@ -41,15 +52,6 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <ImageView
-        android:id="@+id/iv_love"
-        android:layout_width="48dp"
-        android:layout_height="66dp"
-        android:layout_toLeftOf="@id/iv_more"
-        android:scaleX="0.7"
-        android:scaleY="0.7"
-        android:src="@drawable/ic_loved"
-        />
 
     <SeekBar
         android:id="@+id/seekBarFilter"
