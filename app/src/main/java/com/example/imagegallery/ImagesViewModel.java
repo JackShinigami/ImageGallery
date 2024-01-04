@@ -28,6 +28,14 @@ public class ImagesViewModel extends ViewModel {
         return ImagesAlbum;
     }
 
+    public void setImagesBackup(ArrayList<ImageObject> list) {
+        repository.setImagesBackup(list);
+    }
+
+    public MutableLiveData<ArrayList<ImageObject>> getImagesBackup() {
+        return repository.getImagesBackup();
+    }
+
     public LiveData<ArrayList<ImageObject>> getImagesList() {
         return repository.getImagesList();
     }

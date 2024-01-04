@@ -1,6 +1,7 @@
 package com.example.imagegallery;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,8 +18,10 @@ import android.widget.TextView;
 public class ViewImageActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager2;
-    private ImageView edit, iv_love, more, share, delete;
+    private ImageView edit, iv_love, more, share, imgDelete;
     private ViewImageAdapter viewImageAdapter;
+
+    private ImagesViewModel imagesViewModel;
 
     private ImageObject obj ;
 
@@ -26,8 +30,14 @@ public class ViewImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
 
+        this.imagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
+
+        if (SharedPreferencesManager.loadCurrentName(this).equals("Gallery"))
+            viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesList().getValue());
+        else
+            viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesBackup().getValue());
+
         viewPager2 = findViewById(R.id.viewPager2);
-        viewImageAdapter = new ViewImageAdapter(this);
 
         viewPager2.setAdapter(viewImageAdapter);
         viewPager2.setCurrentItem(getIntent().getBundleExtra("positionBundle").getInt("position"), false);
@@ -102,6 +112,35 @@ public class ViewImageActivity extends AppCompatActivity {
                             startActivity(Intent.createChooser(share, "Select"));
                         }
                     });
+        });
+        imgDelete = findViewById(R.id.imgDelete);
+        imgDelete.setOnClickListener(v -> {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_save_edited_image);
+            TextView txtTitle = dialog.findViewById(R.id.tv_message_dialog);
+            txtTitle.setText(R.string.delete_images_confirm);
+            Button btnYes = dialog.findViewById(R.id.btn_save);
+            Button btnNo = dialog.findViewById(R.id.btn_cancel);
+            btnYes.setText(R.string.delete);
+            btnNo.setText(R.string.cancel);
+            btnYes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    obj.deleteToTrash(getApplicationContext());
+                    if (SearchActivity.isSearchActivityRunning()) {
+                        SearchActivity.addDeleteImage(obj);
+                    }
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+            btnNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
         });
     }
 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
     private boolean isSelectMode;
     private SparseBooleanArray selectedItems ;
     private String fragmentName;
-
 
 
 
@@ -104,6 +104,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ImagesViewModel imagesViewModel;
+                    try {
+                        imagesViewModel = new ViewModelProvider((MainActivity) v.getContext()).get(ImagesViewModel.class);
+                    }
+                    catch (Exception e){
+                        imagesViewModel = new ViewModelProvider((SearchActivity) v.getContext()).get(ImagesViewModel.class);
+                    }
+                    imagesViewModel.setImagesBackup(data);
                     Intent intent = new Intent(v.getContext(), ViewImageActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("position", position);

@@ -15,11 +15,9 @@ private ViewImageActivity context;
     private ImageObject imageObject;
     private ImagesViewModel imagesViewModel;
     private ArrayList<ImageObject> imageObjects;
-    public ViewImageAdapter(ViewImageActivity context) {
+    public ViewImageAdapter(ViewImageActivity context,  ArrayList<ImageObject> objs) {
         this.context = context;
-
-        this.imagesViewModel = new ViewModelProvider(this.context).get(ImagesViewModel.class);
-        imageObjects = imagesViewModel.getImagesList().getValue();
+        imageObjects = objs;
         Log.d("imageviewmodel: ", "ViewImageAdapter: " + imageObjects.size());
     }
 
