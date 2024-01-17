@@ -31,8 +31,8 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_detail_and_edit"
             android:id="@+id/imgEdit"
-            android:scaleX="1"
-            android:scaleY="1"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
             android:layout_weight="1"
             />
         <ImageView
@@ -40,8 +40,8 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_loved"
             android:id="@+id/iv_love"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
             android:layout_weight="1"/>
 
         <ImageView
@@ -49,16 +49,16 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_share"
             android:id="@+id/iv_share"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
             android:layout_weight="1"/>
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:src="@drawable/ic_delete"
             android:id="@+id/imgDelete"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
             android:layout_weight="1"/>
 
     </LinearLayout>
