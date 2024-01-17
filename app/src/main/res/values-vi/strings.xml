@@ -131,5 +131,5 @@
     <string name="enter_current_password">Nhập mật khẩu hiện tại</string>
     <string name="reset_password">Đặt lại mật khẩu</string>
     <string name="edit_album_name">Chỉnh Sửa Tên Album</string>
-
+    <string name="extract_text">Nhận diện text</string>
 </resources>

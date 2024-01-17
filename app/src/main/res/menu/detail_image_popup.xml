@@ -28,5 +28,7 @@
 
     <item android:id="@+id/restore_image"
         android:title="@string/restore_trash" />
+    <item android:id="@+id/extract_text"
+        android:title="@string/extract_text" />
 
 </menu>

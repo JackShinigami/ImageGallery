@@ -12,7 +12,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -55,6 +58,9 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.label.ImageLabeler;
 import com.google.mlkit.vision.label.ImageLabeling;
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 
@@ -432,6 +438,29 @@ public class DetailActivity extends AppCompatActivity  {
 
 
                         dialog.show();
+                    } else if (R.id.extract_text==itemId) {
+                        TextRecognizer recognizer =
+                                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+
+                        InputImage image = InputImage.fromBitmap(BitmapFactory.decodeFile(obj.getFilePath()), 0);
+                        recognizer.process(image)
+                                .addOnSuccessListener(visionText -> {
+                                    // Task completed successfully
+                                    // ...
+                                    String text = visionText.getText();
+                                    Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+                                    //copy to clipboard
+                                    String label = "text";
+                                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                    ClipData clip = ClipData.newPlainText(label, text);
+                                    clipboard.setPrimaryClip(clip);
+
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Task failed with an exception
+                                    // ...
+                                    Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+                                });
                     }
 
 

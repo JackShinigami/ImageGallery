@@ -124,5 +124,5 @@
     <string name="enter_current_password">Enter Current Password</string>
     <string name="reset_password">Reset password</string>
     <string name="edit_album_name">Edit Album Name</string>
-
+    <string name="extract_text">Extract Text</string>
 </resources>

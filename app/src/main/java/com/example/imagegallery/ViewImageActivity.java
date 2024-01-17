@@ -123,6 +123,7 @@ public class ViewImageActivity extends AppCompatActivity {
             Button btnNo = dialog.findViewById(R.id.btn_cancel);
             btnYes.setText(R.string.delete);
             btnNo.setText(R.string.cancel);
+            dialog.show();
             btnYes.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

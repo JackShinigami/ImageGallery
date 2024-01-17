@@ -54,7 +54,7 @@ dependencies {
     implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation ("androidx.appcompat:appcompat:1.0.2")
     implementation ("org.mindrot:jbcrypt:0.4")
-    implementation ("com.google.mlkit:image-labeling:17.0.3")
+    implementation ("com.google.mlkit:image-labeling:17.0.7")
 
 
 
@@ -64,5 +64,6 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging")
 
     implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
 
 }
