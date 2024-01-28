@@ -36,6 +36,13 @@ public class ImagesViewModel extends ViewModel {
         return repository.getImagesBackup();
     }
 
+    public void setImagesSearch(ArrayList<ImageObject> list) {
+        repository.setImagesSearch(list);
+    }
+
+    public MutableLiveData<ArrayList<ImageObject>> getImagesSearch() {
+        return repository.getImagesSearch();
+    }
     public LiveData<ArrayList<ImageObject>> getImagesList() {
         return repository.getImagesList();
     }

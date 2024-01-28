@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public class ImagesRepository {
     private static ImagesRepository instance;
     private final MutableLiveData<ArrayList<ImageObject>> ImagesBackup;
-
+    private final MutableLiveData<ArrayList<ImageObject>> ImagesSearch;
     private ImagesRepository() {
         // Private constructor prevents instantiation from other classes
         ImagesList = new MutableLiveData<>(new ArrayList<>());
         ImagesBackup = new MutableLiveData<>(new ArrayList<>());
-
+        ImagesSearch = new MutableLiveData<>(new ArrayList<>());
     }
     public static synchronized ImagesRepository getInstance() {
         if (instance == null) {
@@ -39,7 +39,13 @@ public class ImagesRepository {
         return ImagesBackup;
     }
 
+    public void setImagesSearch(ArrayList<ImageObject> list) {
+        ImagesSearch.setValue(list);
+    }
 
+    public MutableLiveData<ArrayList<ImageObject>> getImagesSearch() {
+        return ImagesSearch;
+    }
 
     public void addImage(ImageObject item) {
         ArrayList<ImageObject> currentList = ImagesList.getValue();

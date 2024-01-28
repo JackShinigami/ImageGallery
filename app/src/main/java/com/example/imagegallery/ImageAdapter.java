@@ -107,11 +107,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageViewHolder>{
                     ImagesViewModel imagesViewModel;
                     try {
                         imagesViewModel = new ViewModelProvider((MainActivity) v.getContext()).get(ImagesViewModel.class);
+                        imagesViewModel.setImagesBackup(data);
                     }
                     catch (Exception e){
                         imagesViewModel = new ViewModelProvider((SearchActivity) v.getContext()).get(ImagesViewModel.class);
+                        imagesViewModel.setImagesSearch(data);
                     }
-                    imagesViewModel.setImagesBackup(data);
                     Intent intent = new Intent(v.getContext(), ViewImageActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("position", position);

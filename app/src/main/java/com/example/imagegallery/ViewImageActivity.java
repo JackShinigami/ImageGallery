@@ -34,8 +34,12 @@ public class ViewImageActivity extends AppCompatActivity {
 
         if (SharedPreferencesManager.loadCurrentName(this).equals("Gallery"))
             viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesList().getValue());
-        else
-            viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesBackup().getValue());
+        else {
+            if (SharedPreferencesManager.loadCurrentName(this).equals("Search"))
+                viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesSearch().getValue());
+            else
+                viewImageAdapter = new ViewImageAdapter(this, imagesViewModel.getImagesBackup().getValue());
+        }
 
         viewPager2 = findViewById(R.id.viewPager2);
 

@@ -90,6 +90,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        SharedPreferencesManager.saveCurrentName(this, "Search");
         imagesViewModel = new ViewModelProvider(this).get(ImagesViewModel.class);
         isRunning = true;
         images = imagesViewModel.getImagesList().getValue();
